@@ -1,0 +1,328 @@
+# Rendercı Muhittin - 3D Görselleştirme Motoru (Detaylı Döküman)
+
+## Genel Bilgi
+
+| Özellik         | Değer                        |
+| --------------- | ---------------------------- |
+| **Tam Adı**     | Rendercı Muhittin            |
+| **Kısaltma**    | Renderci                     |
+| **Versiyon**    | 1.0.0                        |
+| **Framework**   | Vite + React + TypeScript    |
+| **3D Engine**   | Three.js / React Three Fiber |
+| **AI**          | Google Gemini Vision API     |
+| **Animasyon**   | Framer Motion                |
+| **Renk Teması** | Turuncu (#F97316 → #F43F5E)  |
+
+---
+
+## Bileşen Listesi (19 Bileşen)
+
+| Bileşen                    | Boyut | İşlev                    |
+| -------------------------- | ----- | ------------------------ |
+| ThreeDViewer.tsx           | 27KB  | 3D model görüntüleme     |
+| ImageModal.tsx             | 21KB  | Görsel düzenleme modal   |
+| PromptLibraryModal.tsx     | 10KB  | Prompt kütüphanesi       |
+| WelcomeScreen.tsx          | 10KB  | Karşılama ekranı         |
+| ResultDisplay.tsx          | 9KB   | Render sonuç gösterimi   |
+| ImageViewerModal.tsx       | 7KB   | Büyük görüntüleme        |
+| InputPanel.tsx             | 7KB   | Prompt/stil girişi       |
+| ResultActions.tsx          | 7KB   | İndirme/paylaşma         |
+| GalleryModal.tsx           | 7KB   | Galeri görünümü          |
+| ImageUploader.tsx          | 7KB   | Görsel yükleme           |
+| MaterialPalette.tsx        | 5KB   | Materyal seçimi          |
+| StyleReferenceUploader.tsx | 5KB   | Referans görsel          |
+| NavigationControls.tsx     | 5KB   | 3D navigasyon            |
+| CompareSlider.tsx          | 4KB   | Önce/sonra karşılaştırma |
+| Header.tsx                 | 3KB   | Üst menü                 |
+| ResolutionSelector.tsx     | 3KB   | Çözünürlük seçimi        |
+| StylePresetSelector.tsx    | 2KB   | Hazır stiller            |
+| HistoryThumbnails.tsx      | 2KB   | İşlem geçmişi            |
+| Loader.tsx                 | 0.2KB | Yükleme animasyonu       |
+
+---
+
+## Hook Kullanımı
+
+### useAppState (Ana State Hook)
+
+```typescript
+const {
+  sourceFile,
+  previewUrl,
+  stylePreviewUrl,
+  selectedStylePreset,
+  prompt,
+  setPrompt,
+  isLoading,
+  error,
+  setError,
+  threeDFile,
+  setThreeDFile,
+  resetKey,
+  resultImageUrl,
+  history,
+  view,
+  gallery,
+  savedPrompts,
+  isGalleryOpen,
+  setIsGalleryOpen,
+  isPromptLibOpen,
+  isModalOpen,
+  isCorrecting,
+  isExplorerMode,
+  tool,
+  setTool,
+  layers,
+  setLayers,
+  activeLayerId,
+  setActiveLayerId,
+  isRestoringSession,
+  dominantColor,
+  loadingMessage,
+
+  // Handlers
+  reset,
+  handleNewFile,
+  handleFileSelect,
+  handleThreeDCapture,
+  handleStyleFileSelect,
+  handleStyleFileRemove,
+  handleSelectPreset,
+  handleRender,
+  handleRegenerate,
+  handleUndo,
+  handleShowResult,
+  handleOpenModal,
+  handleCloseModal,
+  handleSavePrompt,
+  handleDeletePrompt,
+  handlePromptLibraryOpen,
+  handlePromptLibraryClose,
+  handleGalleryClick,
+  handleSelectFromGallery,
+} = useAppState();
+```
+
+---
+
+## Özellikler
+
+### 1. Görsel Yükleme
+
+- Desteklenen formatlar: JPG, PNG, WEBP, GIF
+- Sürükle-bırak desteği
+- Clipboard'dan yapıştırma
+- URL'den yükleme
+
+### 2. 3D Model Desteği
+
+- **GLB/GLTF**: Web optimized
+- **STEP**: CAD formatı
+- **DXF**: 2D çizim
+- **OBJ**: Universal 3D
+
+### 3. AI Render Motoru
+
+- Google Gemini Vision API
+- Prompt bazlı iyileştirme
+- İteratif düzeltme
+- Çoklu varyasyon
+
+### 4. Stil Presetleri
+
+- **Photorealistic**: Gerçekçi render
+- **Studio Lighting**: Stüdyo ortamı
+- **Outdoor Scene**: Dış mekan
+- **Technical Drawing**: Teknik çizim
+- **Custom**: Özel stil
+
+### 5. Katman Yönetimi
+
+- Çoklu katman desteği
+- Katman sıralama
+- Görünürlük kontrolü
+- Blend modları
+
+### 6. HDRI Aydınlatma
+
+- Ortam haritaları
+- Dinamik ışıklandırma
+- Gölge hesaplama
+
+### 7. Materyal Paleti
+
+- Metal
+- Plastik
+- Cam
+- Ahşap
+- Kumaş
+
+### 8. Prompt Kütüphanesi
+
+- Kayıtlı promptlar
+- Kategorize edilmiş
+- Hızlı erişim
+
+### 9. Galeri
+
+- Render geçmişi
+- Kayıtlı görseller
+- Favoriler
+
+### 10. Export
+
+- Yüksek çözünürlük (4K)
+- Format seçimi (PNG, JPG, WEBP)
+- Şeffaf arka plan
+
+---
+
+## AI Render Pipeline
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    KAYNAK GİRİŞİ                        │
+├─────────────────────────────────────────────────────────┤
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐    │
+│  │ Görsel  │  │ 3D      │  │ Weave   │  │ DXF/    │    │
+│  │ Upload  │  │ Model   │  │ Export  │  │ STEP    │    │
+│  └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘    │
+│       └────────────┴────────────┴────────────┘          │
+│                         │                                │
+│                         ▼                                │
+├─────────────────────────────────────────────────────────┤
+│                     ÖNIŞLEME                            │
+├─────────────────────────────────────────────────────────┤
+│  • Görsel analizi                                        │
+│  • Dominant renk çıkarımı                               │
+│  • Kompozisyon analizi                                  │
+│  • 3D model parse                                       │
+│                         │                                │
+│                         ▼                                │
+├─────────────────────────────────────────────────────────┤
+│                   STİL UYGULAMA                         │
+├─────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
+│  │ Preset      │  │ Referans    │  │ Özel        │     │
+│  │ Seçimi      │  │ Görsel      │  │ Prompt      │     │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘     │
+│         └────────────────┴────────────────┘             │
+│                         │                                │
+│                         ▼                                │
+├─────────────────────────────────────────────────────────┤
+│                    AI RENDER                            │
+├─────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────┐   │
+│  │         Google Gemini Vision API                │   │
+│  │                                                  │   │
+│  │  • Görsel anlama                                │   │
+│  │  • Stil transferi                               │   │
+│  │  • İteratif iyileştirme                        │   │
+│  │  • Çoklu varyasyon üretimi                     │   │
+│  └─────────────────────────────────────────────────┘   │
+│                         │                                │
+│                         ▼                                │
+├─────────────────────────────────────────────────────────┤
+│                      ÇIKTI                              │
+├─────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
+│  │ HD Export   │  │ UPH'ye      │  │ Galeri'ye   │     │
+│  │ (4K)        │  │ Kaydet      │  │ Ekle        │     │
+│  └─────────────┘  └─────────────┘  └─────────────┘     │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 3D Viewer Özellikleri
+
+### Kamera Kontrolleri
+
+- Orbit (döndürme)
+- Pan (kaydırma)
+- Zoom (yakınlaştırma)
+- Reset (sıfırlama)
+
+### Görünüm Modları
+
+- Solid
+- Wireframe
+- X-Ray
+- Exploded View
+
+### Lighting
+
+- Ambient Light
+- Directional Light
+- Point Lights
+- HDRI Environment
+
+### Capture
+
+- Screenshot
+- 360° Turntable
+- Animation Export
+
+---
+
+## Entegrasyonlar
+
+### Weave Entegrasyonu
+
+- PCB görselleştirme
+- Komponent render
+- 3D model import
+
+### UPH Entegrasyonu
+
+- Proje görselleri kaydetme
+- Ürün fotoğrafları
+- Sunum materyalleri
+
+---
+
+## Ekran Görünümü
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  [Rendercı Muhittin]              [Yeni] [Galeri] [⚙]  │
+├─────────────────────────┬───────────────────────────────┤
+│                         │                               │
+│  ┌───────────────────┐  │  ┌───────────────────────┐   │
+│  │                   │  │  │                       │   │
+│  │   KAYNAK          │  │  │   RENDER SONUCU       │   │
+│  │   GÖRSEL/3D       │  │  │   (Büyük Görüntü)     │   │
+│  │                   │  │  │                       │   │
+│  └───────────────────┘  │  └───────────────────────┘   │
+│                         │                               │
+│  [Görsel Yükle] [3D]    │  [← Önceki] [→ Sonraki]      │
+│                         │                               │
+│  Stil Presetleri:       │  ┌───────────────────────┐   │
+│  ○ Photorealistic       │  │ Geçmiş Thumbnails     │   │
+│  ○ Studio               │  │ [■] [■] [■] [■]       │   │
+│  ○ Outdoor              │  └───────────────────────┘   │
+│  ○ Technical            │                               │
+│                         │  [İndir HD] [UPH'ye Kaydet]  │
+│  Referans: [+]          │  [Varyasyon] [Paylaş]        │
+│                         │                               │
+│  ┌───────────────────┐  │                               │
+│  │ Prompt:           │  │                               │
+│  │ "Professional     │  │                               │
+│  │  product photo.." │  │                               │
+│  └───────────────────┘  │                               │
+│                         │                               │
+│  [★ RENDER BAŞLAT]      │                               │
+└─────────────────────────┴───────────────────────────────┘
+```
+
+---
+
+## Kurulum
+
+```bash
+cd Renderci/code
+pnpm install
+pnpm dev
+```
+
+**Port**: 5173 (Vite varsayılan)

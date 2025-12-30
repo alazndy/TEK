@@ -1,0 +1,39 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper to check if user owns the document or is a member
+    // This is a template, should be customized based on your data structure
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Projects collection rules
+    match /projects/{projectId} {
+      // Allow read/write for now only if authenticated
+      // TODO: Implement granular access based on project membership
+      allow read, write: if isAuthenticated();
+      
+      // Tasks sub-collection
+      match /tasks/{taskId} {
+        allow read, write: if isAuthenticated();
+      }
+    }
+
+    // Users collection rules
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    // Default deny for everything else
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ADC Envanter</string>
+    <string name="title_activity_main">ADC Envanter</string>
+    <string name="package_name">com.adc.envanter</string>
+    <string name="custom_url_scheme">com.adc.envanter</string>
+</resources>

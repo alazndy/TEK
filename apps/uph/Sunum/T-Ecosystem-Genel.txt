@@ -1,0 +1,376 @@
+# T-ECOSYSTEM - Kapsamlı Platform Dökümanı
+
+---
+
+## 1. EKOSİSTEM GENEL BAKIŞ
+
+### 1.1 Vizyon
+
+**T-Ecosystem**, mühendislik ve üretim şirketleri için tasarlanmış, yapay zeka destekli entegre dijital platform ailesidir.
+
+**Slogan**: *"Projenizi planlayın, stoklarınızı yönetin, sistemlerinizi tasarlayın, şartnamelerinizi analiz edin"*
+
+### 1.2 Platform Özeti
+
+| Metrik | Değer |
+|--------|-------|
+| **Toplam Uygulama** | 5 |
+| **Toplam Modül** | 60+ |
+| **Toplam Store** | 43 |
+| **Toplam Tip Tanımı** | 150+ |
+| **Desteklenen Platform** | Web, PWA, Desktop, Mobile |
+
+---
+
+## 2. UYGULAMALAR
+
+### 2.1 UPH (Unified Project Hub)
+
+**Rol**: Merkezi Proje Yönetimi
+**Renk**: Mor (#8B5CF6)
+**Açıklama**: Tüm projelerin merkezi yönetim noktası. Diğer uygulamalardan gelen verileri birleştirir.
+
+| Özellik | Değer |
+|---------|-------|
+| Framework | Next.js 16 |
+| Modül | 12 |
+| Store | 25 |
+
+**Temel Özellikler**:
+- Proje oluşturma ve yönetimi
+- Görev ve milestone takibi
+- ECR/ECO (Mühendislik Değişiklik) sistemi
+- RAID (Risk, Assumption, Issue, Dependency) yönetimi
+- EVM (Earned Value Management) metrikleri
+- Fatura ve zaman takibi
+- GitHub/Google Drive entegrasyonu
+
+---
+
+### 2.2 ENV-I (Envanter Yönetim Sistemi)
+
+**Rol**: Stok ve Envanter Yönetimi
+**Renk**: Zümrüt (#10B981)
+**Açıklama**: Tüm ürün, ekipman ve sarf malzemelerinin merkezi veritabanı.
+
+| Özellik | Değer |
+|---------|-------|
+| Framework | Next.js 16 |
+| Modül | 18 |
+| Store | 18 |
+
+**Temel Özellikler**:
+- Ürün/Ekipman/Sarf malzeme yönetimi
+- Depo hiyerarşisi (Depo → Zon → Raf)
+- Stok hareketleri ve transfer
+- Fiziksel sayım
+- Sipariş ve teklif yönetimi
+- Tedarikçi veritabanı
+- Audit log ve raporlama
+
+---
+
+### 2.3 Weave (Sistem Bağlantı Tasarım Platformu)
+
+**Rol**: Fiziksel Ürün Bağlantı Tasarımı
+**Renk**: Mavi (#6366F1)
+**Açıklama**: Kameralar, monitörler, sensörler gibi fiziksel ürünlerin birbirine nasıl bağlanacağını tasarlama platformu.
+
+| Özellik | Değer |
+|---------|-------|
+| Framework | Vite + React |
+| Bileşen | 46 |
+| Konnektör Tipi | 75+ |
+
+**⚠️ ÖNEMLİ NOT**: Weave, PCB veya elektronik devre tasarımı DEĞİLDİR. Sistem seviyesinde bağlantı tasarımıdır.
+
+**Temel Özellikler**:
+- **Ürün Tarama ve Tanımlama**
+  - ENV-I'den ürün import
+  - Görsel yükleme
+  - Port noktası işaretleme
+  - 75+ konnektör tipi seçimi
+
+- **Sistem Tasarımı**
+  - Canvas üzerine ürün yerleştirme
+  - Port'lar arası bağlantı çizimi
+  - Kablo tipi ve renk seçimi
+
+- **Kütüphane ve Saklama**
+  - Tanımlı ürünleri kaydetme
+  - ENV-I senkronizasyonu
+  - Stok durumu gösterimi
+
+- **Export**
+  - PDF teknik şema
+  - BOM (malzeme listesi)
+  - KiCad/SPICE export
+
+---
+
+### 2.4 Rendercı Muhittin (3D Görselleştirme)
+
+**Rol**: AI Destekli Teknik Render
+**Renk**: Turuncu (#F97316)
+**Açıklama**: Teknik çizimler ve 3D modellerden yüksek kaliteli görselleştirme.
+
+| Özellik | Değer |
+|---------|-------|
+| Framework | Vite + React |
+| 3D Engine | Three.js |
+| AI | Google Gemini Vision |
+
+**Temel Özellikler**:
+- Görsel upload ve 3D model desteği (GLB, STEP, DXF)
+- AI destekli render iyileştirme
+- Stil presetleri (Photorealistic, Studio, Outdoor)
+- Katman yönetimi
+- HD export (4K)
+
+---
+
+### 2.5 T-SA (Teknik Şartname Analiz Platformu)
+
+**Rol**: Şartname Analizi ve Ürün Kıyaslama
+**Renk**: Cyan (#06B6D4)
+**Açıklama**: İhale şartnameleri ve teknik dökümanları analiz ederek gereksinim çıkarma ve ürün eşleştirme.
+
+| Özellik | Değer |
+|---------|-------|
+| Framework | Vite + React |
+| AI | Google Gemini Pro |
+
+**⚠️ ÖNEMLİ NOT**: T-SA, genel sohbet asistanı DEĞİLDİR. Teknik şartname analiz platformudur.
+
+**Temel Özellikler**:
+- **Şartname Analizi**
+  - PDF/DOCX döküman parsing
+  - Teknik gereksinim çıkarma
+  - Standart/norm referans tespiti
+
+- **Ürün Kıyaslama**
+  - ENV-I ile ürün eşleştirme
+  - Alternatif ürün önerisi
+  - Fiyat/performans karşılaştırma
+  - Stok durumu kontrolü
+
+- **Datasheet Karşılaştırma**
+  - Yan yana spesifikasyon analizi
+  - Fark vurgulama
+
+---
+
+## 3. ENTEGRASYON MATRİSİ
+
+### 3.1 Veri Akışları
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         T-ECOSYSTEM ENTEGRASYON                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│                             ┌─────────────┐                              │
+│                             │    UPH      │                              │
+│                             │  (Merkez)   │                              │
+│                             └──────┬──────┘                              │
+│                    ┌───────────────┼───────────────┐                     │
+│                    │               │               │                     │
+│              ┌─────▼─────┐   ┌─────▼─────┐   ┌─────▼─────┐              │
+│              │   ENV-I   │   │   Weave   │   │   T-SA    │              │
+│              │  (Stok)   │   │ (Tasarım) │   │ (Analiz)  │              │
+│              └─────┬─────┘   └─────┬─────┘   └─────┬─────┘              │
+│                    │               │               │                     │
+│                    │         ┌─────▼─────┐         │                     │
+│                    │         │ Renderci  │         │                     │
+│                    │         │   (3D)    │         │                     │
+│                    │         └───────────┘         │                     │
+│                    │                               │                     │
+│                    └───────────────┬───────────────┘                     │
+│                                    │                                     │
+│                          ┌─────────▼─────────┐                          │
+│                          │  ORTAK VERİ KATMANI │                         │
+│                          │  (Firebase/Zustand) │                         │
+│                          └───────────────────┘                          │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.2 Uygulama Arası İlişkiler
+
+| Kaynak | Hedef | Veri/İşlem |
+|--------|-------|------------|
+| UPH | ENV-I | Proje malzeme listesi sorgulama |
+| UPH | Weave | Tasarım dosyalarını kaydetme |
+| UPH | T-SA | Döküman analizi talebi |
+| UPH | Renderci | Ürün görseli oluşturma |
+| ENV-I | Weave | Ürün şablonu ve stok verisi |
+| ENV-I | T-SA | Stok sorgulama, ürün eşleştirme |
+| Weave | Renderci | 3D/PCB görselleştirme |
+| Weave | ENV-I | BOM export, stok güncelleme |
+| T-SA | ENV-I | Ürün kıyaslama, alternatif bulma |
+| T-SA | UPH | Gereksinim listesi aktarma |
+
+---
+
+## 4. KULLANIM SENARYOLARI
+
+### Senaryo 1: Yeni Proje Hayat Döngüsü
+
+```
+1. UPH'de yeni proje oluştur
+      │
+2. T-SA ile şartnameyi analiz et
+      │ ├── Gereksinimleri çıkar
+      │ └── Uygun ürünleri belirle
+      │
+3. ENV-I'de stok kontrolü yap
+      │ ├── Mevcut ürünleri kontrol et
+      │ └── Eksik ürünler için sipariş oluştur
+      │
+4. Weave'de sistem tasarımı yap
+      │ ├── Ürünleri tanımla (port'lar)
+      │ ├── Bağlantıları çiz
+      │ └── BOM oluştur
+      │
+5. Renderci ile görselleştir
+      │ └── Müşteri sunumu için render
+      │
+6. UPH'e geri dön
+      └── Tüm dosyaları ve ilerlemeyi takip et
+```
+
+### Senaryo 2: İhale Süreci
+
+```
+1. T-SA'ya şartname PDF yükle
+      │
+2. T-SA gereksinimleri analiz eder
+      │ ├── Teknik spesifikasyonlar
+      │ ├── Miktar ve birimler
+      │ └── Standart referansları
+      │
+3. ENV-I ile ürün eşleştirmesi
+      │ ├── Uygun ürünleri listele
+      │ ├── Stok durumunu kontrol et
+      │ └── Alternatif öner
+      │
+4. Sonuç raporu oluştur
+      ├── Gereksinim tablosu
+      ├── Ürün eşleştirme
+      └── Maliyet tahmini
+```
+
+### Senaryo 3: Sistem Kurulum Projesi
+
+```
+1. Weave'de yeni proje aç
+      │
+2. ENV-I'den ürünleri import et
+      │ ├── Kamera modelleri
+      │ ├── Monitörler
+      │ └── Kablo setleri
+      │
+3. Her ürün için port yapılandır
+      │ ├── Video çıkışları
+      │ ├── Güç girişleri
+      │ └── Sinyal bağlantıları
+      │
+4. Sistem şemasını çiz
+      │ ├── Ürünleri yerleştir
+      │ ├── Bağlantıları çiz
+      │ └── Etiketleme yap
+      │
+5. Export
+      ├── Kurulum şeması (PDF)
+      ├── Malzeme listesi (BOM)
+      └── UPH'ye kaydet
+```
+
+---
+
+## 5. TEKNİK ARŞİTEKTÜR
+
+### 5.1 Teknoloji Yığını
+
+| Katman | Teknolojiler |
+|--------|--------------|
+| **Frontend** | React 19, Next.js 16, Vite, TypeScript 5 |
+| **State** | Zustand |
+| **UI** | Shadcn/ui, Tailwind CSS 4, Framer Motion |
+| **Backend** | Firebase Firestore, Firebase Auth, Firebase Storage |
+| **AI** | Google Gemini Pro, Gemini Vision |
+| **3D** | Three.js, React Three Fiber |
+| **Canvas** | Custom 2D Canvas Engine |
+
+### 5.2 Deployment
+
+| Platform | Teknoloji | Uygulamalar |
+|----------|-----------|-------------|
+| **Web** | Vercel, Firebase Hosting | Tümü |
+| **Desktop** | Electron | Weave |
+| **Mobile** | Capacitor | UPH, ENV-I |
+| **PWA** | next-pwa | UPH, ENV-I |
+
+---
+
+## 6. DOSYA YAPISI
+
+```
+T-Ecosystem/
+├── UPH-main/                 # Merkezi proje yönetimi
+│   ├── src/
+│   │   ├── app/              # Next.js App Router
+│   │   ├── components/       # React bileşenleri
+│   │   ├── stores/           # 25 Zustand store
+│   │   └── types/            # TypeScript tipleri
+│   └── README.md
+│
+├── ENV-I-main/               # Envanter yönetimi
+│   ├── src/
+│   │   ├── app/              # Next.js App Router
+│   │   ├── components/       # React bileşenleri
+│   │   └── stores/           # 18 Zustand store
+│   └── README.md
+│
+├── Weave-main/               # Sistem bağlantı tasarımı
+│   ├── components/           # 46 React bileşen
+│   ├── hooks/                # Custom hooks
+│   ├── services/             # API servisleri
+│   ├── types/                # 351 satır tip tanımı
+│   └── README.md
+│
+├── Renderci/                 # 3D görselleştirme
+│   └── code/
+│       ├── components/       # 19 React bileşen
+│       └── hooks/
+│
+└── T-SA/                     # Şartname analiz
+    └── code/
+        ├── components/       # AI analiz bileşenleri
+        └── services/         # Gemini API servisi
+```
+
+---
+
+## 7. İLETİŞİM VE SÜRÜM
+
+| Bilgi | Değer |
+|-------|-------|
+| **Proje** | T-Ecosystem |
+| **Versiyon** | 1.0.0 |
+| **Tarih** | Aralık 2024 |
+| **Geliştirici** | T-Ecosystem Team |
+
+---
+
+## 8. SONUÇ
+
+T-Ecosystem, mühendislik projelerinin tüm yaşam döngüsünü kapsar:
+
+1. **Planlama** → UPH
+2. **Stok Yönetimi** → ENV-I
+3. **Sistem Tasarımı** → Weave
+4. **Şartname Analizi** → T-SA
+5. **Görselleştirme** → Renderci
+
+Her uygulama bağımsız çalışabilirken, birlikte kullanıldığında maksimum verimlilik sağlar.

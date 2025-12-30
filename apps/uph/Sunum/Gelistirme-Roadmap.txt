@@ -1,0 +1,610 @@
+# T-ECOSYSTEM GELİŞTİRME ROADMAP RAPORU
+
+**Rapor Tarihi**: 23 Aralık 2024
+**Kapsam**: Özellik geliştirme, entegrasyon iyileştirmeleri, Quality of Life güncellemeleri
+**Hariç Tutulan**: Mobil platform geliştirmeleri (iOS, Android, PWA)
+
+---
+
+## ÖZET TABLO
+
+| Uygulama | Kritik | Yüksek | Orta | Düşük | Toplam |
+|----------|--------|--------|------|-------|--------|
+| UPH | 2 | 5 | 8 | 4 | 19 |
+| ENV-I | 1 | 4 | 6 | 3 | 14 |
+| Weave | 2 | 6 | 5 | 3 | 16 |
+| Renderci | 1 | 3 | 4 | 2 | 10 |
+| T-SA | 1 | 4 | 5 | 2 | 12 |
+| **Toplam** | **7** | **22** | **28** | **14** | **71** |
+
+---
+
+# 1. UPH (Unified Project Hub)
+
+## 1.1 KRİTİK - Mock Data Kaldırma
+
+### 🔴 KRİTİK-UPH-01: ECM Store Mock Data
+**Dosya**: `src/stores/ecm-store.ts`
+**Durum**: ECR ve ECO verileri hardcoded mock olarak tanımlı
+**Aksiyon**: Firebase Firestore'a taşı
+```typescript
+// Mevcut:
+const mockECRs: ECR[] = [...]
+const mockECOs: ECO[] = [...]
+
+// Hedef:
+// Firebase'den gerçek zamanlı çekme
+```
+
+### 🔴 KRİTİK-UPH-02: Resource Store Mock Data
+**Dosya**: `src/stores/resource-store.ts`
+**Durum**: Kapasite planlama verileri hardcoded
+**Aksiyon**: Firebase'e taşı veya kullanıcı tarafından düzenlenebilir yap
+
+---
+
+## 1.2 YÜKSEK ÖNCELİK
+
+### 🟠 YÜKSEK-UPH-01: Gantt Şeması
+**Feature Store ID**: `gantt` (enabled: false)
+**Durum**: Özellik tanımlı ama UI yok
+**Aksiyon**: 
+- Proje zaman çizelgesi komponenti oluştur
+- react-gantt-timeline veya benzeri kütüphane entegre et
+- Task bağımlılıkları göster
+
+### 🟠 YÜKSEK-UPH-02: BOM (Bill of Materials) Modülü
+**Feature Store ID**: `bom` (enabled: false)
+**Durum**: Özellik tanımlı ama UI yok
+**Aksiyon**:
+- `/bom` sayfası oluştur
+- Ürün ağacı (tree) yapısı
+- Weave'den BOM import
+
+### 🟠 YÜKSEK-UPH-03: EVM (Earned Value Management) UI
+**Feature Store ID**: `evm` (enabled: false)
+**Durum**: Tip tanımları var, UI eksik
+**Aksiyon**:
+- EVM dashboard widget'ı
+- CPI, SPI, EAC grafikleri
+- Proje performans göstergeleri
+
+### 🟠 YÜKSEK-UPH-04: RAID Sayfası
+**Mevcut**: `/analytics`'e yönlendiriliyor
+**Hedef**: Bağımsız `/raid` sayfası
+**Aksiyon**:
+- Risk matrisi görselleştirme
+- Issue tracker
+- Dependency graph
+
+### 🟠 YÜKSEK-UPH-05: GitHub Gerçek API Entegrasyonu
+**Dosya**: `src/lib/github.ts`
+**Durum**: API hatalarında mock data'ya fallback
+**Aksiyon**:
+- OAuth ile gerçek GitHub bağlantısı
+- Repo seçimi UI
+- Issue senkronizasyonu iki yönlü
+
+---
+
+## 1.3 ORTA ÖNCELİK
+
+### 🟡 ORTA-UPH-01: Team Store Firebase Migration
+**Dosya**: `src/lib/mock-team-data.ts`
+**TODO Yorumu**: "Replace with Firebase Firestore queries in production"
+**Aksiyon**: Ekip verilerini Firebase'e taşı
+
+### 🟡 ORTA-UPH-02: Google Drive Gerçek Entegrasyon
+**Dosya**: `src/services/google-drive-service.ts`
+**Durum**: API anahtarı placeholder
+**Aksiyon**: OAuth2 flow ile gerçek entegrasyon
+
+### 🟡 ORTA-UPH-03: Proje Şablonları
+**Sayfa**: `/templates`
+**Durum**: Sayfa var ama sınırlı
+**Aksiyon**:
+- Hazır proje şablonları (yazılım, donanım, inşaat)
+- Şablon oluşturma ve paylaşma
+- Şablondan proje oluşturma
+
+### 🟡 ORTA-UPH-04: Zaman Takibi İyileştirme
+**Sayfa**: `/time-tracking`
+**Aksiyon**:
+- Timer widget (başlat/durdur)
+- Otomatik zaman önerisi
+- Haftalık timesheet görünümü
+
+### 🟡 ORTA-UPH-05: Fatura Modülü İyileştirme
+**Sayfa**: `/invoices`
+**Aksiyon**:
+- Otomatik fatura numaralama
+- Tekrarlayan faturalar
+- Ödeme hatırlatıcıları
+
+### 🟡 ORTA-UPH-06: Bildirim Sistemi
+**Aksiyon**:
+- In-app bildirimler
+- E-posta bildirimleri (Firebase Functions)
+- Bildirim tercihleri
+
+### 🟡 ORTA-UPH-07: Arama İyileştirme
+**Mevcut**: Basit arama
+**Hedef**:
+- Global arama (⌘K)
+- Fuzzy search
+- Son aramalar
+
+### 🟡 ORTA-UPH-08: Dashboard Özelleştirme
+**Aksiyon**:
+- Widget sürükle-bırak
+- Özel widget ekleme
+- Dashboard şablonları
+
+---
+
+## 1.4 DÜŞÜK ÖNCELİK (QoL)
+
+### 🟢 DÜŞÜK-UPH-01: Klavye Kısayolları
+- Ctrl+N: Yeni proje
+- Ctrl+K: Arama
+- Ctrl+S: Kaydet
+
+### 🟢 DÜŞÜK-UPH-02: Bulk Actions
+- Çoklu proje seçimi
+- Toplu durum değişikliği
+- Toplu silme
+
+### 🟢 DÜŞÜK-UPH-03: Export Seçenekleri
+- PDF rapor export
+- Excel export
+- CSV export
+
+### 🟢 DÜŞÜK-UPH-04: Onboarding Tour
+- İlk kullanıcı için adım adım rehber
+- Özellik tanıtımları
+
+---
+
+# 2. ENV-I (Envanter Yönetim Sistemi)
+
+## 2.1 KRİTİK
+
+### 🔴 KRİTİK-ENVI-01: Transfer Store Kullanıcı Takibi
+**Dosya**: `src/stores/transfer-store.ts`
+**TODO**: Satır 200, 266 - "Replace with actual user"
+**Aksiyon**: Auth context'ten gerçek kullanıcı bilgisi al
+
+---
+
+## 2.2 YÜKSEK ÖNCELİK
+
+### 🟠 YÜKSEK-ENVI-01: Slack/E-posta Bildirimleri
+**Dosya**: `src/stores/alert-store.ts`
+**TODO**: Satır 310, 316 - Webhook entegrasyonu
+**Aksiyon**:
+- Slack webhook kurulumu
+- E-posta servisi (SendGrid/Resend)
+
+### 🟠 YÜKSEK-ENVI-02: Lot Store Kullanıcı Takibi
+**Dosya**: `src/stores/lot-store.ts`
+**TODO**: Satır 288 - "Get actual user"
+**Aksiyon**: Auth entegrasyonu
+
+### 🟠 YÜKSEK-ENVI-03: Google Drive Gerçek Entegrasyon
+**Dosya**: `src/services/google-drive-service.ts`
+**TODO**: Satır 4 - API Key placeholder
+**Aksiyon**: OAuth2 entegrasyonu
+
+### 🟠 YÜKSEK-ENVI-04: UPH Tam Entegrasyon
+**Dosya**: `src/hooks/use-uph-projects.ts`
+**Durum**: Mock fallback var
+**Aksiyon**:
+- UPH Firebase ile gerçek bağlantı
+- Proje seçimi ile malzeme listesi
+- BOM senkronizasyonu
+
+---
+
+## 2.3 ORTA ÖNCELİK
+
+### 🟡 ORTA-ENVI-01: Barkod Okuyucu İyileştirme
+**Aksiyon**:
+- Kamera ile okuma
+- Batch scanning
+- Barkod yazdırma
+
+### 🟡 ORTA-ENVI-02: Stok Uyarı Kuralları
+**Aksiyon**:
+- Özelleştirilebilir uyarı eşikleri
+- Ürün bazlı minimum stok
+- Otomatik sipariş önerisi
+
+### 🟡 ORTA-ENVI-03: Tedarikçi Değerlendirme
+**Aksiyon**:
+- Tedarikçi puanlama
+- Teslimat performansı
+- Fiyat karşılaştırma
+
+### 🟡 ORTA-ENVI-04: Fiziksel Sayım İyileştirme
+**Sayfa**: `/physical-count`
+**Aksiyon**:
+- Planlı sayım döngüleri
+- Sayım ekibi atama
+- Fark analizi raporu
+
+### 🟡 ORTA-ENVI-05: Depo Haritası 3D
+**Sayfa**: `/warehouse-map`
+**Aksiyon**:
+- 3D görselleştirme
+- Raf doluluk gösterimi
+- Ürün konumu işaretleme
+
+### 🟡 ORTA-ENVI-06: Raporlama İyileştirme
+**Aksiyon**:
+- Özelleştirilebilir raporlar
+- Scheduled report e-posta
+- Dashboard widget'ları
+
+---
+
+## 2.4 DÜŞÜK ÖNCELİK (QoL)
+
+### 🟢 DÜŞÜK-ENVI-01: Import Wizard
+- Excel/CSV import
+- Veri eşleştirme UI
+- Önizleme ve doğrulama
+
+### 🟢 DÜŞÜK-ENVI-02: Ürün Kopyalama
+- Mevcut üründen kopyala
+- Değişkenleri düzenle
+
+### 🟢 DÜŞÜK-ENVI-03: Favori Ürünler
+- Sık kullanılan ürünler
+- Hızlı erişim
+
+---
+
+# 3. WEAVE (Sistem Bağlantı Tasarım)
+
+## 3.1 KRİTİK
+
+### 🔴 KRİTİK-WEAVE-01: Tasarım Kaydetme Backend
+**Durum**: Tasarımlar localStorage'da
+**Aksiyon**:
+- Firebase Storage'a kaydetme
+- Versiyon kontrolü
+- Bulut senkronizasyonu
+
+### 🔴 KRİTİK-WEAVE-02: Google Drive Entegrasyonu
+**Dosya**: `services/google-drive-service.ts`
+**TODO**: API Key placeholder
+**Aksiyon**: OAuth2 gerçek entegrasyon
+
+---
+
+## 3.2 YÜKSEK ÖNCELİK
+
+### 🟠 YÜKSEK-WEAVE-01: ENV-I Gerçek Zamanlı Stok
+**Durum**: Statik ürün listesi
+**Aksiyon**:
+- Firebase listener ile canlı stok
+- Stok uyarısı gösterimi
+- "Stokta Yok" işareti
+
+### 🟠 YÜKSEK-WEAVE-02: Ürün Şablonu Kaydetme
+**Aksiyon**:
+- Tanımlanan ürünleri kütüphaneye kaydet
+- Port yapılandırmasıyla birlikte
+- Paylaşılabilir şablonlar
+
+### 🟠 YÜKSEK-WEAVE-03: Otomatik Rota İyileştirme
+**Aksiyon**:
+- Orthogonal routing algoritması
+- Çakışma önleme
+- Kablo renk otomasyonu
+
+### 🟠 YÜKSEK-WEAVE-04: UPH Proje Bağlantısı
+**Aksiyon**:
+- Tasarımı projeye bağla
+- Proje dosyaları listesi
+- Otomatik kaydetme
+
+### 🟠 YÜKSEK-WEAVE-05: Undo/Redo Sistemi
+**Aksiyon**:
+- Komut geçmişi
+- Ctrl+Z / Ctrl+Y
+- Geçmiş paneli
+
+### 🟠 YÜKSEK-WEAVE-06: Multi-select ve Group
+**Aksiyon**:
+- Çoklu öğe seçimi
+- Gruplama
+- Grup taşıma/kopyalama
+
+---
+
+## 3.3 ORTA ÖNCELİK
+
+### 🟡 ORTA-WEAVE-01: Layer Sistemi
+- Katman ekleme/silme
+- Katman görünürlüğü
+- Katman kilitleme
+
+### 🟡 ORTA-WEAVE-02: Snap to Grid
+- Grid hizalama
+- Akıllı kılavuzlar
+- Alignment araçları
+
+### 🟡 ORTA-WEAVE-03: Annotation Araçları
+- Not ekleme
+- Boyut gösterimi
+- Referans numaraları
+
+### 🟡 ORTA-WEAVE-04: PDF Export İyileştirme
+- Sayfa boyutu seçimi
+- Ölçek ayarı
+- Watermark
+
+### 🟡 ORTA-WEAVE-05: KiCad/SPICE Export
+- Gerçek format export
+- Symbol eşleştirme
+
+---
+
+## 3.4 DÜŞÜK ÖNCELİK (QoL)
+
+### 🟢 DÜŞÜK-WEAVE-01: Dark/Light Tema
+- Tema geçişi
+- Canvas arka plan rengi
+
+### 🟢 DÜŞÜK-WEAVE-02: Zoom Controls
+- Fit to screen
+- Zoom slider
+- Minimap
+
+### 🟢 DÜŞÜK-WEAVE-03: Klavye Kısayolları
+- Del: Seçimi sil
+- Ctrl+D: Kopyala
+- Space: Pan
+
+---
+
+# 4. RENDERCI MUHİTTİN (3D Görselleştirme)
+
+## 4.1 KRİTİK
+
+### 🔴 KRİTİK-REND-01: Render Çıktısı Backend
+**Durum**: Render sonuçları yerel
+**Aksiyon**:
+- Firebase Storage'a kaydetme
+- Render geçmişi
+- Paylaşılabilir linkler
+
+---
+
+## 4.2 YÜKSEK ÖNCELİK
+
+### 🟠 YÜKSEK-REND-01: ENV-I Ürün Görseli Bağlantısı
+**Aksiyon**:
+- ENV-I'den ürün seçimi
+- Otomatik ürün görseli çekme
+- Render'ı ürüne bağlama
+
+### 🟠 YÜKSEK-REND-02: Batch Rendering
+**Aksiyon**:
+- Çoklu dosya render
+- Kuyruk sistemi
+- İlerleme gösterimi
+
+### 🟠 YÜKSEK-REND-03: 3D Model Format Desteği
+**Mevcut**: GLB, OBJ, STL
+**Hedef**: STEP, IGES, DXF 3D
+
+---
+
+## 4.3 ORTA ÖNCELİK
+
+### 🟡 ORTA-REND-01: Preset Özelleştirme
+- Özel preset oluşturma
+- Preset paylaşımı
+
+### 🟡 ORTA-REND-02: Lighting Kontrolü
+- Işık kaynağı ekleme
+- HDRI ortamları
+- Gölge ayarları
+
+### 🟡 ORTA-REND-03: Kamera Açıları
+- Kayıtlı kamera pozisyonları
+- 360° turntable
+- Ortografik görünüm
+
+### 🟡 ORTA-REND-04: Watermark/Branding
+- Logo ekleme
+- Özel watermark
+
+---
+
+## 4.4 DÜŞÜK ÖNCELİK (QoL)
+
+### 🟢 DÜŞÜK-REND-01: Galeri Görünümü
+- Grid/List görünüm
+- Filtreleme
+- Sıralama
+
+### 🟢 DÜŞÜK-REND-02: Drag & Drop İyileştirme
+- Çoklu dosya
+- İlerleme gösterimi
+
+---
+
+# 5. T-SA (Şartname Analiz)
+
+## 5.1 KRİTİK
+
+### 🔴 KRİTİK-TSA-01: Analiz Sonuçları Backend
+**Durum**: IndexedDB (yerel)
+**Aksiyon**:
+- Firebase'e taşıma seçeneği
+- Cihazlar arası senkronizasyon
+
+---
+
+## 5.2 YÜKSEK ÖNCELİK
+
+### 🟠 YÜKSEK-TSA-01: ENV-I Gerçek Zamanlı Entegrasyon
+**Aksiyon**:
+- Firebase listener
+- Canlı stok durumu
+- Otomatik ürün eşleştirme
+
+### 🟠 YÜKSEK-TSA-02: Gereksinim Tablosu Export
+**Aksiyon**:
+- Excel export
+- PDF rapor
+- UPH'e aktarma
+
+### 🟠 YÜKSEK-TSA-03: BOM Oluşturma
+**Aksiyon**:
+- Analiz sonucundan BOM
+- Weave'e BOM gönderme
+- Maliyet hesaplama
+
+### 🟠 YÜKSEK-TSA-04: Çoklu Döküman Karşılaştırma
+**Aksiyon**:
+- İki şartname karşılaştırma
+- Fark analizi
+- Revizyon takibi
+
+---
+
+## 5.3 ORTA ÖNCELİK
+
+### 🟡 ORTA-TSA-01: Şablon Sorgular
+- Hazır soru şablonları
+- Sektöre özel şablonlar
+
+### 🟡 ORTA-TSA-02: Analiz Geçmişi
+- Geçmiş analizler
+- Arama ve filtreleme
+- Favori analizler
+
+### 🟡 ORTA-TSA-03: Maliyet Tahmini
+- Ürün fiyatları ile hesaplama
+- Kâr marjı ekleme
+- Teklif oluşturma
+
+### 🟡 ORTA-TSA-04: Tedarikçi Önerisi
+- En uygun tedarikçi
+- Teslimat süresi karşılaştırma
+
+### 🟡 ORTA-TSA-05: PDF Annotation
+- PDF üzerinde işaretleme
+- Notlar ekleme
+- Paylaşılabilir
+
+---
+
+## 5.4 DÜŞÜK ÖNCELİK (QoL)
+
+### 🟢 DÜŞÜK-TSA-01: Sohbet Geçmişi Arama
+- Fulltext search
+- Tarih filtreleme
+
+### 🟢 DÜŞÜK-TSA-02: Export Seçenekleri
+- Markdown export
+- Word export
+
+---
+
+# 6. EKOSISTEM GENELI ENTEGRASYONLAR
+
+## 6.1 Merkezi Kimlik Doğrulama
+
+### 🟠 YÜKSEK-ECO-01: Single Sign-On (SSO)
+**Durum**: Her uygulama bağımsız auth
+**Hedef**: Tek oturum açma
+**Aksiyon**:
+- Firebase Auth paylaşımı
+- JWT token geçişi
+- Oturum senkronizasyonu
+
+---
+
+## 6.2 Veri Senkronizasyonu
+
+### 🟠 YÜKSEK-ECO-02: Gerçek Zamanlı Senkronizasyon
+**Aksiyon**:
+- Firebase onSnapshot listeners
+- Cross-app data sync
+- Conflict resolution
+
+---
+
+## 6.3 Ortak Bildirim Sistemi
+
+### 🟡 ORTA-ECO-01: Unified Notifications
+**Aksiyon**:
+- Tüm uygulamalardan bildirim
+- Bildirim merkezi
+- E-posta özet
+
+---
+
+## 6.4 Ortak Arama
+
+### 🟡 ORTA-ECO-02: Global Search
+**Aksiyon**:
+- Tüm uygulamalarda arama
+- Sonuç kategorileme
+- Quick actions
+
+---
+
+# 7. ÖNCELİKLENDİRME ÖNERİSİ
+
+## Faz 1 (Öncelik: Kritik) - 2 Hafta
+1. UPH ECM/Resource mock data → Firebase
+2. ENV-I kullanıcı takibi düzeltmeleri
+3. Weave tasarım kaydetme backend
+4. T-SA analiz sonuçları backend
+
+## Faz 2 (Öncelik: Yüksek) - 4 Hafta
+1. UPH Gantt şeması
+2. UPH BOM modülü
+3. ENV-I bildirim sistemi
+4. Weave ENV-I gerçek zamanlı stok
+5. T-SA ENV-I entegrasyonu
+
+## Faz 3 (Öncelik: Orta) - 4 Hafta
+1. UPH EVM dashboard
+2. UPH RAID sayfası
+3. ENV-I depo haritası 3D
+4. Weave layer sistemi
+5. Renderci batch rendering
+
+## Faz 4 (QoL) - Sürekli
+- Klavye kısayolları
+- UI polish
+- Performance optimizasyonu
+- Kullanıcı geri bildirimi
+
+---
+
+# 8. TEKNİK BORÇ
+
+| Uygulama | Borç | Açıklama |
+|----------|------|----------|
+| UPH | Mock data | 5 store'da mock data var |
+| UPH | Eski store | `/src/store` klasörü (deprecated) |
+| ENV-I | Google Drive | Mock implementation |
+| Weave | State persistence | localStorage bağımlılığı |
+| All | API Keys | Hardcoded placeholder'lar |
+
+---
+
+# 9. SONUÇ
+
+**Toplam Öğe**: 71 geliştirme maddesi
+**Tahmini Süre**: 10-12 hafta (full-time, tek geliştirici)
+
+**Öneri**: Faz 1'deki kritik öğelerle başla, özellikle backend kaydetme işlevleri. Bu, diğer özelliklerin üzerine inşa edileceği temel altyapıyı sağlar.

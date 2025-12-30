@@ -1,0 +1,381 @@
+# ENV-I - Envanter Yönetim Sistemi (Detaylı Döküman)
+
+## Genel Bilgi
+
+| Özellik            | Değer                      |
+| ------------------ | -------------------------- |
+| **Tam Adı**        | Envanter Yönetim Sistemi   |
+| **Kısaltma**       | ENV-I                      |
+| **Versiyon**       | 1.0.0                      |
+| **Framework**      | Next.js 16 + TypeScript    |
+| **State Yönetimi** | Zustand (18 store)         |
+| **Backend**        | Firebase Firestore         |
+| **UI Kütüphanesi** | Shadcn/ui + Tailwind CSS   |
+| **Renk Teması**    | Zümrüt (#10B981 → #14B8A6) |
+
+---
+
+## Modül Listesi (18 Modül)
+
+### 1. Dashboard (`/dashboard`)
+
+- Toplam ürün sayısı
+- Envanter değeri
+- Düşük stok uyarıları
+- Son hareketler
+
+### 2. Inventory (`/inventory`)
+
+- Ürün listesi (DataTable)
+- Filtreleme ve arama
+- Ürün detay modal
+- CRUD işlemleri
+
+### 3. Equipment (`/equipment`)
+
+- Ekipman yönetimi
+- Seri numarası takibi
+- Bakım geçmişi
+
+### 4. Consumables (`/consumables`)
+
+- Sarf malzemeleri
+- Tüketim takibi
+
+### 5. Catalog (`/catalog`)
+
+- Ürün kataloğu
+- Fiyat güncellemeleri
+- Otomatik senkronizasyon
+
+### 6. Orders (`/orders`)
+
+- Sipariş yönetimi
+- Durum takibi
+
+### 7. Purchases (`/purchases`)
+
+- Satın alma talepleri
+- Onay süreci
+
+### 8. Proposals (`/proposals`)
+
+- Teklif yönetimi
+- PDF oluşturma
+
+### 9. Suppliers (`/suppliers`)
+
+- Tedarikçi veritabanı
+- İletişim bilgileri
+
+### 10. Warehouses (`/warehouses`)
+
+- Depo yönetimi
+- Zon ve raf tanımlama
+
+### 11. Warehouse Map (`/warehouse-map`)
+
+- Görsel depo haritası
+- Konum gösterimi
+
+### 12. Transfers (`/transfers`)
+
+- Depolar arası transfer
+- Onay süreci
+
+### 13. Physical Count (`/physical-count`)
+
+- Fiziksel sayım
+- Fark raporları
+
+### 14. Discontinued (`/discontinued`)
+
+- Sonlandırılan ürünler
+- Arşiv yönetimi
+
+### 15. Audit Log (`/audit-log`)
+
+- İşlem geçmişi
+- Kullanıcı takibi
+
+### 16. Reports (`/reports`)
+
+- Stok raporları
+- Hareket raporları
+- Excel export
+
+### 17. Export (`/export`)
+
+- Veri dışa aktarım
+- CSV, Excel, PDF
+
+### 18. Settings (`/settings`)
+
+- Şirket bilgileri
+- Entegrasyon ayarları
+
+---
+
+## Store Listesi (18 Store)
+
+| Store             | İşlev                |
+| ----------------- | -------------------- |
+| ProductSlice      | Ürün CRUD            |
+| EquipmentSlice    | Ekipman CRUD         |
+| ConsumableSlice   | Sarf CRUD            |
+| OrderSlice        | Sipariş yönetimi     |
+| ProposalSlice     | Teklif yönetimi      |
+| CommonSlice       | Ortak işlemler       |
+| DataStore         | Ana store birleşimi  |
+| AlertStore        | Uyarı yönetimi       |
+| CatalogStore      | Katalog yönetimi     |
+| CurrencyStore     | Döviz kurları        |
+| DashboardStore    | Dashboard verileri   |
+| FeatureStore      | Özellik bayrakları   |
+| LotStore          | Lot takibi           |
+| NotificationStore | Bildirimler          |
+| OnboardingStore   | Kullanıcı rehberliği |
+| PurchaseStore     | Satın alma           |
+| SupplierStore     | Tedarikçi yönetimi   |
+| TransferStore     | Transfer işlemleri   |
+
+---
+
+## Tip Tanımları
+
+### Product Tipi
+
+```typescript
+interface Product {
+  id: string;
+  name: string;
+  code: string; // Benzersiz SKU
+  category: string;
+  subcategory?: string;
+  description?: string;
+  stock: number;
+  minStock: number;
+  maxStock?: number;
+  unit: string;
+  price: number;
+  currency: string;
+  warehouseId?: string;
+  zoneId?: string;
+  shelfId?: string;
+  supplierId?: string;
+  barcode?: string;
+  image?: string;
+  specifications?: Record<string, string>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### Equipment Tipi
+
+```typescript
+interface Equipment {
+  id: string;
+  name: string;
+  serialNumber: string;
+  model: string;
+  manufacturer: string;
+  purchaseDate: Date;
+  warrantyExpiry?: Date;
+  location: string;
+  status: "active" | "maintenance" | "retired";
+  assignedTo?: string;
+  notes?: string;
+}
+```
+
+### Consumable Tipi
+
+```typescript
+interface Consumable {
+  id: string;
+  name: string;
+  code: string;
+  category: string;
+  stock: number;
+  minStock: number;
+  unit: string;
+  expiryDate?: Date;
+  lotNumber?: string;
+}
+```
+
+### Warehouse Tipi
+
+```typescript
+interface Warehouse {
+  id: string;
+  name: string;
+  address?: string;
+  zones: Zone[];
+}
+
+interface Zone {
+  id: string;
+  name: string;
+  shelves: Shelf[];
+}
+
+interface Shelf {
+  id: string;
+  name: string;
+  capacity?: number;
+}
+```
+
+### Order Tipi
+
+```typescript
+interface Order {
+  id: string;
+  orderNumber: string;
+  supplierId: string;
+  items: OrderItem[];
+  status: "pending" | "approved" | "ordered" | "received" | "cancelled";
+  totalAmount: number;
+  orderDate: Date;
+  expectedDelivery?: Date;
+  notes?: string;
+}
+```
+
+---
+
+## Depo Hiyerarşisi
+
+```
+Şirket
+└── Depo (Warehouse)
+    ├── Zon A (Zone)
+    │   ├── Raf 1 (Shelf)
+    │   │   └── Ürünler
+    │   ├── Raf 2
+    │   └── Raf 3
+    ├── Zon B
+    │   ├── Raf 1
+    │   └── Raf 2
+    └── Zon C
+        └── Raf 1
+```
+
+---
+
+## Store Slice Yapısı
+
+### ProductSlice
+
+```typescript
+interface ProductSlice {
+  products: Product[];
+  equipment: Equipment[];
+  consumables: Consumable[];
+  loadingProducts: boolean;
+
+  fetchProducts: (initial?: boolean) => void;
+  addProduct: (data: Omit<Product, "id">) => Promise<void>;
+  updateProduct: (id: string, data: Partial<Product>) => Promise<void>;
+  deleteProduct: (id: string) => Promise<void>;
+
+  searchProducts: (term: string, category?: string) => Promise<void>;
+  autoCategorizeAllProducts: () => Promise<void>;
+  syncPricesFromCatalog: (items: CatalogItem[]) => Promise<void>;
+}
+```
+
+### OrderSlice
+
+```typescript
+interface OrderSlice {
+  orders: Order[];
+  proposals: Proposal[];
+
+  fetchOrders: (initial?: boolean) => void;
+  addOrder: (data: Omit<Order, "id">) => Promise<void>;
+
+  fetchProposals: (initial?: boolean) => void;
+  addProposal: (data: Omit<Proposal, "id">, pdfFile: File) => Promise<void>;
+}
+```
+
+### CommonSlice
+
+```typescript
+interface CommonSlice {
+  logs: AuditLog[];
+  settings: Settings | null;
+  warehouses: Warehouse[];
+
+  fetchLogs: (initial?: boolean) => void;
+  fetchSettings: () => Promise<void>;
+  updateSettings: (settings: Partial<Settings>) => Promise<void>;
+
+  addWarehouse: (data: Omit<Warehouse, "id">) => Promise<void>;
+  updateWarehouse: (id: string, data: Partial<Warehouse>) => Promise<void>;
+  deleteWarehouse: (id: string) => Promise<void>;
+}
+```
+
+---
+
+## Entegrasyonlar
+
+### UPH Entegrasyonu
+
+- Proje malzeme listesi
+- Stok durumu bildirimi
+- Maliyet hesaplama
+
+### Weave Entegrasyonu
+
+- Komponent stok durumu
+- BOM import/export
+
+### T-SA Entegrasyonu
+
+- Stok sorgulama
+- Alternatif ürün önerisi
+- Tüketim analizi
+
+---
+
+## Ekran Görünümleri
+
+### Dashboard
+
+```
+┌─────────────────────────────────────────────────────┐
+│ [Logo] ENV-I           [Arama] [Barkod] [Profil]    │
+├─────────┬───────────────────────────────────────────┤
+│         │ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐          │
+│ Menü    │ │1247 │ │₺2.4M│ │ 23  │ │  8  │          │
+│         │ │Ürün │ │Değer│ │Düşük│ │Sipar│          │
+│ ○ Dash  │ └─────┘ └─────┘ └─────┘ └─────┘          │
+│ ○ Stok  │                                           │
+│ ○ Ekip  │ ┌───────────────┐ ┌───────────────────┐  │
+│ ○ Sarf  │ │ Stok Durumu   │ │ Son Hareketler    │  │
+│ ○ Depo  │ │ (Donut Chart) │ │ Timeline          │  │
+│ ○ Sipar │ │               │ │                   │  │
+│ ○ Rapor │ └───────────────┘ └───────────────────┘  │
+│ ○ Ayar  │                                           │
+│         │ ┌─────────────────────────────────────┐  │
+│         │ │ Kategori Tablosu (DataTable)        │  │
+│         │ └─────────────────────────────────────┘  │
+└─────────┴───────────────────────────────────────────┘
+```
+
+---
+
+## Kurulum
+
+```bash
+cd ENV-I-main
+pnpm install
+pnpm dev
+```
+
+**Port**: 3000 (varsayılan)

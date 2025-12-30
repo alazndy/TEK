@@ -1,0 +1,308 @@
+{
+  "Common": {
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "kanban": "Kanban",
+    "analytics": "Analytics",
+    "inventory": "Inventory",
+    "settings": "Settings",
+    "logout": "Logout",
+    "newProject": "New Project",
+    "searchPlaceholder": "Type a command or search...",
+    "notifications": "Notifications",
+    "cancel": "Cancel",
+    "actions": {
+      "delete": "Delete"
+    }
+  },
+  "Forge": {
+    "title": "Forge Production System",
+    "subtitle": "Manufacturing Execution System (MES)",
+    "newJob": "New Work Order",
+    "activeJobs": "Active Production List",
+    "activeJobsDesc": "Work orders in progress and their status.",
+    "stats": {
+        "active": "Active Orders",
+        "efficiency": "Efficiency",
+        "delays": "Delays",
+        "completed": "Completed (Month)"
+    }
+  },
+  "Flux": {
+    "title": "Flux IoT Monitor",
+    "subtitle": "IoT Device Management & Monitoring",
+    "newDevice": "Add New Device",
+    "refresh": "Refresh",
+    "connectedDevices": "Connected Devices",
+    "connectedDevicesDesc": "Real-time status of IoT devices.",
+    "stats": {
+        "online": "Online Devices",
+        "power": "Total Power",
+        "temp": "Avg Temperature",
+        "load": "System Load"
+    }
+  },
+  "Dashboard": {
+    "title": "Dashboard",
+    "recentProjects": "Recent Projects",
+    "latestActivity": "Latest Activity",
+    "activeProjects": "Active Projects",
+    "budgetUsage": "Budget Usage",
+    "lowStockAlerts": "Low Stock Alerts",
+    "inventoryValue": "Inventory Value",
+    "totalProjects": "total projects",
+    "belowThreshold": "Items below threshold",
+    "allocated": "allocated",
+    "stockAssetValue": "Total stock asset value",
+    "noProjects": "No projects found.",
+    "noActivity": "No recent activity."
+  },
+  "Projects": {
+    "title": "Projects",
+    "createProject": "Create Project",
+    "createDescription": "Enter the details for your new project. Click save when you're done.",
+    "filter": "Filter",
+    "filterPlaceholder": "Filter projects...",
+    "addNewProject": "Add New Project",
+    "name": "Name",
+    "description": "Description",
+    "descriptionPlaceholder": "Brief summary...",
+    "scope": "Scope",
+    "scopePlaceholder": "Write the project scope and purpose...",
+    "team": "Project Team",
+    "color": "Color Theme",
+    "logoUrl": "Logo URL",
+    "status": "Status",
+    "progress": "Progress",
+    "budget": "Budget",
+    "manager": "Manager",
+    "deadline": "Deadline",
+    "due": "Due: {date}",
+    "noDeadline": "No deadline",
+    "viewDashboard": "View Dashboard",
+    "actions": "Actions",
+    "openDetails": "Open Details",
+    "edit": "Edit",
+    "editProject": "Edit Project",
+    "editDescription": "Update the project details below.",
+    "delete": "Delete",
+    "deleteConfirmationTitle": "Are you absolutely sure?",
+    "deleteConfirmationDesc": "This action cannot be undone. This will permanently delete the project <bold>{name}</bold> and all associated data.",
+    "cancel": "Cancel",
+    "confirmDelete": "Delete Project",
+    "loading": "Loading projects...",
+    "selectStatus": "Select status",
+    "selectTeam": "Select Team",
+    "saveChanges": "Save Changes",
+    "importFromGithub": "Import from GitHub",
+    "importDescription": "Create a new project from an existing GitHub repository.",
+    "repoUrl": "Repository URL",
+    "importProject": "Import Project",
+    "importing": "Importing...",
+    "importInfo": "The system will automatically pull the Project Name, Description and README file."
+  },
+  "Kanban": {
+    "title": "Kanban Board",
+    "subtitle": "Drag and drop tasks to manage your workflow",
+    "filter": "Filter",
+    "view": "View",
+    "addTask": "Add Task",
+    "todo": "To Do",
+    "inProgress": "In Progress",
+    "done": "Done",
+    "review": "Review",
+    "noTasks": "No tasks",
+    "clearFilters": "Clear",
+    "viewDefault": "Default",
+    "viewCompact": "Compact",
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "form": {
+      "project": "Project",
+      "selectProject": "Select a project",
+      "title": "Title",
+      "titlePlaceholder": "Task title...",
+      "description": "Description",
+      "descriptionPlaceholder": "Task description...",
+      "priority": "Priority",
+      "selectPriority": "Select priority",
+      "status": "Status",
+      "selectStatus": "Select status",
+      "titleRequired": "Title is required",
+      "projectRequired": "Project is required"
+    }
+  },
+  "Inventory": {
+    "title": "Inventory",
+    "subtitle": "Manage your stock, equipment, and consumables.",
+    "import": "Import",
+    "searchPlaceholder": "Search components...",
+    "filterLowStock": "Filter Low Stock",
+    "showingLowStock": "Showing Low Stock",
+    "stockItems": "Stock Items",
+    "table": {
+      "name": "Name",
+      "category": "Category",
+      "stock": "Stock (Available)",
+      "inProjects": "In Projects",
+      "unitPrice": "Unit Price"
+    },
+    "loading": "Loading inventory...",
+    "noItems": "No items found.",
+    "assigned": "Assigned",
+    "actions": {
+      "label": "Actions",
+      "copyId": "Copy ID",
+      "assignProject": "Assign to Project",
+      "viewUsage": "View Usage",
+      "edit": "Edit Details",
+      "delete": "Delete Item"
+    },
+    "deleteDialog": {
+      "title": "Are you absolutely sure?",
+      "description": "This action cannot be undone. This will permanently delete {name} from your inventory.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    },
+    "addProduct": {
+      "button": "Add Item",
+      "title": "Add New Product",
+      "description": "Add new item to inventory. Click save when you're done."
+    },
+    "editProduct": {
+      "title": "Edit Product",
+      "description": "Make changes to item details. Click save when you're done."
+    },
+    "form": {
+      "name": "Name",
+      "category": "Category",
+      "brand": "Brand",
+      "stock": "Stock",
+      "price": "Price",
+      "selectCategory": "Select category",
+      "stockItem": "Stock Item",
+      "consumable": "Consumable",
+      "save": "Save changes"
+    },
+    "assignProject": {
+      "title": "Assign to Project",
+      "description": "Allocate {name} to a project.",
+      "availableStock": "Available Stock",
+      "project": "Project",
+      "selectProject": "Select project",
+      "quantity": "Quantity",
+      "submit": "Assign",
+      "insufficientStock": "Insufficient stock!"
+    },
+    "usage": {
+      "title": "Usage History: {name}",
+      "description": "See which projects this item is currently assigned to.",
+      "activeAssignments": "Active Assignments",
+      "table": {
+        "project": "Project",
+        "quantity": "Quantity",
+        "date": "Date",
+        "by": "By"
+      },
+      "noAssignments": "Not assigned to any projects.",
+      "totalStock": "Total Stock",
+      "allocated": "Allocated"
+    }
+  },
+  "Analytics": {
+    "title": "Analytics & Reports",
+    "subtitle": "Insights and data visualization for your projects and inventory",
+    "exportProjects": "Export Projects",
+    "exportInventory": "Export Inventory",
+    "exportExcel": "Export as Excel",
+    "exportCSV": "Export as CSV",
+    "totalProjects": "Total Projects",
+    "activeProjects": "Active Projects",
+    "inventoryItems": "Inventory Items",
+    "lowStockAlerts": "Low Stock Alerts"
+  },
+  "Settings": {
+    "integrations": {
+      "title": "Integrations",
+      "description": "Manage connections with other T-ECOSYSTEM apps.",
+      "weave": "Weave (Technical Design)",
+      "weaveDesc": "Enable linking and viewing Weave designs in projects.",
+      "env": "ENV-I Integration",
+      "envDesc": "Enable material and stock management connection for projects.",
+      "googleDrive": "Google Drive",
+      "googleDriveDesc": "Sync and backup project files with Google Drive.",
+      "slack": "Slack",
+      "slackDesc": "Enable Slack notifications for project updates.",
+      "github": "GitHub",
+      "githubDesc": "Show GitHub repository stats for reporting and PR tracking.",
+      "webhookUrl": "Slack Webhook URL",
+      "githubToken": "Personal Access Token",
+      "communication": "Communication",
+      "development": "Development"
+    },
+    "title": "Settings",
+    "tabs": {
+      "profile": "Profile",
+      "system": "System",
+      "maintenance": "Maintenance"
+    },
+    "profile": {
+      "title": "Personal Information",
+      "description": "Update your public profile and contact details.",
+      "changeAvatar": "Change Avatar",
+      "displayName": "Display Name",
+      "email": "Email",
+      "jobTitle": "Job Title",
+      "company": "Company",
+      "save": "Save Changes",
+      "avatarSuccess": "Avatar updated successfully!",
+      "avatarError": "Failed to upload avatar."
+    },
+    "system": {
+      "title": "System Preferences",
+      "description": "Manage global application settings.",
+      "lowStock": "Low Stock Threshold",
+      "lowStockDesc": "Minimum stock level before triggering an alert.",
+      "units": "units",
+      "currency": "Currency",
+      "currencyDesc": "Default currency for project budgets and inventory.",
+      "selectCurrency": "Select currency",
+      "notifications": "Notifications",
+      "notificationsDesc": "Receive alerts for low stock and assigned tasks."
+    },
+    "maintenance": {
+      "title": "Database Maintenance",
+      "description": "Manage database and system configs",
+      "resetData": "Reset & Seed Initial Data",
+      "seedSuccess": "Database seeded successfully!",
+      "seedError": "Failed to seed database."
+    }
+  },
+  "Teams": {
+    "title": "My Teams",
+    "subtitle": "Teams you are a member of or manage",
+    "createTeam": "Create New Team",
+    "noDescription": "No description",
+    "members": "{count} Members",
+    "active": "Active Team",
+    "select": "Select",
+    "empty": {
+      "title": "You don't have any teams yet",
+      "description": "Create your first team to manage projects and collaborate.",
+      "button": "Create Team"
+    },
+    "createDialog": {
+      "title": "Create Team",
+      "description": "Add a new team to manage projects and members.",
+      "name": "Team Name",
+      "namePlaceholder": "Team name...",
+      "desc": "Description",
+      "descPlaceholder": "Team description...",
+      "cancel": "Cancel",
+      "submit": "Create Team"
+    }
+  }
+}

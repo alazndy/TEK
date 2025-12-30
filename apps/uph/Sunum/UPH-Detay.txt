@@ -1,0 +1,365 @@
+# UPH - Unified Project Hub (Detaylı Döküman)
+
+## Genel Bilgi
+
+| Özellik            | Değer                    |
+| ------------------ | ------------------------ |
+| **Tam Adı**        | Unified Project Hub      |
+| **Kısaltma**       | UPH                      |
+| **Versiyon**       | 1.0.0                    |
+| **Framework**      | Next.js 16 + TypeScript  |
+| **State Yönetimi** | Zustand (25 store)       |
+| **Backend**        | Firebase Firestore       |
+| **UI Kütüphanesi** | Shadcn/ui + Tailwind CSS |
+| **Animasyon**      | Framer Motion            |
+| **Renk Teması**    | Mor (#8B5CF6 → #6366F1)  |
+
+---
+
+## Modül Listesi (12 Modül)
+
+### 1. Dashboard (`/dashboard`)
+
+- Genel istatistikler
+- Aktif proje sayısı
+- Bütçe kullanımı
+- Düşük stok uyarıları
+- Aktivite akışı
+
+### 2. Projects (`/projects`, `/projects/[id]`)
+
+- Proje CRUD işlemleri
+- Proje detay sayfası
+- Görev yönetimi
+- Dosya yönetimi
+- GitHub entegrasyonu
+- Google Drive entegrasyonu
+
+### 3. Engineering (`/engineering/ecr`, `/engineering/eco`)
+
+- ECR (Engineering Change Request)
+- ECO (Engineering Change Order)
+- Proje bazlı filtreleme
+- Durum takibi
+
+### 4. Inventory (`/inventory`)
+
+- ENV-I entegrasyonu
+- Proje malzeme listesi
+- Stok durumu görüntüleme
+
+### 5. Invoices (`/invoices`)
+
+- Fatura oluşturma
+- Müşteri yönetimi
+- Ödeme takibi
+- PDF export
+
+### 6. Kanban (`/kanban`)
+
+- Görsel görev panosu
+- Sürükle-bırak
+- Durum geçişleri
+
+### 7. Planning (`/planning`)
+
+- Kaynak planlaması
+- Zamanlama
+- Gantt benzeri görünüm
+
+### 8. Teams (`/teams`)
+
+- Ekip oluşturma
+- Üye davet
+- Rol yönetimi
+
+### 9. Templates (`/templates`)
+
+- Proje şablonları
+- Hızlı proje oluşturma
+
+### 10. Time Tracking (`/time-tracking`)
+
+- Zaman girişi
+- Proje bazlı takip
+- Raporlama
+
+### 11. Analytics (`/analytics`)
+
+- Proje durumu grafikleri
+- Bütçe analizi
+- Performans metrikleri
+
+### 12. Settings (`/settings`)
+
+- Profil ayarları
+- Sistem entegrasyonları
+- Ekip ayarları
+
+---
+
+## Store Listesi (25 Store)
+
+| Store             | Dosya                     | İşlev               |
+| ----------------- | ------------------------- | ------------------- |
+| ProjectStore      | `project-store.ts`        | Proje yönetimi      |
+| AuthStore         | `auth-store.ts`           | Kimlik doğrulama    |
+| TeamStore         | `team-store.ts`           | Ekip yönetimi       |
+| ActivityStore     | `activity-store.ts`       | Aktivite takibi     |
+| AuditStore        | `audit-store.ts`          | Denetim logları     |
+| ECMStore          | `ecm-store.ts`            | ECR/ECO yönetimi    |
+| FeatureStore      | `feature-store.ts`        | Özellik bayrakları  |
+| FileVersionStore  | `file-version-store.ts`   | Dosya versiyonlama  |
+| GitHubStore       | `github-store.ts`         | GitHub entegrasyonu |
+| InventoryStore    | `inventory-store.ts`      | Envanter görünümü   |
+| InvoiceStore      | `invoice-store.ts`        | Fatura yönetimi     |
+| KanbanStore       | `kanban-store.ts`         | Kanban panosu       |
+| NotificationStore | `notification-store.ts`   | Bildirimler         |
+| ReminderStore     | `reminder-store.ts`       | Hatırlatıcılar      |
+| ResourceStore     | `resource-store.ts`       | Kaynak yönetimi     |
+| RiskStore         | `risk-store.ts`           | RAID yönetimi       |
+| SearchStore       | `search-store.ts`         | Global arama        |
+| SettingsStore     | `settings-store.ts`       | Ayarlar             |
+| SyncStore         | `sync-store.ts`           | Senkronizasyon      |
+| TemplateStore     | `template-store.ts`       | Şablonlar           |
+| TimeStore         | `time-store.ts`           | Zaman takibi        |
+| ProjectSlice      | `slices/project-slice.ts` | Proje slice         |
+| TaskSlice         | `slices/task-slice.ts`    | Görev slice         |
+| AssetSlice        | `slices/asset-slice.ts`   | Varlık slice        |
+
+---
+
+## Tip Tanımları
+
+### Project Tipi
+
+```typescript
+interface Project {
+  id: string;
+  userId: string;
+  name: string;
+  description: string;
+  scope?: string;
+  status: "Planning" | "Active" | "On Hold" | "Completed";
+  priority: "Low" | "Medium" | "High";
+  teamGroupId?: string;
+  startDate: string;
+  deadline?: string;
+  budget: number;
+  spent: number;
+  manager: string;
+  completionPercentage: number;
+  tags: string[];
+  files: ProjectFile[];
+  weaveDesigns?: WeaveDesign[];
+  pcbDesigns?: PCBDesign[];
+  threeDModels?: ThreeDModel[];
+  cadDrawings?: CadDrawing[];
+  githubRepo?: string;
+  githubSyncEnabled?: boolean;
+  color?: string;
+  logoUrl?: string;
+  isFavorite?: boolean;
+  googleDriveFolderId?: string;
+}
+```
+
+### ECR/ECO Tipleri
+
+```typescript
+type ECRStatus = "open" | "under_review" | "approved" | "rejected" | "closed";
+type ECOStatus =
+  | "open"
+  | "hold"
+  | "released"
+  | "scheduled"
+  | "implemented"
+  | "cancelled";
+type ECOPriority = "low" | "routine" | "high" | "urgent";
+
+interface ECR {
+  id: string;
+  projectId?: string;
+  identifier: string;
+  title: string;
+  description: string;
+  status: ECRStatus;
+  priority: ECOPriority;
+  requestorId: string;
+  departmentId: string;
+  impactAnalysis?: {
+    technicalFesibility: string;
+    financialImpact: number;
+    inventoryImpact: string;
+  };
+}
+
+interface ECO {
+  id: string;
+  projectId?: string;
+  identifier: string;
+  ecrId?: string;
+  title: string;
+  status: ECOStatus;
+  priority: ECOPriority;
+  approvalStatus: "not_submitted" | "requested" | "approved" | "rejected";
+  mrpActive: boolean;
+  revisedItems: RevisedItem[];
+}
+```
+
+### RAID Tipleri (Risk, Assumption, Issue, Dependency)
+
+```typescript
+type RAIDType = "risk" | "assumption" | "issue" | "dependency";
+type RAIDStatus =
+  | "identified"
+  | "analyzed"
+  | "mitigating"
+  | "resolved"
+  | "closed";
+type RiskImpact = 1 | 2 | 3 | 4 | 5;
+type RiskProbability = 1 | 2 | 3 | 4 | 5;
+
+interface RAIDEntry {
+  id: string;
+  projectId: string;
+  type: RAIDType;
+  title: string;
+  description: string;
+  status: RAIDStatus;
+  ownerId: string;
+  impact?: RiskImpact;
+  probability?: RiskProbability;
+  score?: number;
+  mitigationPlan?: string;
+  contingencyPlan?: string;
+}
+```
+
+### EVM Metrikleri (Earned Value Management)
+
+```typescript
+interface EVMMetrics {
+  projectId: string;
+  date: string;
+  PV: number; // Planned Value
+  EV: number; // Earned Value
+  AC: number; // Actual Cost
+  CV: number; // Cost Variance
+  SV: number; // Schedule Variance
+  CPI: number; // Cost Performance Index
+  SPI: number; // Schedule Performance Index
+  EAC: number; // Estimate At Completion
+  ETC: number; // Estimate To Complete
+}
+```
+
+### Invoice Tipleri
+
+```typescript
+type InvoiceStatus =
+  | "draft"
+  | "sent"
+  | "viewed"
+  | "paid"
+  | "overdue"
+  | "cancelled"
+  | "refunded";
+type PaymentMethod =
+  | "bank_transfer"
+  | "credit_card"
+  | "cash"
+  | "check"
+  | "other";
+
+interface Invoice {
+  id: string;
+  invoiceNumber: string;
+  userId: string;
+  projectId?: string;
+  customerName: string;
+  customerEmail?: string;
+  items: InvoiceItem[];
+  subtotal: number;
+  taxAmount: number;
+  total: number;
+  currency: "TRY" | "EUR" | "USD" | "GBP";
+  issueDate: Date;
+  dueDate: Date;
+  status: InvoiceStatus;
+}
+```
+
+---
+
+## Entegrasyonlar
+
+### GitHub Entegrasyonu
+
+- Repository bağlama
+- Commit geçmişi
+- PR/Issue sayısı
+- Otomatik senkronizasyon
+
+### Google Drive Entegrasyonu
+
+- Klasör bağlama
+- Dosya senkronizasyonu
+- CAD dosyaları
+
+### ENV-I Entegrasyonu
+
+- Stok durumu görüntüleme
+- Proje malzeme listesi
+- Düşük stok uyarıları
+
+### Weave Entegrasyonu
+
+- Tasarım dosyaları
+- Versiyon takibi
+- BOM export
+
+### T-SA Entegrasyonu
+
+- Proje analizi
+- Risk değerlendirme
+- AI önerileri
+
+---
+
+## Ekran Görünümleri
+
+### Dashboard
+
+```
+┌─────────────────────────────────────────────────────┐
+│ [Logo] UPH              [Arama] [Bildirim] [Profil] │
+├─────────┬───────────────────────────────────────────┤
+│         │ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐          │
+│ Menü    │ │ 12  │ │ 78% │ │  5  │ │ 34  │          │
+│         │ │Proje│ │Bütçe│ │Stok │ │Görev│          │
+│ ○ Dash  │ └─────┘ └─────┘ └─────┘ └─────┘          │
+│ ○ Proje │                                           │
+│ ○ Müh.  │ ┌─────────────────────────────────────┐  │
+│ ○ Stok  │ │ Proje Kartları (3x2 grid)           │  │
+│ ○ Fatura│ │                                     │  │
+│ ○ Kanban│ └─────────────────────────────────────┘  │
+│ ○ Plan  │                                           │
+│ ○ Ekip  │ ┌───────────────┐ ┌───────────────────┐  │
+│ ○ Ayar  │ │ Pasta Grafik  │ │ Aktivite Akışı    │  │
+│         │ └───────────────┘ └───────────────────┘  │
+└─────────┴───────────────────────────────────────────┘
+```
+
+---
+
+## Kurulum
+
+```bash
+cd UPH-main
+pnpm install
+pnpm dev
+```
+
+**Port**: 3000 (varsayılan)

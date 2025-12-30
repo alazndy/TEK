@@ -1,0 +1,72 @@
+# Firebase App Hosting Configuration
+# https://firebase.google.com/docs/app-hosting/configure
+# ADC Envanter Sistemi - Production Settings
+
+# ============================================================================
+# Cloud Run Service Settings
+# ============================================================================
+runConfig:
+  cpu: 1
+  memoryMiB: 512
+  maxInstances: 10
+  minInstances: 0
+  concurrency: 80
+
+# ============================================================================
+# Environment Variables - Firebase Configuration
+# NEXT_PUBLIC_ prefix makes these accessible on client-side (required for Firebase)
+# ============================================================================
+env:
+  # Firebase API Key
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyApCi8TwPdiZzRZhgFbpOCCTWk1_RD-N5g
+    availability:
+      - BUILD
+      - RUNTIME
+
+  # Firebase Auth Domain
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: envanterim-g5j8h.firebaseapp.com
+    availability:
+      - BUILD
+      - RUNTIME
+
+  # Firebase Project ID
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: envanterim-g5j8h
+    availability:
+      - BUILD
+      - RUNTIME
+
+  # Firebase Storage Bucket
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: envanterim-g5j8h.firebasestorage.app
+    availability:
+      - BUILD
+      - RUNTIME
+
+  # Firebase Messaging Sender ID
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "399978841070"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  # Firebase App ID
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: 1:399978841070:web:cbb4e1a9386ad73d9844ff
+    availability:
+      - BUILD
+      - RUNTIME
+
+  # Node Environment
+  - variable: NODE_ENV
+    value: production
+    availability:
+      - BUILD
+      - RUNTIME
+
+  # Gemini API Key (from Cloud Secret Manager)
+  # Uncomment when secret is created with: firebase apphosting:secrets:set GEMINI_API_KEY
+  # - variable: GEMINI_API_KEY
+  #   secret: GEMINI_API_KEY

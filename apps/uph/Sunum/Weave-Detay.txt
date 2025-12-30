@@ -1,0 +1,408 @@
+# Weave - Sistem Bağlantı Tasarım Platformu (Detaylı Döküman)
+
+## Genel Bilgi
+
+| Özellik            | Değer                            |
+| ------------------ | -------------------------------- |
+| **Tam Adı**        | Weave System Connection Designer |
+| **Kısaltma**       | Weave                            |
+| **Versiyon**       | 1.0.0                            |
+| **Framework**      | Vite + React + TypeScript        |
+| **Canvas**         | Custom 2D Canvas                 |
+| **State Yönetimi** | Zustand + Custom Hooks           |
+| **Renk Teması**    | Mavi (#6366F1 → #8B5CF6)         |
+
+---
+
+## Vizyon
+
+**"Karmaşık sistemleri görselleştir, bağlantıları yönet, ürünleri takip et"**
+
+Weave, PCB veya elektronik devre tasarımı değil, **sistem seviyesinde bağlantı tasarım platformudur**. Araç içi kamera sistemleri, otomasyon panelleri, güvenlik sistemleri gibi **fiziksel ürünlerin birbirine nasıl bağlanacağını** tasarlamak için kullanılır.
+
+---
+
+## Temel Konsept
+
+### Ne Yapıyor?
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      WEAVE KONSEPT                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  1. ÜRÜN TARAMASINI TANIMLAMA                              │
+│     • ENV-I envanterinden ürün çekme                       │
+│     • Ürün görsellerini yükleme                            │
+│     • Port/konnektör noktalarını işaretleme                │
+│                                                             │
+│  2. SİSTEM TASARIMI                                        │
+│     • Ürünleri canvas üzerine yerleştirme                  │
+│     • Port'lar arası bağlantı çizme                        │
+│     • Kablo tipleri ve renkleri belirleme                  │
+│                                                             │
+│  3. DOKÜMANTASYON                                          │
+│     • Otomatik BOM (malzeme listesi) oluşturma             │
+│     • Teknik şema PDF export                               │
+│     • Müşteri sunumu için export                           │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Örnek Kullanım Senaryosu
+
+**Senaryo**: Bir TIR için 360° kamera sistemi tasarımı
+
+1. **Ürün Tanımlama**:
+
+   - 4 adet kamera (ön, arka, sol, sağ)
+   - 1 adet monitör
+   - 1 adet kayıt ünitesi
+   - Kablo setleri
+
+2. **Port Yapılandırma**:
+
+   - Her kameranın video çıkışı (VBV 4-Pin)
+   - Monitörün video girişleri
+   - Güç bağlantıları
+
+3. **Sistem Çizimi**:
+
+   - Kameraları TIR şeması üzerine yerleştir
+   - Kablolama rotalarını çiz
+   - Güç dağıtımını göster
+
+4. **Çıktı**:
+   - Kurulum şeması PDF
+   - Malzeme listesi (BOM)
+   - Müşteri teklifi için görsel
+
+---
+
+## Ürün Tarama ve Tanımlama
+
+### Ürün Şablonu (Product Template)
+
+Weave'in temel yapı taşı **Product Template**'dir. Her ürün şablonu şunları içerir:
+
+```typescript
+interface ProductTemplate {
+  id: string;
+  name: string; // Ürün adı
+  modelNumber?: string; // Model numarası
+  description?: string; // Açıklama
+  imageUrl: string; // Ürün görseli
+  width: number; // Görsel genişlik (px)
+  height: number; // Görsel yükseklik (px)
+  physicalWidth?: number; // Fiziksel genişlik (mm)
+  ports: PortDefinition[]; // Port tanımları
+
+  // ENV-I Entegrasyonu
+  envInventoryId?: string; // ENV-I ürün ID referansı
+  externalId?: string; // Ekosistem paylaşım ID
+  isConfigured?: boolean; // Port'lar yapılandırıldı mı?
+  stockCount?: number; // Anlık stok durumu (ENV-I'den)
+}
+```
+
+### Port Tanımlama Sistemi
+
+Her ürünün bağlantı noktaları (port) tanımlanır:
+
+```typescript
+interface PortDefinition {
+  id: string;
+  label: string; // Port etiketi (örn: "Video Out")
+  x: number; // Görsel üzerinde X pozisyonu (%)
+  y: number; // Görsel üzerinde Y pozisyonu (%)
+  type: "input" | "output" | "bidirectional";
+  connectorType: ConnectorType; // 75+ konnektör tipinden biri
+  direction?: "top" | "bottom" | "left" | "right";
+
+  // Elektriksel özellikler
+  isPower?: boolean; // Güç bağlantısı mı?
+  isGround?: boolean; // Toprak bağlantısı mı?
+  powerType?: "AC" | "DC";
+  voltage?: string; // Örn: "12V"
+  amperage?: string; // Örn: "2A"
+  customColor?: string; // Özel renk
+}
+```
+
+### Ürün Tarama Akışı
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                  ÜRÜN TARAMA AKIŞI                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  1. KAYNAK SEÇİMİ                                          │
+│     ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │
+│     │ ENV-I'den   │  │ Görsel      │  │ Kütüphane-  │      │
+│     │ İçe Aktar   │  │ Yükle       │  │ den Seç     │      │
+│     └─────────────┘  └─────────────┘  └─────────────┘      │
+│            │                │                │              │
+│            └────────────────┴────────────────┘              │
+│                             │                               │
+│                             ▼                               │
+│  2. GÖRSEL & BİLGİ                                         │
+│     ┌─────────────────────────────────────────────────┐    │
+│     │  [Ürün Görseli]                                 │    │
+│     │                                                  │    │
+│     │  Model: BE-870C-000                             │    │
+│     │  Açıklama: Elite HD Kamera                      │    │
+│     │  Stok: 45 adet (ENV-I'den)                      │    │
+│     └─────────────────────────────────────────────────┘    │
+│                             │                               │
+│                             ▼                               │
+│  3. PORT YAPILANDIRMA                                      │
+│     ┌─────────────────────────────────────────────────┐    │
+│     │  [Görsel üzerinde tıklayarak port ekle]         │    │
+│     │                                                  │    │
+│     │     ● Port 1: Video Out (VBV 4-Pin)             │    │
+│     │     ● Port 2: Power In (Flying Lead)            │    │
+│     │     ● Port 3: Trigger (2-Pin)                   │    │
+│     └─────────────────────────────────────────────────┘    │
+│                             │                               │
+│                             ▼                               │
+│  4. KAYDET                                                 │
+│     ┌─────────────────────────────────────────────────┐    │
+│     │  [✓] Kütüphaneye Kaydet                         │    │
+│     │  [✓] ENV-I ile Senkronize Et                    │    │
+│     └─────────────────────────────────────────────────┘    │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Konnektör Tipleri (75+ Tip)
+
+Weave, endüstriyel standartlara uygun 75'ten fazla konnektör tipini destekler:
+
+### 1. Araç Kamera Sistemleri (Proprietary)
+
+| Konnektör                  | Açıklama                    |
+| -------------------------- | --------------------------- |
+| `brigade-vbv-4pin`         | VBV 4-Pin (Select Series)   |
+| `brigade-vbv-5pin-shutter` | VBV 5-Pin Shutter kontrollü |
+| `brigade-elite-4pin`       | Elite Series su geçirmez    |
+| `brigade-backeye-360`      | 360° kamera sistemi         |
+
+### 2. Endüstriyel M12 Standartları
+
+| Konnektör          | Açıklama                     |
+| ------------------ | ---------------------------- |
+| `m12-d-coded-4pin` | Ethernet (D-Coded)           |
+| `m12-a-coded-5pin` | Power/Analog (A-Coded 5-Pin) |
+| `m12-a-coded-8pin` | Power/Analog (A-Coded 8-Pin) |
+
+### 3. Araç Elektroniği (FAKRA)
+
+| Konnektör        | Açıklama          |
+| ---------------- | ----------------- |
+| `fakra-c-blue`   | GPS anteni (Mavi) |
+| `fakra-d-purple` | GSM/4G (Mor)      |
+| `fakra-e-green`  | Video (Yeşil)     |
+
+### 4. Ağır Hizmet (Heavy Duty)
+
+| Konnektör              | Açıklama           |
+| ---------------------- | ------------------ |
+| `sp7-heavy-duty`       | SP-7 7-Pin         |
+| `mdr-15pin-heavy-duty` | MDR/Omnivue 15-Pin |
+
+### 5. Sensör Sistemleri
+
+| Konnektör                | Açıklama           |
+| ------------------------ | ------------------ |
+| `ultrasonic-sensor-2pin` | Ultrasonik 2-Pin   |
+| `deutsch-dt04-2pin`      | Deutsch DT04 2-Pin |
+| `deutsch-dt04-4pin`      | Deutsch DT04 4-Pin |
+| `deutsch-dt04-6pin`      | Deutsch DT04 6-Pin |
+
+### 6. Güç ve Toprak
+
+| Konnektör             | Açıklama               |
+| --------------------- | ---------------------- |
+| `flying-lead-power`   | Açık uç güç kablosu    |
+| `flying-lead-trigger` | Açık uç sinyal kablosu |
+| `ring-terminal`       | Şase pabucu            |
+| `fuse-holder-blade`   | Sigorta yuvası         |
+
+---
+
+## Bağlantı Yönetimi
+
+### Bağlantı Tipleri
+
+```typescript
+interface Connection {
+  id: string;
+  fromInstanceId: string; // Kaynak ürün
+  fromPortId: string; // Kaynak port
+  toInstanceId: string; // Hedef ürün
+  toPortId: string; // Hedef port
+
+  // Görsel özellikler
+  label?: string; // Kablo etiketi
+  color?: string; // Kablo rengi
+  shape?: "curved" | "straight" | "orthogonal";
+  lineStyle?: "solid" | "dashed" | "dotted";
+  strokeWidth?: "thin" | "normal" | "thick";
+  arrowHead?: "none" | "start" | "end" | "both";
+}
+```
+
+### Bağlantı Stilleri
+
+| Stil           | Kullanım                         |
+| -------------- | -------------------------------- |
+| **Curved**     | Estetik sunumlar için            |
+| **Straight**   | Basit bağlantılar için           |
+| **Orthogonal** | Teknik şemalar için (90° açılar) |
+
+---
+
+## Ürün Saklama ve Kütüphane
+
+### Kütüphane Yapısı
+
+```
+Kütüphane
+├── Sistem Kütüphanesi (Built-in)
+│   ├── Kameralar
+│   ├── Monitörler
+│   ├── Sensörler
+│   └── Güç Üniteleri
+├── Şirket Kütüphanesi (ENV-I senkronize)
+│   └── [ENV-I'deki tüm ürünler]
+└── Kişisel Kütüphane
+    └── [Özel tanımlanan şablonlar]
+```
+
+### ENV-I Entegrasyonu
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                   ENV-I ENTEGRASYONU                        │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ENV-I (Envanter)              Weave (Tasarım)             │
+│  ┌──────────────┐              ┌──────────────┐            │
+│  │ Ürün Listesi │ ──────────►  │ Kütüphane    │            │
+│  │ • Kamera A   │              │ • Kamera A   │            │
+│  │ • Monitör B  │              │ • Monitör B  │            │
+│  │ • Kablo C    │              │ • Kablo C    │            │
+│  └──────────────┘              └──────────────┘            │
+│         │                             │                     │
+│         ▼                             ▼                     │
+│  ┌──────────────┐              ┌──────────────┐            │
+│  │ Stok: 45     │ ◄──────────  │ Kullanım: 3  │            │
+│  │ Rezerve: 3   │   senkron    │ Proje: ABC   │            │
+│  └──────────────┘              └──────────────┘            │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Sayfa ve Proje Sistemi
+
+### Çoklu Sayfa Desteği
+
+Karmaşık sistemler için birden fazla sayfa:
+
+```typescript
+interface Page {
+  id: string;
+  name: string; // Örn: "Sayfa 1 - Kamera Sistemi"
+  instances: ProductInstance[]; // Sayfadaki ürünler
+  connections: Connection[]; // Sayfadaki bağlantılar
+  zones: Zone[]; // Bölge işaretleri
+  textNodes: TextNode[]; // Metin notları
+  comments: Comment[]; // Yorumlar
+  order: number; // Sayfa sırası
+}
+```
+
+### Proje Yapısı
+
+```typescript
+interface ProjectData {
+  metadata: ProjectMetadata; // Proje bilgileri
+  pages: Page[]; // Tüm sayfalar
+  templates: ProductTemplate[]; // Kullanılan şablonlar
+  version: string; // Versiyon numarası
+}
+```
+
+---
+
+## Export ve Çıktılar
+
+### BOM (Bill of Materials)
+
+Otomatik malzeme listesi oluşturma:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    MALZEME LİSTESİ                          │
+├───────┬───────────────────┬───────────┬────────┬───────────┤
+│ Sıra  │ Ürün Adı          │ Model No  │ Adet   │ Stok      │
+├───────┼───────────────────┼───────────┼────────┼───────────┤
+│ 1     │ Elite HD Kamera   │ BE-870C   │ 4      │ ✓ 45      │
+│ 2     │ 7" TFT Monitör    │ BE-870LM  │ 1      │ ✓ 12      │
+│ 3     │ DVR Kayıt Ünitesi │ MDR-504   │ 1      │ ✓ 8       │
+│ 4     │ VBV Kablo 10m     │ VBV-CAB10 │ 4      │ ⚠ 2       │
+└───────┴───────────────────┴───────────┴────────┴───────────┘
+```
+
+### Export Formatları
+
+| Format         | Kullanım                       |
+| -------------- | ------------------------------ |
+| **PDF**        | Müşteri sunumu, kurulum şeması |
+| **PNG/SVG**    | Web, döküman ekleri            |
+| **Netlist**    | Elektriksel veri               |
+| **KiCad**      | PCB tasarım araçlarına aktarım |
+| **UPH Export** | Proje dosyası olarak kaydet    |
+
+---
+
+## Ekran Görünümü
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ [Dosya▼] [Düzenle▼] [Görünüm▼] [Araçlar▼]   [🔍] [Grid] [Snap]  │
+├───────────────┬─────────────────────────────────────┬───────────┤
+│               │                                     │           │
+│ ÜRÜN PALETİ   │         TASARIM CANVAS              │ ÖZELLİK   │
+│               │                                     │ PANELİ    │
+│ ▼ Kameralar   │   ┌─────┐                          │           │
+│   ├ Elite HD  │   │Kamera│──────┐                  │ Seçili:   │
+│   ├ Select    │   │  1   │      │                  │ Kamera 1  │
+│   └ Backeye   │   └─────┘      │                  │           │
+│               │        │        │     ┌─────┐      │ Port'lar: │
+│ ▼ Monitörler  │        │        └────►│Kayıt│      │ • Video   │
+│   ├ 7" TFT    │   ┌────▼────┐        │Ünite│      │ • Power   │
+│   └ 10" LCD   │   │ Monitör │◄───────┤     │      │           │
+│               │   └─────────┘        └─────┘      │ Stok: 45  │
+│ ▼ ENV-I Sync  │                                     │ [ENV-I]   │
+│   └ (45 ürün) │   Sayfa: [1] [2] [3] [+]           │           │
+├───────────────┴─────────────────────────────────────┴───────────┤
+│ Zoom: 100% | Grid: 10px | Ürün: 6 | Bağlantı: 5 | Sayfa 1/3    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Kurulum
+
+```bash
+cd Weave-main
+pnpm install
+pnpm dev
+```
+
+**Port**: 5173 (Vite varsayılan)

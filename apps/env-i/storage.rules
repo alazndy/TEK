@@ -1,0 +1,52 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Product images - authenticated users can read, authenticated users can write
+    match /products/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+    
+    // User uploads - users can only access their own files
+    match /users/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Public assets - anyone can read, no one can write (uploaded via admin)
+    match /public/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // Proposal PDFs
+    match /proposals/{allPaths=**} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Company Logo
+    match /company/{allPaths=**} {
+      allow read, write: if true;
+    }
+
+
+    // Weave Designs
+    match /weave-designs/{allPaths=**} {
+      allow read, write: if isAuthenticated();
+    }
+    match /3d-models/{allPaths=**} {
+      allow read, write: if isAuthenticated();
+    }
+    match /pcb-designs/{allPaths=**} {
+      allow read, write: if isAuthenticated();
+    }
+
+  }
+}
+

@@ -1,0 +1,612 @@
+# T-ECOSYSTEM - SİSTEM MİMARİSİ VE TEKNİK DETAYLAR
+
+---
+
+## 1. SİSTEM ARKİTEKTÜRÜ
+
+### 1.1 Genel Mimari Diyagram
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           T-ECOSYSTEM MİMARİSİ                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                        KULLANICI KATMANI                            │   │
+│  │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐       │   │
+│  │  │   Web   │ │   PWA   │ │ Desktop │ │ Android │ │   iOS   │       │   │
+│  │  │ Browser │ │  Mobile │ │Electron │ │Capacitor│ │Capacitor│       │   │
+│  │  └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘       │   │
+│  │       │           │           │           │           │             │   │
+│  └───────┼───────────┼───────────┼───────────┼───────────┼─────────────┘   │
+│          │           │           │           │           │                 │
+│  ┌───────▼───────────▼───────────▼───────────▼───────────▼─────────────┐   │
+│  │                      ÖN YÜZ (FRONTEND)                              │   │
+│  │  ┌────────────────────────────────────────────────────────────────┐ │   │
+│  │  │                     React Uygulamaları                         │ │   │
+│  │  │  ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌───────────┐      │ │   │
+│  │  │  │    UPH    │ │   ENV-I   │ │   Weave   │ │ Renderci  │      │ │   │
+│  │  │  │ Next.js16 │ │ Next.js16 │ │ Vite+React│ │ Vite+React│      │ │   │
+│  │  │  │  Port:3001│ │  Port:3000│ │  Port:3004│ │  Port:5174│      │ │   │
+│  │  │  └───────────┘ └───────────┘ └───────────┘ └───────────┘      │ │   │
+│  │  │  ┌───────────┐                                                 │ │   │
+│  │  │  │   T-SA    │                                                 │ │   │
+│  │  │  │ Vite+React│                                                 │ │   │
+│  │  │  │  Port:5173│                                                 │ │   │
+│  │  │  └───────────┘                                                 │ │   │
+│  │  └────────────────────────────────────────────────────────────────┘ │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                    │                                        │
+│  ┌─────────────────────────────────▼───────────────────────────────────┐   │
+│  │                     DURUM YÖNETİMİ (STATE)                          │   │
+│  │  ┌────────────────────────────────────────────────────────────────┐ │   │
+│  │  │                      Zustand Stores                            │ │   │
+│  │  │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐              │ │   │
+│  │  │  │ UPH: 25 St. │ │ENV-I: 18 St.│ │ Weave: 4 St.│              │ │   │
+│  │  │  └─────────────┘ └─────────────┘ └─────────────┘              │ │   │
+│  │  │  ┌─────────────┐ ┌─────────────┐                              │ │   │
+│  │  │  │Renderci: 3  │ │ T-SA: 2 St. │                              │ │   │
+│  │  │  └─────────────┘ └─────────────┘                              │ │   │
+│  │  └────────────────────────────────────────────────────────────────┘ │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                    │                                        │
+│  ┌─────────────────────────────────▼───────────────────────────────────┐   │
+│  │                     BACKEND SERVİSLERİ                              │   │
+│  │  ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐    │   │
+│  │  │ Firebase Firestore│ │  Firebase Auth   │ │ Firebase Storage │    │   │
+│  │  │  (NoSQL Database) │ │(Kimlik Doğrulama)│ │ (Dosya Depolama) │    │   │
+│  │  └──────────────────┘ └──────────────────┘ └──────────────────┘    │   │
+│  │  ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐    │   │
+│  │  │    IndexedDB     │ │  Google Gemini   │ │    GitHub API    │    │   │
+│  │  │ (Yerel Depolama) │ │    (AI API)      │ │  (Entegrasyon)   │    │   │
+│  │  └──────────────────┘ └──────────────────┘ └──────────────────┘    │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 2. VERİ AKIŞ DİYAGRAMI
+
+### 2.1 Uygulama Arası Veri Akışı
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        VERİ AKIŞ DİYAGRAMI                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│    ┌─────────────┐                              ┌─────────────┐            │
+│    │    UPH      │◄────── Proje Dosyası ───────►│   Weave     │            │
+│    │  (Merkez)   │                              │  (Tasarım)  │            │
+│    └──────┬──────┘                              └──────┬──────┘            │
+│           │                                            │                    │
+│           │ Proje Bilgisi                             │ Ürün Şablonu       │
+│           │ Malzeme Listesi                           │ BOM Export         │
+│           │                                            │                    │
+│    ┌──────▼──────┐                              ┌──────▼──────┐            │
+│    │   ENV-I     │◄────── Stok Sorgulama ──────►│   T-SA      │            │
+│    │  (Envanter) │        Ürün Eşleştirme       │  (Analiz)   │            │
+│    └──────┬──────┘                              └──────┬──────┘            │
+│           │                                            │                    │
+│           │ Ürün Görseli                              │ Analiz Sonucu      │
+│           │                                            │                    │
+│    ┌──────▼──────────────────────────────────────────▼──────┐              │
+│    │                      Renderci                           │              │
+│    │                  (3D Görselleştirme)                    │              │
+│    └─────────────────────────────────────────────────────────┘              │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 2.2 Detaylı Entegrasyon Matrisi
+
+| Kaynak → Hedef | Veri Tipi | Aktarım Yöntemi | Senkronizasyon |
+|----------------|-----------|-----------------|----------------|
+| **UPH → ENV-I** | Proje malzeme listesi | Firebase Firestore | Gerçek zamanlı |
+| **UPH → Weave** | Proje ID, dosya URL | URL parametresi | Manuel |
+| **UPH → T-SA** | Döküman URL | URL parametresi | Manuel |
+| **UPH → Renderci** | Görsel URL | URL parametresi | Manuel |
+| **ENV-I → Weave** | Ürün listesi, stok | Firebase Firestore | Gerçek zamanlı |
+| **ENV-I → T-SA** | Ürün veritabanı | Firebase Firestore | Gerçek zamanlı |
+| **Weave → ENV-I** | BOM (malzeme listesi) | JSON export | Manuel |
+| **Weave → UPH** | Tasarım dosyası | Firebase Storage | Manuel |
+| **T-SA → UPH** | Gereksinim raporu | JSON export | Manuel |
+| **T-SA → ENV-I** | Ürün eşleştirme | Firebase Firestore | Manuel |
+
+---
+
+## 3. VERİTABANI YAPISI
+
+### 3.1 Firebase Firestore Koleksiyonları
+
+```
+firestore/
+├── users/                      # Kullanıcı profilleri
+│   └── {userId}/
+│       ├── profile             # Profil bilgisi
+│       ├── preferences         # Tercihler
+│       └── notifications       # Bildirimler
+│
+├── projects/                   # UPH Projeleri
+│   └── {projectId}/
+│       ├── info                # Proje bilgisi
+│       ├── tasks/              # Görevler
+│       ├── files/              # Dosyalar
+│       ├── ecrs/               # Mühendislik değişiklik talepleri
+│       ├── ecos/               # Mühendislik değişiklik emirleri
+│       ├── raids/              # Risk, varsayım, sorun, bağımlılık
+│       └── evm/                # Kazanılmış değer metrikleri
+│
+├── products/                   # ENV-I Ürünleri
+│   └── {productId}/
+│       ├── info                # Ürün bilgisi
+│       ├── stock               # Stok durumu
+│       ├── movements/          # Stok hareketleri
+│       └── history/            # Geçmiş
+│
+├── equipment/                  # ENV-I Ekipmanlar
+│   └── {equipmentId}/
+│
+├── consumables/                # ENV-I Sarf malzemeleri
+│   └── {consumableId}/
+│
+├── warehouses/                 # ENV-I Depolar
+│   └── {warehouseId}/
+│       ├── zones/              # Zonlar
+│       └── shelves/            # Raflar
+│
+├── suppliers/                  # ENV-I Tedarikçiler
+│   └── {supplierId}/
+│
+├── orders/                     # ENV-I Siparişler
+│   └── {orderId}/
+│
+├── teams/                      # UPH Ekipler
+│   └── {teamId}/
+│       └── members/            # Üyeler
+│
+├── invoices/                   # UPH Faturalar
+│   └── {invoiceId}/
+│
+└── audit_logs/                 # Denetim logları
+    └── {logId}/
+```
+
+### 3.2 IndexedDB Yapısı (T-SA)
+
+```javascript
+// T-SA IndexedDB Schema
+const dbSchema = {
+  name: "tsa-database",
+  version: 1,
+  stores: {
+    conversations: {
+      keyPath: "id",
+      indexes: ["createdAt", "title", "category"]
+    },
+    messages: {
+      keyPath: "id", 
+      indexes: ["conversationId", "createdAt", "type"]
+    },
+    analyses: {
+      keyPath: "id",
+      indexes: ["documentId", "type", "createdAt"]
+    },
+    documents: {
+      keyPath: "id",
+      indexes: ["name", "type", "size"]
+    }
+  }
+};
+```
+
+---
+
+## 4. API YAPISI
+
+### 4.1 UPH Store API
+
+```typescript
+// project-store.ts - Ana Store Yapısı
+interface ProjectStore {
+  // State
+  projects: Project[];
+  selectedProject: Project | null;
+  isLoading: boolean;
+  error: string | null;
+
+  // Actions
+  fetchProjects: () => Promise<void>;
+  addProject: (data: Partial<Project>) => Promise<string>;
+  updateProject: (id: string, data: Partial<Project>) => Promise<void>;
+  deleteProject: (id: string) => Promise<void>;
+  setSelectedProject: (project: Project | null) => void;
+
+  // Selectors
+  getProjectById: (id: string) => Project | undefined;
+  getProjectsByStatus: (status: ProjectStatus) => Project[];
+  getActiveProjects: () => Project[];
+  getFavoriteProjects: () => Project[];
+}
+```
+
+### 4.2 ENV-I Store API
+
+```typescript
+// product-store.ts - Ürün Yönetimi
+interface ProductStore {
+  // State
+  products: Product[];
+  isLoading: boolean;
+  syncStatus: 'idle' | 'syncing' | 'error';
+
+  // Actions
+  fetchProducts: () => Promise<void>;
+  addProduct: (data: Partial<Product>) => Promise<string>;
+  updateProduct: (id: string, data: Partial<Product>) => Promise<void>;
+  deleteProduct: (id: string) => Promise<void>;
+  adjustStock: (id: string, quantity: number, reason: string) => Promise<void>;
+  transferStock: (id: string, from: string, to: string, qty: number) => Promise<void>;
+
+  // Selectors
+  getProductById: (id: string) => Product | undefined;
+  getProductsByCategory: (category: string) => Product[];
+  getLowStockProducts: () => Product[];
+  searchProducts: (query: string) => Product[];
+}
+```
+
+### 4.3 Weave Store API
+
+```typescript
+// canvas-store.ts - Canvas Yönetimi
+interface CanvasStore {
+  // State
+  pages: Page[];
+  currentPageId: string;
+  components: Component[];
+  connections: Connection[];
+  selectedComponentIds: string[];
+  zoom: number;
+  pan: { x: number; y: number };
+
+  // Actions
+  addPage: (name: string) => void;
+  deletePage: (id: string) => void;
+  setCurrentPage: (id: string) => void;
+  
+  addComponent: (component: Component) => void;
+  updateComponent: (id: string, data: Partial<Component>) => void;
+  deleteComponent: (id: string) => void;
+  
+  addConnection: (from: string, to: string, type: ConnectionType) => void;
+  deleteConnection: (id: string) => void;
+  
+  setZoom: (zoom: number) => void;
+  setPan: (x: number, y: number) => void;
+  
+  exportToPDF: () => Promise<Blob>;
+  exportToBOM: () => BOMItem[];
+}
+```
+
+---
+
+## 5. GÜVENLİK YAPISI
+
+### 5.1 Kimlik Doğrulama Akışı
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    KİMLİK DOĞRULAMA AKIŞI                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌─────────┐      ┌─────────────┐      ┌─────────────────┐     │
+│  │Kullanıcı│──1──►│ Login Form  │──2──►│  Firebase Auth  │     │
+│  └─────────┘      └─────────────┘      └────────┬────────┘     │
+│                                                 │               │
+│                                                3│ JWT Token     │
+│                                                 ▼               │
+│  ┌─────────┐      ┌─────────────┐      ┌─────────────────┐     │
+│  │Protected│◄──5──│ Auth Store  │◄──4──│   Token Valid   │     │
+│  │  Pages  │      │(Zustand)    │      └─────────────────┘     │
+│  └─────────┘      └─────────────┘                               │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+1: Kullanıcı email/şifre girer
+2: Firebase Auth'a istek gönderilir
+3: Başarılı ise JWT token döner
+4: Token Zustand store'a kaydedilir
+5: Korumalı sayfalara erişim sağlanır
+```
+
+### 5.2 Firestore Güvenlik Kuralları
+
+```javascript
+// firestore.rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Kullanıcı profili - sadece sahibi okuyabilir/yazabilir
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Projeler - sahip ve ekip üyeleri
+    match /projects/{projectId} {
+      allow read: if isProjectMember(projectId);
+      allow write: if isProjectOwner(projectId);
+    }
+    
+    // Ürünler - kimliği doğrulanmış kullanıcılar
+    match /products/{productId} {
+      allow read: if request.auth != null;
+      allow write: if hasRole('admin') || hasRole('inventory_manager');
+    }
+    
+    // Yardımcı fonksiyonlar
+    function isProjectMember(projectId) {
+      return request.auth != null && 
+        exists(/databases/$(database)/documents/projects/$(projectId)/members/$(request.auth.uid));
+    }
+    
+    function isProjectOwner(projectId) {
+      return request.auth != null && 
+        get(/databases/$(database)/documents/projects/$(projectId)).data.ownerId == request.auth.uid;
+    }
+    
+    function hasRole(role) {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
+    }
+  }
+}
+```
+
+### 5.3 Rol Bazlı Erişim Kontrolü (RBAC)
+
+| Rol | UPH | ENV-I | Weave | Renderci | T-SA |
+|-----|-----|-------|-------|----------|------|
+| **Admin** | Tam erişim | Tam erişim | Tam erişim | Tam erişim | Tam erişim |
+| **Project Manager** | Proje yönetimi | Okuma | Tasarım | Render | Analiz |
+| **Engineer** | Görev, ECR/ECO | Okuma | Tasarım | Render | Analiz |
+| **Inventory Manager** | Okuma | Tam erişim | Okuma | - | Okuma |
+| **Viewer** | Okuma | Okuma | Okuma | Okuma | Okuma |
+
+---
+
+## 6. PERFORMANS OPTİMİZASYONU
+
+### 6.1 Uygulanan Optimizasyonlar
+
+| Optimizasyon | Uygulama | Açıklama |
+|--------------|----------|----------|
+| **Lazy Loading** | UPH, ENV-I | Büyük bileşenler dinamik import |
+| **Memoization** | Tümü | React.memo, useMemo, useCallback |
+| **Virtual Scrolling** | ENV-I | react-window ile uzun listeler |
+| **Code Splitting** | UPH, ENV-I | Next.js dynamic import |
+| **Image Optimization** | UPH, ENV-I | next/image ile otomatik |
+| **Service Worker** | UPH, ENV-I | PWA offline cache |
+
+### 6.2 Bundle Boyutları
+
+| Uygulama | Ana Bundle | Toplam | Gzip |
+|----------|------------|--------|------|
+| UPH | ~450 KB | ~1.8 MB | ~520 KB |
+| ENV-I | ~380 KB | ~1.5 MB | ~440 KB |
+| Weave | ~320 KB | ~1.2 MB | ~380 KB |
+| Renderci | ~550 KB | ~2.1 MB | ~620 KB |
+| T-SA | ~280 KB | ~1.0 MB | ~320 KB |
+
+---
+
+## 7. DEPLOYMENT YAPISI
+
+### 7.1 Ortam Konfigürasyonu
+
+```bash
+# UPH & ENV-I .env.local
+NEXT_PUBLIC_FIREBASE_API_KEY=xxx
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=xxx.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=xxx
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=xxx.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=xxx
+NEXT_PUBLIC_FIREBASE_APP_ID=xxx
+
+# Weave, Renderci, T-SA .env
+VITE_FIREBASE_API_KEY=xxx
+VITE_FIREBASE_AUTH_DOMAIN=xxx.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=xxx
+VITE_GEMINI_API_KEY=xxx  # Renderci ve T-SA için
+```
+
+### 7.2 CI/CD Pipeline (GitHub Actions)
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy T-Ecosystem
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+      - run: pnpm install
+      - run: pnpm test
+      - run: pnpm build
+
+  deploy-uph:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          vercel-project-id: ${{ secrets.UPH_PROJECT_ID }}
+
+  deploy-envi:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SA }}
+          channelId: live
+```
+
+---
+
+## 8. İZLEME VE LOGLAMA
+
+### 8.1 Audit Log Yapısı
+
+```typescript
+interface AuditLog {
+  id: string;
+  userId: string;
+  userName: string;
+  action: 'CREATE' | 'UPDATE' | 'DELETE' | 'VIEW' | 'EXPORT';
+  entityType: 'project' | 'product' | 'order' | 'user' | 'design';
+  entityId: string;
+  entityName: string;
+  changes?: {
+    field: string;
+    oldValue: any;
+    newValue: any;
+  }[];
+  metadata?: Record<string, any>;
+  ipAddress?: string;
+  userAgent?: string;
+  timestamp: Date;
+}
+```
+
+### 8.2 Hata İzleme
+
+```typescript
+// Sentry entegrasyonu (önerilen)
+import * as Sentry from "@sentry/react";
+
+Sentry.init({
+  dsn: "https://xxx@sentry.io/xxx",
+  environment: process.env.NODE_ENV,
+  tracesSampleRate: 0.1,
+  beforeSend(event) {
+    // Hassas verileri filtrele
+    if (event.user) {
+      delete event.user.email;
+    }
+    return event;
+  }
+});
+```
+
+---
+
+## 9. MOBİL UYGULAMA YAPISI
+
+### 9.1 Capacitor Konfigürasyonu
+
+```json
+// capacitor.config.json (UPH & ENV-I)
+{
+  "appId": "com.tecosystem.uph",
+  "appName": "T-HUB",
+  "webDir": "out",
+  "bundledWebRuntime": false,
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#0a0a0a"
+    },
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "Keyboard": {
+      "resize": "body",
+      "style": "dark"
+    }
+  }
+}
+```
+
+### 9.2 Platform Özellikleri
+
+| Özellik | Web | PWA | Android | iOS | Desktop |
+|---------|-----|-----|---------|-----|---------|
+| Offline Mode | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Push Notifications | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Kamera Erişimi | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Dosya Sistemi | Sınırlı | Sınırlı | ✅ | ✅ | ✅ |
+| Barkod Okuyucu | ✅ | ✅ | ✅ | ✅ | ❌ |
+
+---
+
+## 10. GELİŞTİRME STANDARTLARI
+
+### 10.1 Kod Yapısı
+
+```
+src/
+├── app/                    # Next.js App Router (sayfalar)
+├── components/            
+│   ├── ui/                 # Atomik UI bileşenleri (shadcn)
+│   ├── layout/             # Layout bileşenleri
+│   ├── features/           # Özellik bazlı bileşenler
+│   └── shared/             # Paylaşılan bileşenler
+├── hooks/                  # Custom React hooks
+├── stores/                 # Zustand store'ları
+├── lib/                    # Yardımcı fonksiyonlar
+│   ├── firebase.ts         # Firebase config
+│   ├── utils.ts            # Genel yardımcılar
+│   └── api/                # API fonksiyonları
+├── types/                  # TypeScript tip tanımları
+└── styles/                 # Global stiller
+```
+
+### 10.2 Commit Mesaj Formatı
+
+```
+<type>(<scope>): <description>
+
+Types:
+- feat: Yeni özellik
+- fix: Hata düzeltme
+- docs: Döküman değişikliği
+- style: Kod formatı
+- refactor: Refaktoring
+- test: Test ekleme
+- chore: Yapılandırma
+
+Örnek:
+feat(inventory): add barcode scanner component
+fix(auth): resolve token refresh issue
+docs(readme): update installation steps
+```
+
+---
+
+## 11. ÖZET METRİKLER
+
+| Metrik | Değer |
+|--------|-------|
+| **Toplam Uygulama** | 5 |
+| **Toplam Kod Satırı** | ~150,000 |
+| **Toplam Zustand Store** | 52 |
+| **Toplam TypeScript Tipi** | ~200 |
+| **Toplam React Bileşeni** | ~250 |
+| **Firebase Koleksiyonu** | 15+ |
+| **Desteklenen Platform** | 5 (Web, PWA, Android, iOS, Desktop) |
+| **AI Entegrasyonu** | Google Gemini Pro |
+| **3D Engine** | Three.js |

@@ -1,0 +1,35 @@
+
+{
+  "firestore": {
+    "database": "(default)",
+    "location": "eur3",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "source": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "apphosting": "envanterim-backend"
+      }
+    ]
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "apphosting": {
+    "backends": [
+      {
+        "id": "envanterim-backend",
+        "region": "europe-west1",
+        "serviceAccount": "app-hosting-envanterim-g5j8h"
+      }
+    ]
+  }
+}

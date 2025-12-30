@@ -1,0 +1,308 @@
+{
+  "Common": {
+    "dashboard": "Panel",
+    "projects": "Projeler",
+    "kanban": "Kanban",
+    "analytics": "Analitik",
+    "inventory": "Envanter",
+    "settings": "Ayarlar",
+    "logout": "Çıkış Yap",
+    "newProject": "Yeni Proje",
+    "searchPlaceholder": "Bir komut yazın veya arayın...",
+    "notifications": "Bildirimler",
+    "cancel": "İptal",
+    "actions": {
+      "delete": "Sil"
+    }
+  },
+  "Forge": {
+    "title": "Forge Üretim Sistemi",
+    "subtitle": "Üretim Takip ve Yönetim Sistemi (MES)",
+    "newJob": "Yeni İş Emri Oluştur",
+    "activeJobs": "Aktif Üretim Listesi",
+    "activeJobsDesc": "Atölyede devam eden iş emirleri ve durumları.",
+    "stats": {
+        "active": "Aktif İş Emirleri",
+        "efficiency": "Üretim Verimliliği",
+        "delays": "Gecikmeler",
+        "completed": "Tamamlanan (Bu Ay)"
+    }
+  },
+  "Flux": {
+    "title": "Flux IoT Monitör",
+    "subtitle": "IoT Cihaz Yönetimi ve İzleme",
+    "newDevice": "Yeni Cihaz Ekle",
+    "refresh": "Yenile",
+    "connectedDevices": "Bağlı Cihazlar",
+    "connectedDevicesDesc": "Sistemdeki IoT cihazlarının anlık durumu.",
+    "stats": {
+        "online": "Çevrimiçi Cihazlar",
+        "power": "Toplam Güç Tüketimi",
+        "temp": "Ortalama Sıcaklık",
+        "load": "Sistem Yükü"
+    }
+  },
+  "Dashboard": {
+    "title": "Gösterge Paneli",
+    "recentProjects": "Son Projeler",
+    "latestActivity": "Son Hareketler",
+    "activeProjects": "Aktif Projeler",
+    "budgetUsage": "Bütçe Kullanımı",
+    "lowStockAlerts": "Düşük Stok Uyarıları",
+    "inventoryValue": "Envanter Değeri",
+    "totalProjects": "toplam proje",
+    "belowThreshold": "Eşik altı ürünler",
+    "allocated": "tahsis edilen",
+    "stockAssetValue": "Toplam stok varlık değeri",
+    "noProjects": "Proje bulunamadı.",
+    "noActivity": "Son aktivite yok."
+  },
+  "Projects": {
+    "title": "Projeler",
+    "createProject": "Proje Oluştur",
+    "createDescription": "Yeni projeniz için detayları girin. İşiniz bittiğinde kaydedin.",
+    "filter": "Filtrele",
+    "filterPlaceholder": "Projeleri filtrele...",
+    "addNewProject": "Yeni Proje Ekle",
+    "name": "İsim",
+    "description": "Açıklama",
+    "descriptionPlaceholder": "Kısa özet...",
+    "scope": "Kapsam",
+    "scopePlaceholder": "Proje kapsamı ve amacını yazın...",
+    "team": "Proje Takımı",
+    "color": "Renk Teması",
+    "logoUrl": "Logo URL",
+    "status": "Durum",
+    "progress": "İlerleme",
+    "budget": "Bütçe",
+    "manager": "Yönetici",
+    "deadline": "Bitiş Tarihi",
+    "due": "Bitiş: {date}",
+    "noDeadline": "Bitiş tarihi yok",
+    "viewDashboard": "Paneli Görüntüle",
+    "actions": "İşlemler",
+    "openDetails": "Detayları Aç",
+    "edit": "Düzenle",
+    "editProject": "Projeyi Düzenle",
+    "editDescription": "Proje detaylarını aşağıdan güncelleyin.",
+    "delete": "Sil",
+    "deleteConfirmationTitle": "Kesinlikle emin misiniz?",
+    "deleteConfirmationDesc": "Bu işlem geri alınamaz. <bold>{name}</bold> projesi ve ilişkili tüm veriler kalıcı olarak silinecektir.",
+    "cancel": "İptal",
+    "confirmDelete": "Projeyi Sil",
+    "loading": "Projeler yükleniyor...",
+    "selectStatus": "Durum seçin",
+    "selectTeam": "Takım seçin",
+    "saveChanges": "Değişiklikleri Kaydet",
+    "importFromGithub": "GitHub'dan İçe Aktar",
+    "importDescription": "Mevcut bir GitHub deposundan yeni bir proje oluşturun.",
+    "repoUrl": "Depo URL (GitHub)",
+    "importProject": "Projeyi İçe Aktar",
+    "importing": "İçe Aktarılıyor...",
+    "importInfo": "Sistem otomatik olarak Proje Adı, Açıklama ve README dosyasını çekecektir."
+  },
+  "Kanban": {
+    "title": "Kanban Panosu",
+    "subtitle": "İş akışınızı yönetmek için görevleri sürükleyip bırakın",
+    "filter": "Filtrele",
+    "view": "Görünüm",
+    "addTask": "Görev Ekle",
+    "todo": "Yapılacaklar",
+    "inProgress": "Devam Ediyor",
+    "done": "Tamamlandı",
+    "review": "İnceleme",
+    "noTasks": "Görev yok",
+    "clearFilters": "Temizle",
+    "viewDefault": "Varsayılan",
+    "viewCompact": "Kompakt",
+    "priorities": {
+      "low": "Düşük",
+      "medium": "Orta",
+      "high": "Yüksek"
+    },
+    "form": {
+      "project": "Proje",
+      "selectProject": "Bir proje seçin",
+      "title": "Başlık",
+      "titlePlaceholder": "Görev başlığı...",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "Görev açıklaması...",
+      "priority": "Öncelik",
+      "selectPriority": "Öncelik seçin",
+      "status": "Durum",
+      "selectStatus": "Durum seçin",
+      "titleRequired": "Başlık zorunludur",
+      "projectRequired": "Proje zorunludur"
+    }
+  },
+  "Inventory": {
+    "title": "Envanter",
+    "subtitle": "Stok, ekipman ve sarf malzemelerinizi yönetin.",
+    "import": "İçe Aktar",
+    "searchPlaceholder": "Bileşen ara...",
+    "filterLowStock": "Düşük Stok Filtrele",
+    "showingLowStock": "Düşük Stok Gösteriliyor",
+    "stockItems": "Stok Kalemleri",
+    "table": {
+      "name": "İsim",
+      "category": "Kategori",
+      "stock": "Stok (Mevcut)",
+      "inProjects": "Projelerde",
+      "unitPrice": "Birim Fiyat"
+    },
+    "loading": "Envanter yükleniyor...",
+    "noItems": "Öğe bulunamadı.",
+    "assigned": "Atandı",
+    "actions": {
+      "label": "İşlemler",
+      "copyId": "ID Kopyala",
+      "assignProject": "Projeye Ata",
+      "viewUsage": "Kullanımı Gör",
+      "edit": "Detayları Düzenle",
+      "delete": "Öğeyi Sil"
+    },
+    "deleteDialog": {
+      "title": "Kesinlikle emin misiniz?",
+      "description": "Bu işlem geri alınamaz. {name} kalıcı olarak envanterinizden silinecektir.",
+      "cancel": "İptal",
+      "confirm": "Sil"
+    },
+    "addProduct": {
+      "button": "Öğe Ekle",
+      "title": "Yeni Ürün Ekle",
+      "description": "Envantere yeni öğe ekleyin. İşiniz bittiğinde kaydedin."
+    },
+    "editProduct": {
+      "title": "Ürünü Düzenle",
+      "description": "Öğe detaylarında değişiklik yapın. İşiniz bittiğinde kaydedin."
+    },
+    "form": {
+      "name": "İsim",
+      "category": "Kategori",
+      "brand": "Marka",
+      "stock": "Stok",
+      "price": "Fiyat",
+      "selectCategory": "Kategori seçin",
+      "stockItem": "Stok Malzemesi",
+      "consumable": "Sarf Malzeme",
+      "save": "Değişiklikleri Kaydet"
+    },
+    "assignProject": {
+      "title": "Projeye Ata",
+      "description": "{name} öğesini bir projeye tahsis et.",
+      "availableStock": "Mevcut Stok",
+      "project": "Proje",
+      "selectProject": "Proje seçin",
+      "quantity": "Miktar",
+      "submit": "Ata",
+      "insufficientStock": "Yetersiz stok!"
+    },
+    "usage": {
+      "title": "Kullanım Geçmişi: {name}",
+      "description": "Bu öğenin şu anda hangi projelere atandığını görün.",
+      "activeAssignments": "Aktif Atamalar",
+      "table": {
+        "project": "Proje",
+        "quantity": "Miktar",
+        "date": "Tarih",
+        "by": "Atayan"
+      },
+      "noAssignments": "Herhangi bir projeye atanmamış.",
+      "totalStock": "Toplam Stok",
+      "allocated": "Tahsis Edilen"
+    }
+  },
+  "Analytics": {
+    "title": "Analitik & Raporlar",
+    "subtitle": "Projeleriniz ve envanteriniz için içgörüler ve veri görselleştirme",
+    "exportProjects": "Projeleri Dışa Aktar",
+    "exportInventory": "Envanteri Dışa Aktar",
+    "exportExcel": "Excel Olarak İndir",
+    "exportCSV": "CSV Olarak İndir",
+    "totalProjects": "Toplam Projeler",
+    "activeProjects": "Aktif Projeler",
+    "inventoryItems": "Envanter Kalemleri",
+    "lowStockAlerts": "Düşük Stok Uyarıları"
+  },
+  "Settings": {
+    "integrations": {
+      "title": "Entegrasyonlar",
+      "description": "Diğer T-ECOSYSTEM uygulamaları ile bağlantıları yönetin.",
+      "weave": "Weave (Teknik Tasarım)",
+      "weaveDesc": "Projelere Weave tasarımlarını bağlamayı ve görüntülemeyi etkinleştir.",
+      "env": "ENV-I (Envanter)",
+      "envDesc": "Stok takibi için ENV-I envanterine erişimi etkinleştir.",
+      "googleDrive": "Google Drive",
+      "googleDriveDesc": "Proje dosyalarını Google Drive ile senkronize et ve yedekle.",
+      "slack": "Slack",
+      "slackDesc": "Proje güncellemeleri için Slack bildirimlerini etkinleştir.",
+      "github": "GitHub",
+      "githubDesc": "Raporlama ve PR takibi için GitHub deposu istatistiklerini göster.",
+      "webhookUrl": "Slack Webhook URL",
+      "githubToken": "Kişisel Erişim Belirteci (Token)",
+      "communication": "İletişim",
+      "development": "Geliştirme"
+    },
+    "title": "Ayarlar",
+    "tabs": {
+      "profile": "Profil",
+      "system": "Sistem",
+      "maintenance": "Bakım"
+    },
+    "profile": {
+      "title": "Kişisel Bilgiler",
+      "description": "Herkese açık profilinizi ve iletişim bilgilerinizi güncelleyin.",
+      "changeAvatar": "Avatarı Değiştir",
+      "displayName": "Görünen Ad",
+      "email": "E-posta",
+      "jobTitle": "Unvan",
+      "company": "Şirket",
+      "save": "Değişiklikleri Kaydet",
+      "avatarSuccess": "Avatar başarıyla güncellendi!",
+      "avatarError": "Avatar yüklenemedi."
+    },
+    "system": {
+      "title": "Sistem Tercihleri",
+      "description": "Global uygulama ayarlarını yönetin.",
+      "lowStock": "Düşük Stok Eşiği",
+      "lowStockDesc": "Uyarı tetiklenmeden önceki minimum stok seviyesi.",
+      "units": "birim",
+      "currency": "Para Birimi",
+      "currencyDesc": "Proje bütçeleri ve envanter için varsayılan para birimi.",
+      "selectCurrency": "Para birimi seçin",
+      "notifications": "Bildirimler",
+      "notificationsDesc": "Düşük stok ve atanan görevler için uyarı alın."
+    },
+    "maintenance": {
+      "title": "Veritabanı Bakımı",
+      "description": "Veritabanı ve sistem yapılandırmalarını yönetin",
+      "resetData": "Sıfırla ve Başlangıç Verilerini Yükle",
+      "seedSuccess": "Veritabanı başarıyla başlangıç verileriyle dolduruldu!",
+      "seedError": "Veritabanı doldurulamadı."
+    }
+  },
+  "Teams": {
+    "title": "Takımlarım",
+    "subtitle": "Üyesi olduğunuz veya yönettiğiniz takımlar",
+    "createTeam": "Yeni Takım Oluştur",
+    "noDescription": "Açıklama yok",
+    "members": "{count} Üye",
+    "active": "Aktif Takım",
+    "select": "Seç",
+    "empty": {
+      "title": "Henüz bir takımınız yok",
+      "description": "Projelerinizi yönetmek ve işbirliği yapmak için ilk takımınızı oluşturun.",
+      "button": "Takım Oluştur"
+    },
+    "createDialog": {
+      "title": "Takım Oluştur",
+      "description": "Projeleri ve üyeleri yönetmek için yeni bir takım ekleyin.",
+      "name": "Takım Adı",
+      "namePlaceholder": "Takım adı...",
+      "desc": "Açıklama",
+      "descPlaceholder": "Takım açıklaması...",
+      "cancel": "İptal",
+      "submit": "Takım Oluştur"
+    }
+  }
+}

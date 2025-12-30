@@ -1,0 +1,4 @@
+rootProject.name = 'UPH-Android'
+include ':app'
+
+apply from: 'capacitor.settings.gradle'
