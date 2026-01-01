@@ -1,7 +1,8 @@
 
 import { create } from 'zustand';
 import { CatalogItem } from '@/lib/types';
-import { apiClient } from '@/lib/api-client';
+import { db } from "@/lib/firebase";
+import { collection, getDocs, writeBatch, doc, query, limit, orderBy, deleteDoc } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 
 interface CatalogState {
@@ -23,8 +24,10 @@ export const useCatalogStore = create<CatalogState>((set, get) => ({
     
     set({ loading: true });
     try {
-        const response = await apiClient.get('/marketplace/products'); // Using marketplace as catalog source
-        set({ items: response.data, hasInitialized: true });
+        const q = query(collection(db, "catalog_items"), orderBy("model"), limit(1000)); // Initial limit to prevent huge reads
+        const snapshot = await getDocs(q);
+        const items = snapshot.docs.map(doc => doc.data() as CatalogItem);
+        set({ items, hasInitialized: true });
     } catch (error) {
         console.error("Error fetching catalog:", error);
         toast({ title: "Hata", description: "Katalog verisi çekilemedi.", variant: "destructive" });
@@ -36,8 +39,21 @@ export const useCatalogStore = create<CatalogState>((set, get) => ({
   uploadWithBatch: async (newItems: CatalogItem[]) => {
       set({ loading: true });
       try {
-          // Send all items to backend to handle batching
-          await apiClient.post('/marketplace/products/batch', { items: newItems });
+          // Process in chunks of 500 (Firestore batch limit)
+          const chunkSize = 450; 
+          for (let i = 0; i < newItems.length; i += chunkSize) {
+              const chunk = newItems.slice(i, i + chunkSize);
+              const batch = writeBatch(db);
+              
+              chunk.forEach(item => {
+                  // Create a safe ID from model/manufacturer to prevent duplicates
+                  const safeId = `${item.manufacturer}-${item.model}`.replace(/[^a-zA-Z0-9-_]/g, '_').toLowerCase();
+                  const docRef = doc(db, "catalog_items", safeId);
+                  batch.set(docRef, { ...item, id: safeId, updatedAt: new Date().toISOString() });
+              });
+
+              await batch.commit();
+          }
 
           // Refresh local state
           await get().fetchItems(true);
@@ -54,7 +70,18 @@ export const useCatalogStore = create<CatalogState>((set, get) => ({
   clearCatalog: async () => {
       set({ loading: true });
       try {
-          await apiClient.delete('/marketplace/products');
+          // Delete in batches
+          const q = query(collection(db, "catalog_items"), limit(450));
+          let snapshot = await getDocs(q);
+          
+          while (!snapshot.empty) {
+              const batch = writeBatch(db);
+              snapshot.docs.forEach(doc => {
+                  batch.delete(doc.ref);
+              });
+              await batch.commit();
+              snapshot = await getDocs(q);
+          }
           
           set({ items: [] });
           toast({ title: "Başarılı", description: "Katalog temizlendi." });

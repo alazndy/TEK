@@ -13,7 +13,6 @@ import { Badge } from '@/components/ui/badge';
 import { generateProjectTasks, summarizeIssues, analyzeProject, ProjectAnalysis, USE_MOCK } from '@/lib/gemini';
 import { useProjectStore } from '@/stores/project-store';
 import { useGitHubStore } from '@/stores/github-store';
-import { useRiskStore } from '@/stores/risk-store';
 import { Sparkles, Loader2, CheckCircle2, Wand2, FileText, Info, BarChart3, AlertTriangle, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -31,7 +30,6 @@ export function AIAssistant({ projectId, projectName, projectDescription }: AIAs
   
   const { addTask, getProjectTasks } = useProjectStore();
   const { issues } = useGitHubStore();
-  const { getProjectEntries } = useRiskStore();
 
   const handlePlanProject = async () => {
     setMode('plan');
@@ -67,13 +65,33 @@ export function AIAssistant({ projectId, projectName, projectDescription }: AIAs
     setIsLoading(true);
     setResult(null);
     try {
-      const projectRisks = getProjectEntries(projectId).map(r => ({ title: r.title, type: r.type }));
+      const { risks, evmMetrics, getProjectTasks } = useProjectStore.getState();
+      
+      const projectRisks = risks
+        .filter(r => r.projectId === projectId)
+        .map(r => ({ 
+          title: r.title, 
+          type: r.category, 
+          severity: r.severity,
+          impact: r.impact,
+          probability: r.probability
+        }));
+
       const projectTasks = getProjectTasks(projectId).map(t => ({ title: t.title, status: t.status }));
       
-      const analysis = await analyzeProject(projectName, projectDescription, projectTasks, projectRisks);
+      const evm = evmMetrics && evmMetrics.projectId === projectId ? {
+        cpi: evmMetrics.costPerformanceIndex,
+        spi: evmMetrics.schedulePerformanceIndex,
+        eac: evmMetrics.estimateAtCompletion,
+        sv: evmMetrics.scheduleVariance,
+        cv: evmMetrics.costVariance
+      } : null;
+
+      const analysis = await analyzeProject(projectName, projectDescription, projectTasks, projectRisks, evm);
       setResult(analysis);
     } catch (error) {
       toast.error('Failed to analyze project');
+      console.error(error);
     } finally {
       setIsLoading(false);
     }

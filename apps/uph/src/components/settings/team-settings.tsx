@@ -47,20 +47,27 @@ import {
 export function TeamSettings() {
     const { 
         teams, addMember, removeMember, activeTeamId, fetchUserTeams,
-        createTeam, updateMemberRole
+        createTeam, updateMemberRole,
+        createGroup: storeCreateGroup, deleteGroup: storeDeleteGroup, addMemberToGroup: storeAddMemberToGroup, removeMemberFromGroup: storeRemoveMemberFromGroup
     } = useTeamStore();
     
     // Derived state for current view (simplified for prototype)
     const activeTeam = teams.find(t => t.id === activeTeamId) || teams[0];
     const teamMembers = activeTeam?.members || [];
-    
-    // Mock groups for now as team-store doesn't implement groups yet
-    // Mock groups for now as team-store doesn't implement groups yet
-    const teamGroups: any[] = [];
-    const createGroup = async (name: string) => { console.log("Create group", name) };
-    const deleteGroup = async (id: string) => { console.log("Delete group", id) };
-    const addMemberToGroup = async (groupId: string, memberId: string) => { console.log("Add member to group", groupId, memberId) };
-    const removeMemberFromGroup = async (groupId: string, memberId: string) => { console.log("Remove member from group", groupId, memberId) };
+    const teamGroups = activeTeam?.groups || [];
+
+    const createGroup = async (name: string) => { 
+        if (activeTeam) await storeCreateGroup(activeTeam.id, name);
+    };
+    const deleteGroup = async (groupId: string) => { 
+        if (activeTeam) await storeDeleteGroup(activeTeam.id, groupId);
+    };
+    const addMemberToGroup = async (groupId: string, memberId: string) => { 
+        if (activeTeam) await storeAddMemberToGroup(activeTeam.id, groupId, memberId);
+    };
+    const removeMemberFromGroup = async (groupId: string, memberId: string) => { 
+        if (activeTeam) await storeRemoveMemberFromGroup(activeTeam.id, groupId, memberId);
+    };
     const handleUpdateMemberRole = async (memberId: string, newRole: UserRole) => {
         if (activeTeam) await updateMemberRole(activeTeam.id, memberId, newRole);
     };

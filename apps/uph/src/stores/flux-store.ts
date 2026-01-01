@@ -94,18 +94,8 @@ export const useFluxStore = create<FluxStore>((set, get) => ({
         loading: false 
       });
     } catch (error: any) {
-      // Fallback to mock data if DB is empty or fails (for demo purposes)
-      console.warn('Fetching flux devices failed, falling back to mock:', error);
-      const mockDevices: FluxDevice[] = [
-        { id: 'DEV-001', name: 'Ana Dağıtım Panosu', location: 'Blok A', status: 'Online', temp: 34, load: 45, uptime: '12d 4h', lastSeen: 'Just now' },
-        { id: 'DEV-002', name: 'HVAC Kontrol Ünitesi', location: 'Çatı Katı', status: 'Online', temp: 28, load: 40, uptime: '45d 1h', lastSeen: '1m ago' },
-        { id: 'DEV-003', name: 'UPS Sistemi', location: 'Server Odası', status: 'Warning', temp: 42, load: 85, uptime: '2d 12h', lastSeen: '30s ago' },
-      ];
-      set({ 
-        devices: mockDevices, 
-        stats: calculateStats(mockDevices),
-        loading: false 
-      });
+      console.error('Fetching flux devices failed:', error);
+      set({ error: error.message, loading: false });
     }
   },
 
@@ -172,7 +162,7 @@ export const useFluxStore = create<FluxStore>((set, get) => ({
   },
 
   refreshStats: () => {
-    // Legacy random simulation (kept for fallback) if not connected to broker
+    // Simulate real-time fluctuations if not connected to broker
     if (get().isBrokerConnected) return;
 
     const devices = get().devices.map(d => {

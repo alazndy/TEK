@@ -14,7 +14,6 @@ import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { KanbanColumn } from './kanban-column';
 import { ForgeJobCard } from './forge-job-card';
 import { useForgeStore } from '@/stores/forge-store';
-import { ForgeJob } from '@/types/forge';
 import { EditJobDialog } from '@/components/forge/edit-job-dialog';
 
 type Status = 'Pending' | 'In Progress' | 'Review' | 'Completed';

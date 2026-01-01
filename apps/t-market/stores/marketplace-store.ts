@@ -2,7 +2,9 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Module, InstalledModule } from '@/types';
 import { FEATURE_TO_MODULE_MAP } from '@/types';
-import { apiClient } from '@/lib/api-client';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, query, where, getDocs, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { MOCK_MODULES } from '@/lib/mock-data';
 
 interface MarketplaceState {
   modules: Module[];
@@ -29,8 +31,8 @@ interface MarketplaceActions {
 export const useMarketplaceStore = create<MarketplaceState & MarketplaceActions>()(
   persist(
     (set, get) => ({
-      modules: [],
-      filteredModules: [],
+      modules: MOCK_MODULES,
+      filteredModules: MOCK_MODULES,
       installedModules: [],
       loading: false,
       searchQuery: '',
@@ -38,16 +40,9 @@ export const useMarketplaceStore = create<MarketplaceState & MarketplaceActions>
 
       fetchModules: async () => {
         set({ loading: true });
-        try {
-            const response = await apiClient.get<Module[]>('/marketplace/products');
-            const modules = response.data;
-            set({ modules, filteredModules: modules, loading: false });
-            // Re-apply filter if needed
-            get().filterModules();
-        } catch (error) {
-            console.error('Failed to fetch modules:', error);
-            set({ loading: false });
-        }
+        // In production, fetch from Firestore
+        await new Promise(resolve => setTimeout(resolve, 500));
+        set({ modules: MOCK_MODULES, filteredModules: MOCK_MODULES, loading: false });
       },
 
       setSearchQuery: (q) => {
@@ -84,27 +79,58 @@ export const useMarketplaceStore = create<MarketplaceState & MarketplaceActions>
       },
 
       syncPurchases: async (userId: string) => {
-        // Mock purchases for now as API isn't ready
         set({ loading: true });
-        
-        // TODO: Call apiClient.get(`/marketplace/purchases?userId=${userId}`)
-        
-        setTimeout(() => {
-            set({ loading: false });
-        }, 500);
+        try {
+          const q = query(collection(db, 'purchases'), where('userId', '==', userId), where('status', '==', 'active'));
+          const snapshot = await getDocs(q);
+          const installed = snapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+              moduleId: data.moduleId || data.id, // Fallback
+              installedAt: data.purchaseDate,
+              status: 'active',
+              autoRenew: true
+            } as InstalledModule;
+          });
+          
+          set({ installedModules: installed, loading: false });
+        } catch (error) {
+          console.error("Failed to sync purchases", error);
+          set({ loading: false });
+        }
       },
 
       installModule: async (module: Module, userId: string) => {
         set({ loading: true });
         try {
-            // TODO: Call apiClient.post('/marketplace/install', { moduleId: module.id })
-            
-            // NOTE: We are doing a hybrid approach for now:
-            // 1. We removed Firebase logic to follow "refactor to Core API"
-            // 2. But Core API lacks "Install" endpoint.
-            // 3. We simulate success to allow testing the UI.
-            
-             const newInstall: InstalledModule = {
+            // Check if already purchased but inactive
+            const q = query(
+                collection(db, 'purchases'), 
+                where('userId', '==', userId),
+                where('moduleId', '==', module.id)
+            );
+            const snapshot = await getDocs(q);
+
+            if (!snapshot.empty) {
+                // Reactivate
+                const docRef = doc(db, 'purchases', snapshot.docs[0].id);
+                await updateDoc(docRef, { status: 'active', purchaseDate: new Date().toISOString() });
+            } else {
+                // Create new purchase
+                await addDoc(collection(db, 'purchases'), {
+                    userId,
+                    moduleId: module.id,
+                    moduleName: module.name,
+                    amount: module.price,
+                    currency: module.currency,
+                    purchaseDate: new Date().toISOString(),
+                    status: 'active',
+                    type: module.type
+                });
+            }
+
+            // Update local state
+            const newInstall: InstalledModule = {
                 moduleId: module.id,
                 installedAt: new Date().toISOString(),
                 status: 'active',
@@ -126,8 +152,18 @@ export const useMarketplaceStore = create<MarketplaceState & MarketplaceActions>
       uninstallModule: async (moduleId: string, userId: string) => {
         set({ loading: true });
         try {
-             // TODO: Call apiClient.post('/marketplace/uninstall', { moduleId })
-             
+            const q = query(
+                collection(db, 'purchases'), 
+                where('userId', '==', userId),
+                where('moduleId', '==', moduleId),
+                where('status', '==', 'active')
+            );
+            const snapshot = await getDocs(q);
+            
+            // Mark as inactive in DB
+            const updates = snapshot.docs.map(d => updateDoc(doc(db, 'purchases', d.id), { status: 'inactive' }));
+            await Promise.all(updates);
+
             set(state => ({
                 installedModules: state.installedModules.filter(m => m.moduleId !== moduleId),
                 loading: false

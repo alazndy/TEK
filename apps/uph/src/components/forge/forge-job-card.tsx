@@ -34,7 +34,6 @@ export function ForgeJobCard({ job, isOverlay, onClick }: ForgeJobCardProps) {
     High: 'bg-red-500/20 text-red-400 border-red-500/50',
     Medium: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50',
     Low: 'bg-blue-500/20 text-blue-400 border-blue-500/50',
-    Critical: 'bg-purple-500/20 text-purple-400 border-purple-500/50',
   }[job.priority] || 'bg-zinc-500/20 text-zinc-400';
 
   return (

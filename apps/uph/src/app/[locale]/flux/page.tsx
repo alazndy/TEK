@@ -102,10 +102,10 @@ export default function FluxPage() {
                         Detaylı enerji analizi ve anlık metrik takibi için <strong>Flux Analytics Pro</strong> eklentisini edinin.
                     </p>
                     <Button 
-                        onClick={() => window.open('http://localhost:3003/store/flux', '_blank')}
+                        onClick={() => router.push('/marketplace')}
                         className="bg-cyan-600 hover:bg-cyan-700 text-white shadow-lg shadow-cyan-500/20"
                     >
-                        T-Market'e Git
+                        Markete Git
                     </Button>
                 </div>
             )}

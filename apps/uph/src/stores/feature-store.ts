@@ -87,15 +87,6 @@ const initialFeatures: Feature[] = [
     category: 'finance',
     enabled: true,
     path: '/analytics/evm'
-  },
-  // IoT & Automation Category
-  {
-    id: 'flux',
-    name: 'Flux (IoT & Otomasyon)',
-    description: 'IoT cihazlarını ve otomasyon akışlarını yönetin.',
-    category: 'engineering',
-    enabled: true, 
-    path: '/flux'
   }
 ];
 

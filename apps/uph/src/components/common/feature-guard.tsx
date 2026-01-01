@@ -32,13 +32,13 @@ export function FeatureGuard({ module, children, fallback }: FeatureGuardProps) 
       </div>
       <h2 className="text-2xl font-bold mb-2">Bu Modüle Erişiminiz Yok</h2>
       <p className="text-muted-foreground max-w-md mb-8">
-        Bu özelliği kullanmak için <strong>T-Market</strong> üzerinden ilgili modülü yüklemeniz gerekmektedir.
+        Bu özelliği kullanmak için <strong>Marketplace</strong> üzerinden ilgili modülü yüklemeniz gerekmektedir.
       </p>
       <Button 
-        onClick={() => window.open(`http://localhost:3003/store/${module}`, '_blank')} 
+        onClick={() => router.push('/marketplace')} 
         className="bg-indigo-600 hover:bg-indigo-700 text-white"
       >
-        T-Market'te İncele
+        Markete Git
       </Button>
     </div>
   );

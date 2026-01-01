@@ -1,67 +1,65 @@
-import { apiClient } from '../lib/api-client';
+import { openDB, DBSchema } from 'idb';
 import { AnalysisResult } from '../types';
 
+interface TSADB extends DBSchema {
+  analyses: {
+    key: string;
+    value: AnalysisResult;
+    indexes: { 'by-date': string };
+  };
+}
+
+const DB_NAME = 'tsa-db';
+const STORE_NAME = 'analyses';
+
+export const initDB = async () => {
+  return openDB<TSADB>(DB_NAME, 1, {
+    upgrade(db) {
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+        store.createIndex('by-date', 'timestamp');
+      }
+    },
+  });
+};
+
 export const saveAnalysis = async (analysis: AnalysisResult) => {
-  try {
-    const { data } = await apiClient.post('/analyses', analysis);
-    return data;
-  } catch (error) {
-    console.error('Failed to save analysis:', error);
-    throw error;
-  }
+  const db = await initDB();
+  await db.put(STORE_NAME, analysis);
 };
 
 export const getAllAnalyses = async (): Promise<AnalysisResult[]> => {
-  try {
-    const { data } = await apiClient.get('/analyses');
-    return data;
-  } catch (error) {
-    console.error('Failed to fetch analyses:', error);
-    return [];
-  }
+  const db = await initDB();
+  const results = await db.getAllFromIndex(STORE_NAME, 'by-date');
+  return results.reverse(); // Newest first
 };
 
 export const deleteAnalysis = async (id: string) => {
-  try {
-    await apiClient.delete(`/analyses/${id}`);
-  } catch (error) {
-    console.error('Failed to delete analysis:', error);
-    throw error;
-  }
+  const db = await initDB();
+  await db.delete(STORE_NAME, id);
 };
 
 export const getAnalysis = async (id: string) => {
-  try {
-    const { data } = await apiClient.get(`/analyses/${id}`);
-    return data;
-  } catch (error) {
-    console.error('Failed to get analysis:', error);
-    throw error;
-  }
+  const db = await initDB();
+  return db.get(STORE_NAME, id);
 };
 
-// Migration helper: Move legacy localStorage/IDB data to Core API
-// Note: This is a one-time simplified migration from localStorage only for now
+// Migration helper: Move legacy localStorage data to IDB
 export const migrateFromLocalStorage = async () => {
   try {
     const raw = localStorage.getItem('techSpec_history');
     if (raw) {
       const data = JSON.parse(raw);
       if (Array.isArray(data)) {
-        console.log(`Migrating ${data.length} items to Core API...`);
         for (const item of data) {
-          // Check if already exists? API doesn't check duplicates yet, but we can just push.
-          // Or we rely on ID.
-          try {
-             const analysis = { ...item, id: item.id || Date.now().toString() + Math.random() };
-             await saveAnalysis(analysis);
-          } catch (e) {
-             console.warn("Skipping item migration due to error", e);
+          if (item.id) await saveAnalysis(item);
+          else {
+             // Assign ID if missing (legacy data)
+             await saveAnalysis({ ...item, id: Date.now().toString() + Math.random() });
           }
         }
       }
-      localStorage.removeItem('techSpec_history'); // Clear after attempt
-      console.log("Migration complete.");
+      localStorage.removeItem('techSpec_history'); // Clear after success
     }
   } catch (e) {
     console.warn("Migration failed", e);

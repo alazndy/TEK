@@ -51,7 +51,7 @@ export function BudgetChart() {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value: any) => `$${Number(value).toLocaleString()}`}
+                formatter={(value: number) => `$${value.toLocaleString()}`}
                 contentStyle={{
                   backgroundColor: '#18181b',
                   border: '1px solid #3f3f46',

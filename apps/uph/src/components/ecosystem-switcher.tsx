@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useSettingsStore } from "@/stores/settings-store"
-import { useAuthStore } from "@/stores/auth-store"
 
 const apps = [
     {
@@ -47,30 +46,12 @@ const apps = [
 
 export function EcosystemSwitcher() {
   const { system } = useSettingsStore();
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const filteredApps = apps.filter(app => {
-    // Super Admin Bypass
-    const user = useAuthStore.getState().user;
-    if (user?.email === 'goktugt.brigade@adctasarim.com') return true;
-    
     if (app.name === "T-WEAVE") return system.integrations?.weave ?? true;
     if (app.name === "ENV-I") return system.integrations?.envInventory ?? true;
     return true;
   });
-
-  if (!mounted) {
-      return (
-        <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full hover:bg-muted text-muted-foreground hover:text-primary">
-            <Boxes className="h-5 w-5" />
-            <span className="sr-only">Switch App</span>
-        </Button>
-      );
-  }
 
   return (
     <DropdownMenu>

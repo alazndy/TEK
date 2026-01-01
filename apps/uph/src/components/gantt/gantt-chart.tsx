@@ -345,7 +345,72 @@ export function GanttChart({
               );
             })}
             
-            {/* Dependency lines - TODO: Implement SVG lines */}
+            {/* Dependency lines */}
+            <svg 
+              className="absolute inset-0 pointer-events-none z-0" 
+              style={{ width: '100%', height: '100%' }}
+            >
+              {sortedTasks.flatMap(task => {
+                if (!task.dependencies || task.dependencies.length === 0) return [];
+                
+                return task.dependencies.map(depId => {
+                  const dependencyTask = sortedTasks.find(t => t.id === depId);
+                  
+                  // Skip if dependent task is not found or not in current view
+                  // or if it's a self-dependency (safety check)
+                  if (!dependencyTask || task.id === depId) return null;
+                  
+                  // Calculate coordinates (connecting Finish-to-Start usually)
+                  const depStyle = getTaskStyle(dependencyTask);
+                  const taskStyle = getTaskStyle(task);
+                  
+                  // Find row indices to determine vertical positions
+                  const depIndex = sortedTasks.indexOf(dependencyTask);
+                  const taskIndex = sortedTasks.indexOf(task);
+                  
+                  if (depIndex === -1 || taskIndex === -1) return null;
+                  
+                  // Start point: End of dependency task
+                  const x1 = depStyle.left + depStyle.width;
+                  const y1 = depIndex * rowHeight + (rowHeight / 2);
+                  
+                  // End point: Start of current task
+                  const x2 = taskStyle.left;
+                  const y2 = taskIndex * rowHeight + (rowHeight / 2);
+                  
+                  // Control points for bezier curve
+                  const controlOffset = 20;
+                  
+                  // Draw path
+                  // M x1 y1: Move to start
+                  // C ...: Quadratic bezier curve
+                  return (
+                    <path
+                      key={`${depId}-${task.id}`}
+                      d={`M ${x1} ${y1} C ${x1 + controlOffset} ${y1}, ${x2 - controlOffset} ${y2}, ${x2} ${y2}`}
+                      fill="none"
+                      stroke="#94a3b8"
+                      strokeWidth="2"
+                      markerEnd="url(#arrowhead)"
+                      className="opacity-60 hover:opacity-100 hover:stroke-primary transition-all duration-300"
+                    />
+                  );
+                });
+              })}
+              
+              <defs>
+                <marker
+                  id="arrowhead"
+                  markerWidth="10"
+                  markerHeight="7"
+                  refX="9"
+                  refY="3.5"
+                  orient="auto"
+                >
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
+                </marker>
+              </defs>
+            </svg>
           </div>
         </div>
       </div>

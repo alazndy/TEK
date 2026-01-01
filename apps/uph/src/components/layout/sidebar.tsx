@@ -130,14 +130,13 @@ export function Sidebar({ isCollapsed = false }: SidebarProps) {
       color: 'text-pink-700',
       id: 'inventory'
     },
-    // Marketplace link removed
-    // {
-    //   label: 'Marketplace',
-    //   icon: ShoppingBag,
-    //   href: '/marketplace',
-    //   color: 'text-indigo-500',
-    //   id: 'dashboard'
-    // },
+    {
+      label: 'Marketplace',
+      icon: ShoppingBag,
+      href: '/marketplace',
+      color: 'text-indigo-500',
+      id: 'dashboard' // Grouping with core dashboard features
+    },
     {
       label: 'Forge (Üretim)',
       icon: Hammer,

@@ -1,5 +1,4 @@
 
-
 "use client"
 
 import * as React from "react"
@@ -125,10 +124,10 @@ export default function LoginPage() {
   if (user) return null // Prevent flash of login page if user is already logged in and redirecting
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950 px-4 py-8 transition-colors duration-300">
-      <Card className="w-full max-w-sm border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xl">
+    <div className="flex min-h-screen items-center justify-center bg-secondary px-4 py-8">
+      <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Giriş Yap</CardTitle>
+          <CardTitle>Giriş Yap</CardTitle>
           <CardDescription>Devam etmek için hesabınıza giriş yapın</CardDescription>
         </CardHeader>
         <CardContent>
@@ -141,7 +140,7 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>E-posta</FormLabel>
                     <FormControl>
-                      <Input placeholder="ornek@mail.com" {...field} className="bg-white dark:bg-zinc-950" />
+                      <Input placeholder="ornek@mail.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -154,7 +153,7 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>Şifre</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} className="bg-white dark:bg-zinc-950" />
+                      <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -168,13 +167,13 @@ export default function LoginPage() {
           </Form>
            <div className="relative my-4">
               <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-zinc-200 dark:border-zinc-800" />
+                  <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white dark:bg-zinc-900 px-2 text-muted-foreground">Veya</span>
+                  <span className="bg-background px-2 text-muted-foreground">Veya</span>
               </div>
           </div>
-           <Button variant="outline" className="w-full border-zinc-200 dark:border-zinc-800" onClick={handleGoogleSignIn} disabled={isLoading || isGoogleLoading}>
+           <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading || isGoogleLoading}>
               {isGoogleLoading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
@@ -184,7 +183,7 @@ export default function LoginPage() {
           </Button>
         </CardContent>
         <CardFooter className="flex justify-center text-sm">
-          <p className="text-muted-foreground">
+          <p>
             Hesabınız yok mu?{" "}
             <Link href="/signup" className="font-medium text-primary hover:underline">
               Kaydolun

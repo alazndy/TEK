@@ -1,4 +1,4 @@
-export type ModuleCategory = 'Operations' | 'Engineering' | 'Finance' | 'HR' | 'Productivity' | 'Integration' | 'Analytics';
+export type ModuleCategory = 'Operations' | 'Engineering' | 'Finance' | 'HR' | 'Productivity' | 'Integration';
 export type ModuleType = 'app' | 'addon' | 'integration';
 
 export interface User {

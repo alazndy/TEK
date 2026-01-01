@@ -1,9 +1,18 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { apiClient } from '@/lib/api-client';
+import { 
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+  signInWithPopup,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  User as FirebaseUser
+} from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
 import type { User } from '@/types';
-import { GoogleAuthProvider, GithubAuthProvider, signInWithPopup, signOut as firebaseSignOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 
 interface AuthState {
   user: User | null;
@@ -17,46 +26,27 @@ interface AuthActions {
   signInWithGoogle: () => Promise<void>;
   signInWithGithub: () => Promise<void>;
   signOut: () => Promise<void>;
-  initAuth: () => Promise<void>;
+  initAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState & AuthActions>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: null,
-      loading: true, // Initially true to check session
+      loading: true,
       error: null,
 
       signIn: async (email, password) => {
         set({ loading: true, error: null });
         try {
-          // 1. Login to get token
-          // Note: our mock AuthController expects "username", we map email to it
-          // Also, sending a fake userId for the mock
-          const loginRes = await apiClient.post('/auth/login', { 
-              username: email, 
-              password,
-              userId: 'mock-user-id', // Mock ID required by our simplistic AuthService
-              roles: ['member']
-          });
+          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+          const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
           
-          const { access_token } = loginRes.data;
-          localStorage.setItem('access_token', access_token);
-
-          // 2. Fetch Profile or use mock
-          // In real app: const userRes = await apiClient.get('/users/profile');
-          // For now, construct a user from the login info
-          const user: User = {
-              uid: 'mock-user-id', 
-              email, 
-              displayName: email.split('@')[0],
-              createdAt: new Date().toISOString()
-          };
-
-          set({ user, loading: false });
+          if (userDoc.exists()) {
+            set({ user: userDoc.data() as User, loading: false });
+          }
         } catch (error: any) {
-          console.error('Login error:', error);
-          set({ error: error.response?.data?.message || 'Login failed', loading: false });
+          set({ error: error.message, loading: false });
           throw error;
         }
       },
@@ -64,102 +54,103 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       signUp: async (email, password, displayName) => {
         set({ loading: true, error: null });
         try {
-          // 1. Create User
-          await apiClient.post('/users', { email, displayName });
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          
+          const newUser: User = {
+            uid: userCredential.user.uid,
+            email: userCredential.user.email!,
+            displayName,
+            createdAt: new Date().toISOString(),
+          };
 
-          // 2. Auto Login (optional, or redirect to login)
-          // For now calling signIn
-          await get().signIn(email, password);
+          await setDoc(doc(db, 'users', newUser.uid), newUser);
+          set({ user: newUser, loading: false });
         } catch (error: any) {
-           console.error('SignUp error:', error);
-           set({ error: error.response?.data?.message || 'Signup failed', loading: false });
-           throw error;
+          set({ error: error.message, loading: false });
+          throw error;
         }
       },
 
       signInWithGoogle: async () => {
-         set({ loading: true, error: null });
-         try {
-             // Use Firebase Google Auth
-             const provider = new GoogleAuthProvider();
-             const result = await signInWithPopup(auth, provider);
-             const firebaseUser = result.user;
-             
-             // Map Firebase User to App User
-             const appUser: User = {
-                 uid: firebaseUser.uid,
-                 email: firebaseUser.email || '',
-                 displayName: firebaseUser.displayName || 'Google User',
-                 photoURL: firebaseUser.photoURL || undefined,
-                 createdAt: firebaseUser.metadata.creationTime || new Date().toISOString()
-             };
+        set({ loading: true, error: null });
+        try {
+          const provider = new GoogleAuthProvider();
+          const result = await signInWithPopup(auth, provider);
+          const firebaseUser = result.user;
 
-             const token = await firebaseUser.getIdToken();
-             localStorage.setItem('access_token', token);
-             set({ user: appUser, loading: false });
-         } catch (error: any) {
-             console.error('Google login error:', error);
-             set({ error: error.message || 'Google login failed', loading: false });
-         }
+          // Check if user exists, if not create
+          const userDocRef = doc(db, 'users', firebaseUser.uid);
+          const userDoc = await getDoc(userDocRef);
+
+          if (!userDoc.exists()) {
+             const newUser: User = {
+                uid: firebaseUser.uid,
+                email: firebaseUser.email!,
+                displayName: firebaseUser.displayName || 'User',
+                photoURL: firebaseUser.photoURL || undefined,
+                createdAt: new Date().toISOString(),
+             };
+             await setDoc(userDocRef, newUser);
+             set({ user: newUser, loading: false });
+          } else {
+             set({ user: userDoc.data() as User, loading: false });
+          }
+        } catch (error: any) {
+           set({ error: error.message, loading: false });
+           throw error;
+        }
       },
 
       signInWithGithub: async () => {
-         set({ loading: true, error: null });
-         try {
-             const provider = new GithubAuthProvider();
-             const result = await signInWithPopup(auth, provider);
-             const firebaseUser = result.user;
+        set({ loading: true, error: null });
+        try {
+          const provider = new GithubAuthProvider();
+          const result = await signInWithPopup(auth, provider);
+          const firebaseUser = result.user;
 
-             const appUser: User = {
-                 uid: firebaseUser.uid,
-                 email: firebaseUser.email || '',
-                 displayName: firebaseUser.displayName || 'GitHub User',
-                 photoURL: firebaseUser.photoURL || undefined,
-                 createdAt: firebaseUser.metadata.creationTime || new Date().toISOString()
+          const userDocRef = doc(db, 'users', firebaseUser.uid);
+          const userDoc = await getDoc(userDocRef);
+
+          if (!userDoc.exists()) {
+             const newUser: User = {
+                uid: firebaseUser.uid,
+                email: firebaseUser.email!,
+                displayName: firebaseUser.displayName || 'User',
+                photoURL: firebaseUser.photoURL || undefined,
+                createdAt: new Date().toISOString(),
              };
-
-             const token = await firebaseUser.getIdToken();
-             localStorage.setItem('access_token', token);
-             set({ user: appUser, loading: false });
-         } catch (error: any) {
-             console.error('GitHub login error:', error);
-             set({ error: error.message || 'GitHub login failed', loading: false });
-         }
+             await setDoc(userDocRef, newUser);
+             set({ user: newUser, loading: false });
+          } else {
+             set({ user: userDoc.data() as User, loading: false });
+          }
+        } catch (error: any) {
+           set({ error: error.message, loading: false });
+           throw error;
+        }
       },
 
       signOut: async () => {
         try {
-            await firebaseSignOut(auth);
-        } catch(e) { /* ignore */ }
-        localStorage.removeItem('access_token');
-        set({ user: null });
+          await firebaseSignOut(auth);
+          set({ user: null });
+        } catch (error: any) {
+          set({ error: error.message });
+          throw error;
+        }
       },
 
-      initAuth: async () => {
-         const token = localStorage.getItem('access_token');
-         if (token) {
-             try {
-                 // Verify token by fetching profile
-                 // const res = await apiClient.get('/users/profile');
-                 // set({ user: res.data, loading: false });
-                 
-                 // Mock restoration
-                 set({ 
-                     user: { 
-                         uid: 'mock-user-id', 
-                         email: 'restored@example.com', 
-                         displayName: 'Restored User',
-                         createdAt: new Date().toISOString()
-                     }, 
-                     loading: false 
-                 });
-             } catch (err) {
-                 localStorage.removeItem('access_token');
-                 set({ user: null, loading: false });
-             }
-         } else {
-             set({ user: null, loading: false });
-         }
+      initAuth: () => {
+        onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+          if (firebaseUser) {
+            const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+            if (userDoc.exists()) {
+              set({ user: userDoc.data() as User, loading: false });
+            }
+          } else {
+            set({ user: null, loading: false });
+          }
+        });
       },
     }),
     {

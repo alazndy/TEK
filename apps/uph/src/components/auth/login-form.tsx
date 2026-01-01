@@ -29,11 +29,14 @@ const formSchema = z.object({
   }),
 });
 
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+
 export function LoginForm() {
   const router = useRouter();
   const { login, loginWithGoogle, loginWithGithub } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [isSocialLoading, setIsSocialLoading] = useState<'google' | 'github' | null>(null);
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,6 +49,14 @@ export function LoginForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
+      if (!executeRecaptcha) {
+        console.warn("Recaptcha not ready");
+        return;
+      }
+
+      const token = await executeRecaptcha("login_submit");
+      console.log("Captcha Token:", token); // In production, send this to backend
+
       await login(values.email, values.password);
       toast.success('Login successful!');
       router.push('/dashboard');
@@ -86,70 +97,7 @@ export function LoginForm() {
   }
 
   return (
-    <div className="space-y-6 p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm">
-      <div className="text-center mb-4">
-        <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">Giriş Yap</h2>
-        <p className="text-zinc-500 dark:text-zinc-400 text-sm">Hesabınıza erişmek için bilgilerinizi girin</p>
-      </div>
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-zinc-900 dark:text-zinc-100 font-semibold">E-posta</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="ornek@sirket.com" 
-                    {...field} 
-                    className="bg-zinc-50 dark:bg-black border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white"
-                  />
-                </FormControl>
-                <FormMessage className="text-red-500" />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-zinc-900 dark:text-zinc-100 font-semibold">Şifre</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="password" 
-                    placeholder="••••••••" 
-                    {...field} 
-                    className="bg-zinc-50 dark:bg-black border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white"
-                  />
-                </FormControl>
-                <FormMessage className="text-red-500" />
-              </FormItem>
-            )}
-          />
-          <Button 
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5" 
-            type="submit" 
-            disabled={isLoading || isSocialLoading !== null}
-          >
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Giriş Yap
-          </Button>
-        </form>
-      </Form>
-
-      {/* Divider */}
-      <div className="relative my-4">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-zinc-200 dark:border-zinc-700" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white dark:bg-zinc-900 px-2 text-zinc-500 font-medium">veya şununla devam et</span>
-        </div>
-      </div>
-
+    <div className="space-y-6">
       {/* Social Login Buttons */}
       <div className="grid grid-cols-2 gap-3">
         <Button
@@ -157,7 +105,7 @@ export function LoginForm() {
           type="button"
           onClick={handleGoogleLogin}
           disabled={isLoading || isSocialLoading !== null}
-          className="bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200"
+          className="bg-white/5 border-white/10 hover:bg-white/10"
         >
           {isSocialLoading === 'google' ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -188,7 +136,7 @@ export function LoginForm() {
           type="button"
           onClick={handleGithubLogin}
           disabled={isLoading || isSocialLoading !== null}
-          className="bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200"
+          className="bg-white/5 border-white/10 hover:bg-white/10"
         >
           {isSocialLoading === 'github' ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -203,6 +151,52 @@ export function LoginForm() {
           GitHub
         </Button>
       </div>
+
+      {/* Divider */}
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-white/10" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-zinc-900 px-2 text-zinc-500">Or continue with</span>
+        </div>
+      </div>
+
+      {/* Email/Password Form */}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input placeholder="name@example.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input type="password" placeholder="******" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button className="w-full bg-purple-600 hover:bg-purple-700" type="submit" disabled={isLoading || isSocialLoading !== null}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Sign In
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 }

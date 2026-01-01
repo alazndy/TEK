@@ -174,7 +174,8 @@ export async function analyzeProject(
   projectName: string,
   description: string,
   tasks: Array<{ title: string; status: string }>,
-  risks: Array<{ title: string; type: string }>
+  risks: Array<{ title: string; type: string; severity: number; impact: number; probability: number }>,
+  evmMetrics: { cpi: number; spi: number; eac: number; sv: number; cv: number } | null
 ): Promise<ProjectAnalysis> {
   // Mock analysis
   if (USE_MOCK || !genAI) {
@@ -198,28 +199,53 @@ export async function analyzeProject(
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-    const prompt = `Analyze this project and provide a health report.
+    let evmContext = "No EVM data available.";
+    if (evmMetrics) {
+      evmContext = `
+      EVM Financial Metrics:
+      - Cost Performance Index (CPI): ${evmMetrics.cpi.toFixed(2)} (Target: >1.0)
+      - Schedule Performance Index (SPI): ${evmMetrics.spi.toFixed(2)} (Target: >1.0)
+      - Schedule Variance (SV): ${evmMetrics.sv.toFixed(2)}
+      - Cost Variance (CV): ${evmMetrics.cv.toFixed(2)}
+      - Estimate At Completion (EAC): ${evmMetrics.eac.toFixed(2)}
+      `;
+    }
 
-Project: ${projectName}
-Description: ${description}
-Task Count: ${tasks.length}
-Risk Count: ${risks.length}
+    const riskSummary = risks.map(r => 
+      `- ${r.title} (Severity: ${r.severity}, Impact: ${r.impact}, Prob: ${r.probability})`
+    ).join('\n');
 
-Tasks Sample: ${tasks.slice(0, 5).map(t => t.title).join(', ')}
-Risks Sample: ${risks.slice(0, 5).map(r => r.title).join(', ')}
+    const prompt = `Analyze this project and provide a strategic health report.
+    
+    Project: ${projectName}
+    Description: ${description}
+    Task Count: ${tasks.length}
+    Total Risks Identified: ${risks.length}
 
-Return a JSON object with this structure:
-{
-  "healthScore": number (0-100),
-  "swot": {
-    "strengths": string[],
-    "weaknesses": string[],
-    "opportunities": string[],
-    "threats": string[]
-  },
-  "recommendations": string[],
-  "summary": string
-}`;
+    ${evmContext}
+
+    Identified Risks:
+    ${riskSummary.slice(0, 1000)}... (truncated if too long)
+
+    Tasks Sample: ${tasks.slice(0, 10).map(t => `- [${t.status}] ${t.title}`).join('\n')}
+
+    Based on the EVM metrics (Financial/Schedule health) and the Risk Registry:
+    1. Calculate a realistic Health Score (0-100). If CPI/SPI < 1, score should reflect that.
+    2. Generate a SWOT analysis specific to these metrics.
+    3. Provide 3 concrete recommendations to improve CPI/SPI or mitigate top risks.
+
+    Return a JSON object with this structure:
+    {
+      "healthScore": number (0-100),
+      "swot": {
+        "strengths": string[],
+        "weaknesses": string[],
+        "opportunities": string[],
+        "threats": string[]
+      },
+      "recommendations": string[],
+      "summary": string (Executive summary focusing on financial and risk outlook)
+    }`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;

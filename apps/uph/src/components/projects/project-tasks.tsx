@@ -10,6 +10,8 @@ import { Project, ProjectTask } from '@/types/project';
 import { useProjectStore } from '@/stores/project-store';
 import { Virtuoso } from 'react-virtuoso';
 import { generateGoogleCalendarLink } from '@/utils/calendar-utils';
+import { ImportWeaveDialog } from './import-weave-dialog';
+import { ImportTasksDialog } from './import-json-dialog';
 
 interface ProjectTasksProps {
     project: Project;
@@ -135,6 +137,10 @@ export function ProjectTasks({ project }: ProjectTasksProps) {
                     <CardDescription>
                         {tasks.filter(t => t.completed).length || 0} of {tasks.length || 0} tasks completed
                     </CardDescription>
+                </div>
+                <div className="flex gap-2">
+                    <ImportTasksDialog projectId={project.id} />
+                    <ImportWeaveDialog projectId={project.id} />
                 </div>
             </CardHeader>
             <CardContent className="space-y-4 flex-1 flex flex-col min-h-0">

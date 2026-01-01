@@ -1,9 +1,11 @@
+```javascript
 
 const { initializeApp } = require('firebase/app');
 const { getFirestore, doc, updateDoc, collection, addDoc, getDocs } = require('firebase/firestore');
+require('dotenv').config({ path: '.env.local' });
 
 const firebaseConfig = {
-  apiKey: "AIzaSyApCi8TwPdiZzRZhgFbpOCCTWk1_RD-N5g",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: "envanterim-g5j8h.firebaseapp.com",
   projectId: "envanterim-g5j8h",
   storageBucket: "envanterim-g5j8h.firebasestorage.app",

@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/stores/cart-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -36,11 +39,12 @@ export default function CheckoutPage() {
         return;
       }
 
-      // Redirect to Stripe checkout using the session URL
-      // The API should return the session URL directly
-      if (sessionId) {
-        // For now, use the Stripe hosted checkout page
-        window.location.href = `https://checkout.stripe.com/pay/${sessionId}`;
+      const stripe = await stripePromise;
+      const { error: stripeError } = await stripe!.redirectToCheckout({ sessionId });
+
+      if (stripeError) {
+        setError(stripeError.message || 'Payment failed');
+        setLoading(false);
       }
     } catch (err: any) {
       setError(err.message);
@@ -57,9 +61,9 @@ export default function CheckoutPage() {
           <h2 className="text-xl font-bold text-white mb-4">Order Summary</h2>
           <div className="space-y-3">
             {items.map((item) => (
-              <div key={item.id} className="flex justify-between text-white">
-                <span>{item.name}</span>
-                <span className="font-semibold">${item.price}</span>
+              <div key={item.moduleId} className="flex justify-between text-white">
+                <span>{item.module.name}</span>
+                <span className="font-semibold">${item.module.price}</span>
               </div>
             ))}
           </div>

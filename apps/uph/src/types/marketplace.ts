@@ -1,9 +1,20 @@
 export type ModuleCategory = 'Operations' | 'Engineering' | 'Finance' | 'HR' | 'Productivity' | 'Integration';
 export type ModuleType = 'app' | 'addon' | 'integration';
 
-import { Module } from '@t-ecosystem/core-types';
-
-export type MarketplaceModule = Module;
+export interface MarketplaceModule {
+  id: string;
+  name: string;
+  description: string;
+  icon: string; // Lucide icon name
+  category: ModuleCategory;
+  type: ModuleType;
+  parentId?: string; // If this is an addon, which app does it belong to?
+  price: number;
+  isPopular?: boolean;
+  isNew?: boolean;
+  features: string[]; // List of specific technical feature keys enabled
+  version: string;
+}
 
 export interface InstalledModule {
   moduleId: string;

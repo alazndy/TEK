@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Team, TeamMember } from '@/types/team';
+import { Team, TeamMember, TeamGroup } from '@/types/team';
 import { db } from '@/lib/firebase';
 import { 
   collection, 
@@ -25,6 +25,12 @@ interface TeamState {
   addMember: (teamId: string, email: string, role: UserRole) => Promise<void>;
   removeMember: (teamId: string, memberId: string) => Promise<void>;
   updateMemberRole: (teamId: string, memberId: string, newRole: UserRole) => Promise<void>;
+  
+  createGroup: (teamId: string, name: string) => Promise<void>;
+  deleteGroup: (teamId: string, groupId: string) => Promise<void>;
+  addMemberToGroup: (teamId: string, groupId: string, memberId: string) => Promise<void>;
+  removeMemberFromGroup: (teamId: string, groupId: string, memberId: string) => Promise<void>;
+
   setActiveTeam: (teamId: string) => void;
 }
 
@@ -193,5 +199,83 @@ export const useTeamStore = create<TeamState>((set, get) => ({
       } catch (error: any) {
           console.error("Error updating member role:", error);
       }
+  },
+
+  createGroup: async (teamId, name) => {
+    try {
+        const teamRef = doc(db, 'teams', teamId);
+        const team = get().teams.find(t => t.id === teamId);
+        if (!team) return;
+
+        const newGroup: TeamGroup = {
+            id: crypto.randomUUID(),
+            name,
+            memberIds: []
+        };
+        const updatedGroups = [...(team.groups || []), newGroup];
+        await updateDoc(teamRef, { groups: updatedGroups });
+
+        set(state => ({
+            teams: state.teams.map(t => t.id === teamId ? { ...t, groups: updatedGroups } : t)
+        }));
+    } catch (error: any) {
+        console.error("Error creating group:", error);
+    }
+  },
+
+  deleteGroup: async (teamId, groupId) => {
+    try {
+        const teamRef = doc(db, 'teams', teamId);
+        const team = get().teams.find(t => t.id === teamId);
+        if (!team) return;
+
+        const updatedGroups = (team.groups || []).filter(g => g.id !== groupId);
+        await updateDoc(teamRef, { groups: updatedGroups });
+        set(state => ({
+            teams: state.teams.map(t => t.id === teamId ? { ...t, groups: updatedGroups } : t)
+        }));
+    } catch (error: any) {
+        console.error("Error deleting group:", error);
+    }
+  },
+
+  addMemberToGroup: async (teamId, groupId, memberId) => {
+    try {
+        const teamRef = doc(db, 'teams', teamId);
+        const team = get().teams.find(t => t.id === teamId);
+        if (!team) return;
+
+        const updatedGroups = (team.groups || []).map(g => 
+            g.id === groupId && !g.memberIds.includes(memberId)
+            ? { ...g, memberIds: [...g.memberIds, memberId] }
+            : g
+        );
+        await updateDoc(teamRef, { groups: updatedGroups });
+        set(state => ({
+            teams: state.teams.map(t => t.id === teamId ? { ...t, groups: updatedGroups } : t)
+        }));
+    } catch (error: any) {
+        console.error("Error adding member to group:", error);
+    }
+  },
+
+  removeMemberFromGroup: async (teamId, groupId, memberId) => {
+    try {
+        const teamRef = doc(db, 'teams', teamId);
+        const team = get().teams.find(t => t.id === teamId);
+        if (!team) return;
+
+        const updatedGroups = (team.groups || []).map(g => 
+            g.id === groupId 
+            ? { ...g, memberIds: g.memberIds.filter(id => id !== memberId) }
+            : g
+        );
+        await updateDoc(teamRef, { groups: updatedGroups });
+        set(state => ({
+            teams: state.teams.map(t => t.id === teamId ? { ...t, groups: updatedGroups } : t)
+        }));
+    } catch (error: any) {
+        console.error("Error removing member from group:", error);
+    }
   }
 }));

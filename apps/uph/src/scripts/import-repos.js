@@ -1,20 +1,22 @@
 
 const { initializeApp } = require('firebase/app');
 const { getFirestore, collection, addDoc, getDocs, query, where } = require('firebase/firestore');
+require('dotenv').config({ path: '.env.local' });
 
 const firebaseConfig = {
-  apiKey: "AIzaSyApCi8TwPdiZzRZhgFbpOCCTWk1_RD-N5g",
-  authDomain: "envanterim-g5j8h.firebaseapp.com",
-  projectId: "envanterim-g5j8h",
-  storageBucket: "envanterim-g5j8h.firebasestorage.app",
-  messagingSenderId: "399978841070",
-  appId: "1:399978841070:web:cbb4e1a9386ad73d9844ff"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "envanterim-g5j8h.firebaseapp.com",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "envanterim-g5j8h",
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "envanterim-g5j8h.firebasestorage.app",
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "399978841070",
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:399978841070:web:cbb4e1a9386ad73d9844ff"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const userId = "Ib7zSzUA2ZcEAbxWdOn5kOPHOJD2";
+// Use env var or default to the previously hardcoded ID for backward compat during migration
+const userId = process.env.ADMIN_USER_ID || "Ib7zSzUA2ZcEAbxWdOn5kOPHOJD2";
 
 const repos = [
   { name: "UPH", full_name: "alazndy/UPH", description: "Unified Project Hub", language: "TypeScript" },

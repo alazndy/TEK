@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/select';
 import { Plus, Download, Loader2 } from 'lucide-react';
 import { GanttTask } from '@/types/gantt';
+import { TaskDetailDialog } from '@/components/projects/task-detail-dialog';
 
 export default function GanttPage() {
   const t = useTranslations('Common');
@@ -40,9 +41,16 @@ export default function GanttPage() {
     };
   }, [selectedProjectId, subscribeToTasks, unsubscribeAll]);
 
+  const [selectedTask, setSelectedTask] = useState<any>(null); // Using any to bridge types if necessary
+  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
+
   const handleTaskClick = (task: GanttTask) => {
-    console.log('Task clicked:', task);
-    // TODO: Open task detail dialog
+    // Map GanttTask to the format expected by TaskDetailDialog if needed, 
+    // or fetch the full task details.
+    // For now, we'll pass the task ID which standard dialogs usually use to fetch data,
+    // or pass the object if strictly compatible.
+    setSelectedTask(task);
+    setIsTaskDetailOpen(true);
   };
 
   const handleTaskUpdate = async (taskId: string, updates: Partial<GanttTask>) => {
@@ -212,6 +220,15 @@ export default function GanttPage() {
           </Card>
         </div>
       )}
+      <TaskDetailDialog
+        taskId={selectedTask?.id || ''}
+        open={isTaskDetailOpen}
+        onOpenChange={setIsTaskDetailOpen}
+        onUpdate={() => {
+            // Refresh tasks if needed
+            subscribeToTasks(selectedProjectId === 'all' ? undefined : selectedProjectId);
+        }}
+      />
     </div>
   );
 }

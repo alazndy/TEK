@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useMarketplaceStore } from '@/stores/marketplace-store';
-import { useAuthStore } from '@/stores/auth-store';
 import { Module } from '@/types';
 
 // Icons mapping
@@ -30,7 +29,6 @@ export default function StorePage() {
   const router = useRouter();
   
   const { modules, fetchModules, loading, installModule, uninstallModule, isModuleInstalled } = useMarketplaceStore();
-  const { user } = useAuthStore();
 
   useEffect(() => {
     fetchModules();
@@ -47,14 +45,10 @@ export default function StorePage() {
   ));
 
   const handleIntegrationAction = async (module: Module) => {
-    if (!user) {
-      router.push('/login');
-      return;
-    }
     if (isModuleInstalled(module.id)) {
-        await uninstallModule(module.id, user.uid);
+        await uninstallModule(module.id);
     } else {
-        await installModule(module, user.uid);
+        await installModule(module.id);
     }
   };
 

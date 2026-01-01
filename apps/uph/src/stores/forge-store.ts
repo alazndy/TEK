@@ -83,17 +83,8 @@ export const useForgeStore = create<ForgeStore>((set, get) => ({
         loading: false 
       });
     } catch (error: any) {
-      console.warn('Fetching forge jobs failed, falling back to mock:', error);
-      const mockJobs: ForgeJob[] = [
-        { id: 'JOB-2023-001', projectId: 'p1', project: 'Fabrika Otomasyon', status: 'In Progress', progress: 65, step: 'Montaj', priority: 'High', technician: 'Ahmet Y.', add_date: '2023-12-01' },
-    { id: 'JOB-2023-002', projectId: 'p2', project: 'Pano Taslağı v4', status: 'Pending', progress: 0, step: 'Hazırlık', priority: 'Medium', technician: '-', add_date: '2023-12-05' },
-    { id: 'JOB-2023-003', projectId: 'p3', project: 'Saha Dağıtım Kutusu', status: 'Completed', progress: 100, step: 'Test', priority: 'High', technician: 'Mehmet K.', add_date: '2023-11-20' },
-      ];
-      set({ 
-        jobs: mockJobs, 
-        stats: calculateStats(mockJobs),
-        loading: false 
-      });
+      console.error('Fetching forge jobs failed:', error);
+      set({ error: error.message, loading: false });
     }
   },
 

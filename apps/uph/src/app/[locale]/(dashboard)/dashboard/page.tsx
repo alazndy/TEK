@@ -15,9 +15,18 @@ import Link from 'next/link';
 import { CreateProjectDialog } from '@/components/projects/create-project-dialog';
 import { useTranslations } from 'next-intl';
 
-// Sub-components
-import { StatsCards } from '@/components/dashboard/stats-cards';
-import { ActivityFeed } from '@/components/dashboard/activity-feed';
+import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
+
+// Lazy loaded components
+const StatsCards = dynamic(() => import('@/components/dashboard/stats-cards').then(mod => mod.StatsCards), {
+  loading: () => <div className="h-32 animate-pulse bg-white/5 rounded-2xl" />,
+  ssr: false // Client-side only for stats
+});
+const ActivityFeed = dynamic(() => import('@/components/dashboard/activity-feed').then(mod => mod.ActivityFeed), {
+  loading: () => <div className="h-64 animate-pulse bg-white/5 rounded-2xl" />,
+  ssr: true
+});
 
 export default function DashboardPage() {
   const { projects, fetchProjects } = useProjectStore();
@@ -56,15 +65,17 @@ export default function DashboardPage() {
         <CreateProjectDialog />
       </div>
 
-      <StatsCards 
-        t={t}
-        activeProjectsCount={activeProjects.length}
-        totalProjectsCount={projects.length}
-        totalSpent={totalSpent}
-        totalBudget={totalBudget}
-        lowStockItemsCount={lowStockItems.length}
-        inventoryValue={inventoryValue}
-      />
+      <Suspense fallback={<div className="h-32 bg-white/5 animate-pulse rounded-2xl" />}>
+        <StatsCards 
+          t={t}
+          activeProjectsCount={activeProjects.length}
+          totalProjectsCount={projects.length}
+          totalSpent={totalSpent}
+          totalBudget={totalBudget}
+          lowStockItemsCount={lowStockItems.length}
+          inventoryValue={inventoryValue}
+        />
+      </Suspense>
 
       <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-12">
         {/* Recent Projects Section */}
@@ -118,7 +129,9 @@ export default function DashboardPage() {
         
         {/* Activity Feed Section */}
         <div className="col-span-12 lg:col-span-4">
-          <ActivityFeed t={t} activities={activities} />
+          <Suspense fallback={<div className="h-full bg-white/5 animate-pulse rounded-2xl" />}>
+            <ActivityFeed t={t} activities={activities} />
+          </Suspense>
         </div>
       </div>
     </div>

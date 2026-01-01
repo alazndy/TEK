@@ -27,6 +27,8 @@ export interface ProjectTask {
     dueDate?: string;
     subtasks?: Subtask[];
     comments?: TaskComment[];
+    priority?: 'low' | 'medium' | 'high';
+    tags?: string[];
 }
 
 export interface ProjectFile {
@@ -90,6 +92,7 @@ export interface Project {
     scope?: string; // Proje kapsamı / amacı
     status: ProjectStatus;
     teamGroupId?: string; // Added Team Group ID
+    members?: string[]; // Added: List of user IDs with access (Owner + Team)
     priority: ProjectPriority;
     startDate: string;
     deadline?: string;

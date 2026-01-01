@@ -184,21 +184,22 @@ class NotificationService {
   /**
    * Send email notification (placeholder - needs email service integration)
    */
+  /**
+   * Send email notification (stub implementation)
+   */
   private async sendEmailNotification(
     recipients: string[],
     title: string,
     message: string
   ): Promise<boolean> {
-    // TODO: Integrate with email service (SendGrid, Resend, etc.)
-    // For now, just log the intent
-    console.log('Email notification would be sent to:', recipients, { title, message });
+    // Stub implementation for email service
+    // In a real application, this would use a provider like SendGrid, AWS SES, or Resend
+    console.log(`[EmailService Stub] Sending email to [${recipients.join(', ')}]`);
+    console.log(`[EmailService Stub] Subject: ${title}`);
+    console.log(`[EmailService Stub] Body: ${message}`);
     
-    // In production, you would call Firebase Cloud Function or email API here
-    // Example with Cloud Function:
-    // await fetch('/api/send-email', {
-    //   method: 'POST',
-    //   body: JSON.stringify({ recipients, title, message })
-    // });
+    // Simulate API latency
+    await new Promise(resolve => setTimeout(resolve, 500));
     
     return true;
   }

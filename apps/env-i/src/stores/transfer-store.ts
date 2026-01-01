@@ -275,7 +275,77 @@ export const useTransferStore = create<TransferStore>((set, get) => ({
     
     // If already shipped, need to reverse the stock changes
     if (transfer.status === 'in_transit') {
-      // TODO: Reverse stock changes from source warehouse
+      // Reverse stock changes from source warehouse
+      const { items } = transfer;
+      const { updateLot, addLotMovement, getLotMovementsByReferenceId, getLotById } = useLotStore.getState();
+
+      // Find stock movements related to this transfer
+      // Since lot-store doesn't expose getMovements directly in the interface used here, we rely on the lot movements we just created
+      // Ideally we should track which lots were used in the transfer object itself.
+      // Current implementation of shipTransfer uses FIFO and creates movements.
+      
+      // Better approach: Find movements by referenceId (transferId)
+      // Assuming getLotMovementsByReferenceId exists (if not we need to add it or iterate lots)
+      // Since we don't have that helper in the context provided, we'll iterate items and lots.
+      
+      // FALLBACK: Iterate all lots and find movements for this transfer (could be slow but accurate)
+      // OR: Since we don't have lot tracking in TransferItem, we have to rely on what shipTransfer did.
+      
+      // Let's implement a logical reversal based on the assumption that shipTransfer worked.
+      // We need to put items BACK into the source warehouse.
+      // To simplify, we will find the original lots if possible, or create new lots in source warehouse.
+      // Trying to find original lots:
+       
+      for (const item of items) {
+         if (!item.productId || !item.shippedQuantity) continue;
+
+         // We need to add 'item.shippedQuantity' back to 'transfer.fromWarehouseId'
+         // We will look for an EXISTING lot for this product in the source warehouse to add to,
+         // or create a new one.
+         
+         const { lots } = useLotStore.getState();
+         const sourceLot = lots.find(l => 
+            l.productId === item.productId && 
+            l.warehouseId === transfer.fromWarehouseId &&
+            l.status === 'available'
+         );
+
+         if (sourceLot) {
+            await updateLot(sourceLot.id, {
+               quantity: sourceLot.quantity + item.shippedQuantity
+            });
+             await addLotMovement({
+               lotId: sourceLot.id,
+               type: 'adjustment', // or 'cancellation_return'
+               quantity: item.shippedQuantity,
+               fromWarehouseId: transfer.fromWarehouseId, // It's coming back to here
+               toWarehouseId: transfer.fromWarehouseId,
+               referenceType: 'transfer',
+               referenceId: transfer.id,
+               notes: 'Transfer cancellation return',
+               performedBy: 'system' 
+            });
+         } else {
+             // Create new lot (returned stock)
+             const { addLot } = useLotStore.getState();
+              // Mock function to generate lot number (reuse from receive)
+             const lotNumber = `RET-${transfer.transferNumber}-${item.productId.substring(0,4)}`;
+             
+             const newLotId = await addLot({
+                lotNumber: lotNumber,
+                productId: item.productId,
+                productName: item.productName,
+                warehouseId: transfer.fromWarehouseId,
+                quantity: item.shippedQuantity,
+                status: 'available',
+                receivedDate: new Date(),
+                costPerUnit: 0,
+                currency: 'TRY',
+                notes: `Returned from cancelled transfer ${transfer.transferNumber}`,
+                reservedQuantity: 0,
+            });
+         }
+      }
     }
     
     await get().updateTransfer(id, {

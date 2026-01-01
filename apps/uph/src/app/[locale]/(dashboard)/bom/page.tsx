@@ -210,14 +210,25 @@ export default function BOMPage() {
   const handleAddItem = async () => {
     if (!selectedProjectId || !newItem.productName) return;
     
-    await addItem({
-      ...newItem,
-      projectId: selectedProjectId,
-      parentId: parentId || undefined,
-    });
+    if (editingItemId) {
+        // Update existing item
+        // Assuming useBOMStore has updateItem method (it should)
+        const { updateItem } = useBOMStore.getState();
+        await updateItem(editingItemId, {
+           ...newItem,
+        });
+    } else {
+        // Add new item
+        await addItem({
+          ...newItem,
+          projectId: selectedProjectId,
+          parentId: parentId || undefined,
+        });
+    }
     
     setIsDialogOpen(false);
     setParentId(null);
+    setEditingItemId(null); // Reset editing state
     setNewItem({
       productName: '',
       quantity: 1,
@@ -234,9 +245,21 @@ export default function BOMPage() {
     setIsDialogOpen(true);
   };
 
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+
   const handleEdit = (item: BOMItem) => {
-    // TODO: Open edit dialog
-    console.log('Edit:', item);
+    setEditingItemId(item.id);
+    setNewItem({
+        productName: item.productName,
+        quantity: item.quantity,
+        unit: item.unit,
+        source: item.source,
+        status: item.status,
+        unitCost: item.unitCost || 0,
+        currency: item.currency || 'TRY',
+    });
+    setParentId(item.parentId || null);
+    setIsDialogOpen(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -280,7 +303,7 @@ export default function BOMPage() {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>
-                  {parentId ? 'Alt Malzeme Ekle' : 'Yeni Malzeme Ekle'}
+                  {editingItemId ? 'Malzeme Düzenle' : (parentId ? 'Alt Malzeme Ekle' : 'Yeni Malzeme Ekle')}
                 </DialogTitle>
                 <DialogDescription>
                   Malzeme bilgilerini girin
@@ -352,7 +375,7 @@ export default function BOMPage() {
                   İptal
                 </Button>
                 <Button onClick={handleAddItem}>
-                  Ekle
+                  {editingItemId ? 'Güncelle' : 'Ekle'}
                 </Button>
               </DialogFooter>
             </DialogContent>

@@ -1,9 +1,10 @@
-
 const { initializeApp } = require('firebase/app');
 const { getFirestore, collection, getDocs } = require('firebase/firestore');
+require('dotenv').config({ path: '.env.local' });
 
+// Firebase Config
 const firebaseConfig = {
-  apiKey: "AIzaSyApCi8TwPdiZzRZhgFbpOCCTWk1_RD-N5g",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: "envanterim-g5j8h.firebaseapp.com",
   projectId: "envanterim-g5j8h",
   storageBucket: "envanterim-g5j8h.firebasestorage.app",

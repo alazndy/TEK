@@ -78,7 +78,7 @@ export function ProjectFinancials({ project, projectInventory, allProducts }: Pr
                                         <Cell key={`cell-${index}`} fill={entry.color} />
                                     ))}
                                 </Pie>
-                                  <Tooltip formatter={(value: any) => `$${Number(value).toLocaleString()}`} />
+                                <Tooltip formatter={(value: number) => `$${value.toLocaleString()}`} />
                                 <Legend verticalAlign="bottom" height={36}/>
                             </PieChart>
                         </ResponsiveContainer>
@@ -98,7 +98,7 @@ export function ProjectFinancials({ project, projectInventory, allProducts }: Pr
                                 <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                                 <XAxis dataKey="name" fontSize={12} />
                                 <YAxis fontSize={12} tickFormatter={(value) => `$${value/1000}k`} />
-                                <Tooltip formatter={(value: any) => [`$${Number(value).toLocaleString()}`, 'Tutar']} />
+                                <Tooltip formatter={(value: number) => [`$${value.toLocaleString()}`, 'Tutar']} />
                                 <Bar dataKey="amount" fill="#6366f1" radius={[4, 4, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>

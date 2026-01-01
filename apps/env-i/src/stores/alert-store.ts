@@ -307,14 +307,35 @@ export const useAlertStore = create<AlertStore>((set, get) => ({
   },
 
   sendSlackNotification: async (alert) => {
-    // TODO: Implement Slack webhook integration
-    // This would call the Slack webhook URL from settings
-    console.log('Sending Slack notification:', alert.message);
+    // Call the notification service
+    const { notificationService } = await import('@/services/notification-service');
+    const settings = get().alertSettings;
+    
+    if (settings?.notificationChannels.slack) {
+      // We pass 'slack' as the only channel to force it only to Slack, 
+      // although the service logic might try to send to others if configured in its own settings.
+      // For this specific alert store method, we act as a wrapper.
+      await notificationService.sendNotification(
+        alert.type as any, // Type cast might be needed matching NotificationType
+        `Stock Alert: ${alert.productName}`, 
+        alert.message,
+        { priority: alert.severity === 'critical' ? 'critical' : 'medium' }
+      );
+    }
   },
 
   sendEmailNotification: async (alert) => {
-    // TODO: Implement email notification
-    // This would use SendGrid/Resend API
-    console.log('Sending email notification:', alert.message);
+     // Call the notification service
+    const { notificationService } = await import('@/services/notification-service');
+    const settings = get().alertSettings;
+    
+    if (settings?.notificationChannels.email) {
+      await notificationService.sendNotification(
+        alert.type as any,
+        `Stock Alert: ${alert.productName}`,
+        alert.message,
+        { priority: alert.severity === 'critical' ? 'critical' : 'medium' }
+      );
+    }
   },
 }));

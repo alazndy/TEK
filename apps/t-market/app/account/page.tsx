@@ -7,7 +7,7 @@ import { useMarketplaceStore } from '@/stores/marketplace-store';
 import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Purchase, Module } from '@/types';
-import { User, CreditCard, Package, LogOut, Settings, ExternalLink, Save, Loader2, BarChart, ShieldAlert, Zap } from 'lucide-react';
+import { User, CreditCard, Package, LogOut, Settings, ExternalLink, Save, Loader2, BarChart, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -168,7 +168,7 @@ export default function AccountPage() {
             </TabsList>
 
             <AnimatePresence mode="wait">
-                 <TabsContent key="overview" value="overview" className="space-y-8 focus-visible:outline-none">
+                 <TabsContent value="overview" className="space-y-8 focus-visible:outline-none">
                     <motion.div variants={tabContentVariants} initial="hidden" animate="visible" exit="exit">
                         
                         {/* Stats Grid */}
@@ -258,7 +258,7 @@ export default function AccountPage() {
                                                         <div>
                                                             <h3 className="text-white font-semibold text-lg flex items-center gap-2">
                                                                 {purchase.moduleName}
-                                                                {modules.find(m => m.id === purchase.moduleId)?.type === 'addon' && <Badge variant="secondary" className="bg-purple-500/10 text-purple-300 text-[10px] pointer-events-none">ADD-ON</Badge>}
+                                                                {purchase.type === 'addon' && <Badge variant="secondary" className="bg-purple-500/10 text-purple-300 text-[10px] pointer-events-none">ADD-ON</Badge>}
                                                             </h3>
                                                             <div className="flex items-center gap-3 text-sm text-slate-500">
                                                                 <span>version 2.0</span>
@@ -288,7 +288,7 @@ export default function AccountPage() {
                     </motion.div>
                  </TabsContent>
 
-                 <TabsContent key="settings" value="settings" className="focus-visible:outline-none">
+                 <TabsContent value="settings" className="focus-visible:outline-none">
                     <motion.div variants={tabContentVariants} initial="hidden" animate="visible" exit="exit">
                         <Card className="bg-slate-900/50 border-white/5 backdrop-blur-sm max-w-2xl">
                             <CardHeader>
@@ -328,7 +328,7 @@ export default function AccountPage() {
                     </motion.div>
                  </TabsContent>
 
-                 <TabsContent key="billing" value="billing" className="focus-visible:outline-none">
+                 <TabsContent value="billing" className="focus-visible:outline-none">
                     <motion.div variants={tabContentVariants} initial="hidden" animate="visible" exit="exit">
                         <Card className="bg-slate-900/50 border-white/5 backdrop-blur-sm">
                             <CardHeader>

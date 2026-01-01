@@ -14,7 +14,6 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@t-ecosystem/ui-kit', '@t-ecosystem/core-types'],
   /* config options here */
   output: process.env.NEXT_PUBLIC_STATIC_EXPORT === 'true' ? 'export' : undefined,
   images: {

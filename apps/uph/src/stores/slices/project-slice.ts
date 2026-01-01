@@ -61,10 +61,22 @@ export const createProjectSlice: StateCreator<ProjectSlice> = (set, get) => ({
   addProject: async (projectData) => {
     set({ isLoading: true, error: null });
     try {
-        const { user } = (await import('../auth-store')).useAuthStore.getState();
+        const { user, teamGroups } = (await import('../auth-store')).useAuthStore.getState();
+        
+        // Calculate initial members (Owner + Team Group Members)
+        let members = [user?.uid || 'anonymous'];
+        if (projectData.teamGroupId) {
+            const group = teamGroups.find(g => g.id === projectData.teamGroupId);
+            if (group) {
+                // Merge and deduplicate
+                members = [...new Set([...members, ...group.memberIds])];
+            }
+        }
+
         const newProjectData = { 
             ...projectData, 
             userId: user?.uid || 'anonymous',
+            members, // Persist access list
             logoUrl: projectData.logoUrl || '/logo.png',
             spent: 0, 
             completionPercentage: 0,

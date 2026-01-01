@@ -30,5 +30,6 @@ export interface Team {
   updatedAt: Date;
   members: TeamMember[];
   memberIds?: string[];
+  groups?: TeamGroup[];
   avatarUrl?: string;
 }

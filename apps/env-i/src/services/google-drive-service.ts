@@ -1,7 +1,7 @@
 export const GoogleDriveService = {
   isAuthenticated: false,
   
-  // TODO: Replace with actual Client ID / API Key
+  // Configuration from environment variables
   clientId: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID || '', 
   apiKey: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY || '',
 
