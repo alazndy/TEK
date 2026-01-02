@@ -1,0 +1,12 @@
+{
+  "name": "@t-ecosystem/integrations",
+  "version": "0.0.1",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "echo 'No build step yet'"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

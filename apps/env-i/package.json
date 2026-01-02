@@ -4,7 +4,7 @@
   "private": true,
   "main": "electron/main.js",
   "scripts": {
-    "dev": "next dev --turbopack -p 3005",
+    "dev": "next dev --turbopack -p 3000",
     "build": "next build",
     "build:static": "next build && next export",
     "start": "next start",
@@ -83,6 +83,7 @@
     "zustand": "^4.5.4",
     "@t-ecosystem/ui-kit": "workspace:*",
     "@t-ecosystem/core-types": "workspace:*",
+    "@t-ecosystem/integrations": "workspace:*",
     "axios": "^1.7.0"
   },
   "devDependencies": {

@@ -49,6 +49,7 @@
     "@t-ecosystem/ui-kit": "workspace:*",
     "@types/three": "^0.182.0",
     "axios": "^1.13.2",
+    "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -80,6 +81,7 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
     "three": "^0.182.0",
+    "uuid": "^13.0.0",
     "xlsx": "^0.18.5",
     "zod": "^4.1.13",
     "zustand": "^5.0.9"
@@ -90,6 +92,7 @@
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",

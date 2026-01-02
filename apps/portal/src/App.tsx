@@ -25,6 +25,7 @@ interface AppCardProps {
 
 const apps = [
     {
+        id: "env-i",
         title: "ENV-I",
         description: "Envanter ve ERP Yönetimi",
         icon: Box,
@@ -33,6 +34,7 @@ const apps = [
         color: "text-blue-400"
     },
     {
+        id: "uph",
         title: "UPH",
         description: "Unified Project Hub",
         icon: LayoutGrid,
@@ -41,6 +43,7 @@ const apps = [
         color: "text-purple-400"
     },
      {
+        id: "weave",
         title: "Weave",
         description: "Takım İletişimi ve Proje Yönetimi",
         icon: Users,
@@ -49,6 +52,7 @@ const apps = [
         color: "text-green-400"
     },
     {
+        id: "t-market",
         title: "T-Market",
         description: "Modül ve Eklenti Pazarı",
         icon: ShoppingCart,
@@ -57,6 +61,7 @@ const apps = [
         color: "text-orange-400"
     },
     {
+        id: "renderci",
         title: "Renderci",
         description: "AI Görselleştirme Stüdyosu",
         icon: ImageIcon,
@@ -65,6 +70,7 @@ const apps = [
         color: "text-pink-400"
     },
     {
+        id: "t-sa",
         title: "T-SA",
         description: "Teknik Şartname Analizi",
         icon: BarChart2,
@@ -73,6 +79,7 @@ const apps = [
         color: "text-cyan-400"
     },
     {
+        id: "core-api",
         title: "Core API",
         description: "Merkezi Backend Servisi",
         icon: Database,
@@ -83,6 +90,8 @@ const apps = [
 ];
 
 import { useAppStatus } from './hooks/useAppStatus';
+import { WizardModal } from './features/onboarding/wizard-modal';
+import { usePortalPreferences } from './stores/preferences-store';
 
 const AppCard: React.FC<AppCardProps> = ({ title, description, icon: Icon, url, port, color }) => {
     // Only check status for localhost urls to avoid CORS issues with external sites if any
@@ -128,8 +137,21 @@ const AppCard: React.FC<AppCardProps> = ({ title, description, icon: Icon, url, 
 };
 
 const App: React.FC = () => {
+    const { enabledApps, isOnboardingComplete, resetOnboarding } = usePortalPreferences();
+
+    // Show all apps in dev mode / initial state if list is empty but onboarding is supposedly mostly done?
+    // Actually, following user requirement: filter based on enabledApps if onboarding is done.
+    // If enabledApps is empty (shouldn't happen if wizard works), show all? No, wizard fills it.
+    
+    // Filter apps
+    const displayedApps = isOnboardingComplete && enabledApps.length > 0
+        ? apps.filter(app => enabledApps.includes(app.id))
+        : apps;
+
     return (
         <div className="min-h-screen p-8 lg:p-16 flex flex-col max-w-7xl mx-auto">
+            <WizardModal />
+            
             <header className="mb-16">
                 <motion.div 
                     initial={{ opacity: 0, y: -20 }}
@@ -157,12 +179,13 @@ const App: React.FC = () => {
             </header>
 
             <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {apps.map((app, index) => (
+                {displayedApps.map((app, index) => (
                     <motion.div
                         key={app.title}
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: index * 0.1 }}
+                        layout // Animate layout changes when filtering
                     >
                         <AppCard {...app} />
                     </motion.div>
@@ -171,13 +194,24 @@ const App: React.FC = () => {
 
             <footer className="mt-20 border-t border-white/5 pt-8 text-center text-sm text-muted-foreground">
                 <p>© 2025 T-Ecosystem. Tüm hakları saklıdır.</p>
-                <div className="flex justify-center gap-4 mt-4 text-xs font-mono">
-                    <span>v0.9.0-beta</span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                        System Online
-                    </span>
+                <div className="flex justify-center flex-col items-center gap-4 mt-4 text-xs font-mono">
+                    <div className="flex gap-4">
+                        <span>v0.9.0-beta</span>
+                        <span>•</span>
+                        <span className="flex items-center gap-1">
+                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                            System Online
+                        </span>
+                    </div>
+                    
+                    {isOnboardingComplete && (
+                        <button 
+                             onClick={resetOnboarding}
+                             className="text-white/20 hover:text-white transition-colors underline"
+                        >
+                            Kurulum Sihirbazını Tekrar Başlat
+                        </button>
+                    )}
                 </div>
             </footer>
         </div>

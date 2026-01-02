@@ -25,6 +25,7 @@
     "@google/genai": "^1.30.0",
     "@t-ecosystem/core-types": "workspace:*",
     "@t-ecosystem/ui-kit": "workspace:*",
+    "@t-ecosystem/integrations": "workspace:*",
     "axios": "^1.7.0",
     "firebase": "^11.0.0",
     "html2canvas": "^1.4.1",
