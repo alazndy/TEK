@@ -118,8 +118,8 @@ export default function AppDetailPage() {
                                 >
                                     {loading ? 'Processing...' : isMainInstalled ? 'Uninstall Application' : `Install ${appModule.name}`}
                                 </Button>
-                                {appModule.website && (
-                                    <Button size="lg" variant="outline" className="h-14 border-white/10 text-white hover:bg-white/5">
+                                {appModule.url && (
+                                    <Button size="lg" variant="outline" className="h-14 border-white/10 text-white hover:bg-white/5" onClick={() => window.open(appModule.url, '_blank')}>
                                         <Globe className="w-5 h-5 mr-2" /> Visit Website
                                     </Button>
                                 )}

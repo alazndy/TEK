@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
-import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 import "./globals.css";
 import { AuthProvider } from "@/components/auth-provider";
 import { CartDrawer } from "@/components/cart-drawer";
+import { RecaptchaProvider } from "@/components/recaptcha-provider";
 
 export const metadata: Metadata = {
   title: "T-Market | Ecosystem Marketplace",
@@ -17,21 +17,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${GeistSans.variable} font-body antialiased`}>
-        <GoogleReCaptchaProvider
-            reCaptchaKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? '6Lc...'} // Placeholder fallback
-            scriptProps={{
-                async: false,
-                defer: false,
-                appendTo: "head",
-                nonce: undefined,
-            }}
-        >
+      <body className={`${GeistSans.variable} font-body antialiased`} suppressHydrationWarning>
+        <RecaptchaProvider>
           <AuthProvider>
             {children}
             <CartDrawer />
           </AuthProvider>
-        </GoogleReCaptchaProvider>
+        </RecaptchaProvider>
       </body>
     </html>
   );

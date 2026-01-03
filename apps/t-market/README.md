@@ -76,7 +76,8 @@ STRIPE_WEBHOOK_SECRET=
 ## Development Roadmap
 
 - [x] Project initialization
-- [ ] Authentication system
+- [x] Authentication system (Firebase Auth)
+- [x] UI System (Shadcn/UI + tek-ui variables)
 - [ ] Marketplace catalog
 - [ ] Shopping cart
 - [ ] Stripe integration

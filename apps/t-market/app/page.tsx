@@ -14,12 +14,15 @@ import { Module } from '@/types';
 import { ModuleCard } from '@/components/module-card';
 import { CatalogSearch } from '@/components/catalog-search';
 import { motion, useScroll, useTransform } from 'framer-motion';
-
 import { useCartStore } from '@/stores/cart-store';
+import { OnboardingWizard } from '@/components/onboarding-wizard';
+import { useOnboardingStore } from '@/stores/onboarding-store';
 
 export default function Home() {
   const { items, toggleCart } = useCartStore();
   const { user, initAuth } = useAuthStore();
+  const { isComplete: onboardingComplete } = useOnboardingStore();
+  const [showWizard, setShowWizard] = useState(false);
   const router = useRouter();
   
   // Market Store for Data
@@ -29,6 +32,13 @@ export default function Home() {
     initAuth();
     fetchModules();
   }, [fetchModules, initAuth]);
+
+  // Show wizard for logged-in users who haven't completed onboarding
+  useEffect(() => {
+    if (user && !onboardingComplete) {
+      setShowWizard(true);
+    }
+  }, [user, onboardingComplete]);
 
   // Featured Apps for Bento Grid
   const uphCore = modules.find(m => m.id === 'uph-core');
@@ -65,6 +75,14 @@ export default function Home() {
   return (
     // ...
     <div className="min-h-screen bg-slate-950 selection:bg-indigo-500/30">
+      {/* Onboarding Wizard Modal */}
+      {showWizard && (
+        <OnboardingWizard onComplete={() => {
+          setShowWizard(false);
+          router.push('https://localhost:4000'); // Redirect to Portal
+        }} />
+      )}
+
       {/* Navbar */}
       <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-slate-950/50 backdrop-blur-xl">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">

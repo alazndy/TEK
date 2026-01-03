@@ -7,7 +7,7 @@ import { useMarketplaceStore } from '@/stores/marketplace-store';
 import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Purchase, Module } from '@/types';
-import { User, CreditCard, Package, LogOut, Settings, ExternalLink, Save, Loader2, BarChart, ShieldAlert } from 'lucide-react';
+import { User, CreditCard, Package, LogOut, Settings, ExternalLink, Save, Loader2, BarChart, ShieldAlert, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -242,6 +242,7 @@ export default function AccountPage() {
                                     <div className="grid gap-4">
                                         {activePurchases.map((purchase, i) => {
                                             const url = getModuleUrl(purchase.moduleId);
+                                            const module = modules.find(m => m.id === purchase.moduleId);
                                             return (
                                                 <motion.div
                                                     key={purchase.id}
@@ -258,7 +259,7 @@ export default function AccountPage() {
                                                         <div>
                                                             <h3 className="text-white font-semibold text-lg flex items-center gap-2">
                                                                 {purchase.moduleName}
-                                                                {purchase.type === 'addon' && <Badge variant="secondary" className="bg-purple-500/10 text-purple-300 text-[10px] pointer-events-none">ADD-ON</Badge>}
+                                                                {module?.type === 'addon' && <Badge variant="secondary" className="bg-purple-500/10 text-purple-300 text-[10px] pointer-events-none">ADD-ON</Badge>}
                                                             </h3>
                                                             <div className="flex items-center gap-3 text-sm text-slate-500">
                                                                 <span>version 2.0</span>

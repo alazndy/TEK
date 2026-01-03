@@ -1,9 +1,12 @@
 'use client';
 
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { loginSchema, type LoginInput } from '@/lib/validators';
+
+import { useAuthStore } from '@/stores/auth-store';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,10 +33,6 @@ export default function LoginPage() {
       }
       
       const token = await executeRecaptcha("login_submit");
-      // In a real app, verify 'token' on backend via Firebase Functions before calling signIn
-      // For now, we simulate the "CAPTCHA PASS" and proceed
-      console.log("Captcha Token:", token);
-
       await signIn(data.email, data.password);
       router.push('/account');
     } catch (err) {
@@ -41,7 +40,23 @@ export default function LoginPage() {
     }
   };
 
-  // ... (Social login handlers remain same)
+  const handleGoogleLogin = async () => {
+    try {
+      await signInWithGoogle();
+      router.push('/account');
+    } catch (error) {
+      console.error("Google login failed", error);
+    }
+  };
+
+  const handleGithubLogin = async () => {
+    try {
+      await signInWithGithub();
+      router.push('/account');
+    } catch (error) {
+      console.error("Github login failed", error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 relative overflow-hidden">

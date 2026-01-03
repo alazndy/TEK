@@ -40,7 +40,7 @@ export default function CheckoutPage() {
       }
 
       const stripe = await stripePromise;
-      const { error: stripeError } = await stripe!.redirectToCheckout({ sessionId });
+      const { error: stripeError } = await (stripe as any)!.redirectToCheckout({ sessionId });
 
       if (stripeError) {
         setError(stripeError.message || 'Payment failed');
@@ -61,9 +61,9 @@ export default function CheckoutPage() {
           <h2 className="text-xl font-bold text-white mb-4">Order Summary</h2>
           <div className="space-y-3">
             {items.map((item) => (
-              <div key={item.moduleId} className="flex justify-between text-white">
-                <span>{item.module.name}</span>
-                <span className="font-semibold">${item.module.price}</span>
+              <div key={item.id} className="flex justify-between text-white">
+                <span>{item.name}</span>
+                <span className="font-semibold">${item.price}</span>
               </div>
             ))}
           </div>

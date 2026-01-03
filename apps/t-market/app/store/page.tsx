@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useMarketplaceStore } from '@/stores/marketplace-store';
 import { Module } from '@/types';
+import { useAuthStore } from '@/stores/auth-store';
 
 // Icons mapping
 const IconMap: Record<string, any> = {
@@ -29,6 +30,7 @@ export default function StorePage() {
   const router = useRouter();
   
   const { modules, fetchModules, loading, installModule, uninstallModule, isModuleInstalled } = useMarketplaceStore();
+  const { user } = useAuthStore();
 
   useEffect(() => {
     fetchModules();
@@ -45,10 +47,15 @@ export default function StorePage() {
   ));
 
   const handleIntegrationAction = async (module: Module) => {
+    if (!user) {
+        router.push('/login');
+        return;
+    }
+
     if (isModuleInstalled(module.id)) {
-        await uninstallModule(module.id);
+        await uninstallModule(module.id, user.uid);
     } else {
-        await installModule(module.id);
+        await installModule(module, user.uid);
     }
   };
 

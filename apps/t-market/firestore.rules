@@ -1,0 +1,29 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default: Deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User Data: Users can only read/write their own profile
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Products: Public read, Authenticated create (for now, refine later)
+    match /products/{productId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.sellerId;
+    }
+
+    // Orders: Users can read/create their own orders
+    match /orders/{orderId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null && (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.sellerId);
+      allow update: if false; // Orders should be immutable via client, use backend for status updates
+    }
+  }
+}

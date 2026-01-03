@@ -6,7 +6,7 @@ import { Trash2, ShoppingBag } from 'lucide-react';
 
 export default function CartPage() {
   const router = useRouter();
-  const { items, removeItem, total, clearCart } = useCartStore();
+  const { items, removeFromCart, total, clearCart } = useCartStore();
 
   const handleCheckout = () => {
     router.push('/checkout');
@@ -38,19 +38,19 @@ export default function CartPage() {
         <div className="space-y-4 mb-8">
           {items.map((item) => (
             <div
-              key={item.moduleId}
+              key={item.id}
               className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl p-6 flex justify-between items-center"
             >
               <div className="flex-1">
-                <h3 className="text-xl font-bold text-white mb-1">{item.module.name}</h3>
-                <p className="text-white/70 text-sm">{item.module.description}</p>
+                <h3 className="text-xl font-bold text-white mb-1">{item.name}</h3>
+                <p className="text-white/70 text-sm">{item.description}</p>
               </div>
               <div className="flex items-center gap-6">
                 <div className="text-2xl font-bold text-white">
-                  ${item.module.price}
+                  ${item.price}
                 </div>
                 <button
-                  onClick={() => removeItem(item.moduleId)}
+                  onClick={() => removeFromCart(item.id)}
                   className="p-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-colors"
                 >
                   <Trash2 className="w-5 h-5" />
