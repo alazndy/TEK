@@ -1,4 +1,4 @@
-import { StylePreset, Resolution, SavedPrompt } from './types';
+import { StylePreset, Resolution, SavedPrompt } from '../types';
 
 // ========== Project Types ==========
 

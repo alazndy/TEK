@@ -16,9 +16,12 @@ service cloud.firestore {
 
     // Projects collection rules
     match /projects/{projectId} {
-      // Allow read/write for now only if authenticated
-      // TODO: Implement granular access based on project membership
-      allow read, write: if isAuthenticated();
+      // Allow read/write if authenticated AND (is owner OR is member)
+      allow read, write: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || 
+        request.auth.uid in resource.data.members ||
+        resource == null // Allow creation (where resource is null)
+      );
       
       // Tasks sub-collection
       match /tasks/{taskId} {
