@@ -1,32 +1,43 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, Firestore, enableIndexedDbPersistence } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
+import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, Firestore } from 'firebase/firestore';
+import { getAuth, Auth } from 'firebase/auth';
 import { firebaseConfig } from './firebase-config';
 
 // Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-// Initialize Firestore with persistent cache settings (modern approach)
+// Check if config is valid (has apiKey)
+const isConfigValid = !!firebaseConfig?.apiKey;
+
+let app: FirebaseApp;
 let db: Firestore;
+let auth: Auth;
 
-try {
-  db = initializeFirestore(app, {
-    localCache: persistentLocalCache({
-      tabManager: persistentMultipleTabManager()
-    })
-  });
+if (isConfigValid) {
+  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
   
-  // Enable offline persistence (legacy method fallback or explicit enable if needed for some SDK versions, 
-  // but initializeFirestore with persistentLocalCache is usually enough for modern SDKs. 
-  // However, enableIndexedDbPersistence is explicit.)
-  // Note: initializeFirestore with persistentLocalCache handles it in modular SDK 9+. 
-  // adding explicit log to confirm.
-} catch (e) {
-  // If Firestore is already initialized (e.g. during hot reload), use existing instance
-  console.log("Firestore already initialized, using existing instance");
-  db = getFirestore(app);
+  try {
+    db = initializeFirestore(app, {
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager()
+      })
+    });
+  } catch (e) {
+    // If Firestore is already initialized (e.g. during hot reload), use existing instance
+    console.log("Firestore already initialized, using existing instance");
+    db = getFirestore(app);
+  }
+
+  auth = getAuth(app);
+} else {
+  console.warn("Firebase config missing or invalid. Using mock objects for build.");
+  // Basic mocks to prevent build crashes
+  app = {} as FirebaseApp;
+  db = {
+    type: 'firestore',
+    app: {} as any,
+  } as unknown as Firestore;
+  auth = {
+     currentUser: null,
+  } as unknown as Auth;
 }
-
-const auth = getAuth(app);
-
 
 export { app, db, auth };

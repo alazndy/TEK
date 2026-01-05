@@ -72,6 +72,9 @@ export type InventoryItem = {
   partNumber?: string;
   productCategory?: string;
   isFaulty?: boolean;
+  unit?: string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
 };
 
 export type Product = InventoryItem & {

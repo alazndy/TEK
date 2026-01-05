@@ -160,7 +160,7 @@ export function TeamSettings() {
                          </div>
 
                         {teamMembers.map((member) => (
-                            <div key={member.uid} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/30 transition-colors">
+                            <div key={member.userId} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/30 transition-colors">
                                 <div className="flex items-center gap-4">
                                     <Avatar>
                                         <AvatarImage src={member.avatarUrl} />
@@ -246,7 +246,7 @@ export function TeamSettings() {
                                     
                                     <div className="flex -space-x-2 overflow-hidden py-1">
                                         {group.memberIds.map((mid: string, i: number) => {
-                                            const m = teamMembers.find(tm => tm.uid === mid);
+                                            const m = teamMembers.find(tm => tm.userId === mid);
                                             if (!m) return null;
                                             return (
                                                 <Avatar key={mid} className="inline-block border-2 border-background w-8 h-8">
@@ -268,15 +268,14 @@ export function TeamSettings() {
                                         <DropdownMenuContent className="w-56">
                                             <div className="p-2 text-xs font-bold text-muted-foreground uppercase">Üye Ekle/Çıkar</div>
                                             {teamMembers.map(member => {
-                                                const isInGroup = group.memberIds.includes(member.uid);
+                                                const isInGroup = group.memberIds.includes(member.userId);
                                                 return (
                                                     <DropdownMenuCheckboxItem 
-                                                        key={member.uid}
+                                                        key={member.userId}
                                                         checked={isInGroup}
                                                         onCheckedChange={(checked) => {
-                                                            if (!member.uid) return;
-                                                            if (checked) addMemberToGroup(group.id, member.uid);
-                                                            else removeMemberFromGroup(group.id, member.uid);
+                                                            if (checked) addMemberToGroup(group.id, member.userId);
+                                                            else removeMemberFromGroup(group.id, member.userId);
                                                         }}
                                                     >
                                                         {member.displayName}

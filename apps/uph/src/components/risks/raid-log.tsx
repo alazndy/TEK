@@ -64,19 +64,19 @@ export function RAIDLog({ projectId }: RAIDLogProps) {
       <div className="flex items-center justify-between mb-4">
         <TabsList className="bg-black/20 border border-white/10">
             <TabsTrigger value="risks">Risks ({projectRisks.length})</TabsTrigger>
-            <TabsTrigger value="issues">Issues ({projectRaid.filter(i => i.type === 'Issue').length})</TabsTrigger>
-            <TabsTrigger value="dependencies">Dependencies ({projectRaid.filter(i => i.type === 'Dependency').length})</TabsTrigger>
+            <TabsTrigger value="issues">Issues ({projectRaid.filter(i => i.type === 'issue').length})</TabsTrigger>
+            <TabsTrigger value="dependencies">Dependencies ({projectRaid.filter(i => i.type === 'dependency').length})</TabsTrigger>
         </TabsList>
       </div>
 
       <TabsContent value="risks" className="mt-0">
-         {renderTable(projectRisks, 'Risk')}
+         {renderTable(projectRisks, 'risk')}
       </TabsContent>
       <TabsContent value="issues" className="mt-0">
-         {renderTable(projectRaid.filter(i => i.type === 'Issue'), 'Issue')}
+         {renderTable(projectRaid.filter(i => i.type === 'issue'), 'issue')}
       </TabsContent>
        <TabsContent value="dependencies" className="mt-0">
-         {renderTable(projectRaid.filter(i => i.type === 'Dependency'), 'Dependency')}
+         {renderTable(projectRaid.filter(i => i.type === 'dependency'), 'dependency')}
       </TabsContent>
     </Tabs>
   );

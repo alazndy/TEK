@@ -1,4 +1,4 @@
-export type ForgeJobStatus = 'Pending' | 'In Progress' | 'Completed' | 'Delayed';
+export type ForgeJobStatus = 'Pending' | 'In Progress' | 'Review' | 'Completed' | 'Delayed';
 export type ForgeJobPriority = 'Low' | 'Medium' | 'High' | 'Critical';
 
 export interface ForgeJob {

@@ -1,0 +1,152 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * t-Market - READABILITY OPTIMIZED
+ * WCAG AA Compliant contrast ratios
+ */
+
+@layer base {
+  :root {
+    /* Light Theme - High Contrast */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 142 71% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 40%;
+    --accent: 220 14% 96%;
+    --accent-foreground: 142 71% 35%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 90%;
+    --input: 220 13% 90%;
+    --ring: 142 71% 45%;
+    --radius: 0.75rem;
+
+    --sidebar-background: 220 15% 98%;
+    --sidebar-foreground: 222 47% 20%;
+    --sidebar-primary: 142 71% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 94%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-ring: 142 71% 45%;
+
+    --premium-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+  }
+
+  .dark {
+    /* Dark Theme - High Contrast */
+    --background: 222 47% 8%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 142 71% 45%;
+    --primary-foreground: 222 47% 8%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 70%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 217 33% 22%;
+    --input: 217 33% 17%;
+    --ring: 142 71% 45%;
+    
+    --sidebar-background: 222 47% 6%;
+    --sidebar-foreground: 215 20% 80%;
+    --sidebar-primary: 142 71% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 33% 15%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 18%;
+    --sidebar-ring: 142 71% 45%;
+  }
+
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    position: relative;
+    overflow-x: hidden;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  /* Ambient glow - subtle */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -30%;
+    left: 10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, hsla(142, 71%, 45%, 0.06) 0%, transparent 70%);
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -20%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, hsla(160, 80%, 40%, 0.04) 0%, transparent 70%);
+    filter: blur(100px);
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  
+  .dark .glass-panel {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .glass-sidebar {
+    background: rgba(15, 23, 42, 0.95);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  .neon-text {
+    color: hsl(142 71% 50%);
+    text-shadow: 0 0 20px hsla(142, 71%, 45%, 0.4);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}

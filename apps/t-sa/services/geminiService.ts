@@ -135,7 +135,7 @@ const ANALYSIS_RESPONSE_SCHEMA: Schema = {
     requirements: {
       type: Type.ARRAY,
       items: REQUIREMENT_SCHEMA,
-      description: "Dökümandaki tüm "meli/malı" içeren teknik ve idari gereksinimlerin listesi."
+      description: "Dökümandaki tüm 'meli/malı' içeren teknik ve idari gereksinimlerin listesi."
     },
     generalProvisions: GENERAL_PROVISIONS_SCHEMA
   },
@@ -211,7 +211,7 @@ export const analyzeTechnicalPdf = async (base64Data: string, mimeType: string, 
 
     return {
       products,
-      products,
+
       requirements: json.requirements || [],
       summary: json.summary || "Analiz tamamlandı.",
       generalProvisions: json.generalProvisions

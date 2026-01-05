@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Plus, Search, ArrowLeftRight, MoreHorizontal, Eye, Truck, Package, X } from "lucide-react";
 import { useTransferStore } from "@/stores/transfer-store";
 import { useDataStore } from "@/stores/data-store";
+import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -58,6 +59,7 @@ const STATUS_COLORS: Record<TransferStatus, "default" | "secondary" | "destructi
 
 export default function TransfersPage() {
   const { transfers, loading, fetchTransfers, shipTransfer, cancelTransfer } = useTransferStore();
+  const { user } = useAuth();
   const { warehouses, fetchWarehouses } = useDataStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<TransferStatus | "all">("all");
@@ -80,7 +82,7 @@ export default function TransfersPage() {
 
   const handleShip = async (transfer: StockTransfer) => {
     if (confirm(`${transfer.transferNumber} transferini göndermek istediğinize emin misiniz?`)) {
-      await shipTransfer(transfer.id);
+      await shipTransfer(transfer.id, user?.uid || "system");
     }
   };
 

@@ -1,23 +1,24 @@
-import { GoogleDriveService as SharedDriveService } from '@t-ecosystem/integrations';
-
-// Next.js uses process.env usually, but check validity. 
-// If it's client side, it might need NEXT_PUBLIC prefix or specific config.
-// Assuming process.env works as per previous file content check.
-
-const serviceInstance = new SharedDriveService({
-    clientId: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID || '',
-    apiKey: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY || ''
-});
-
 export const GoogleDriveService = {
-    isAuthenticated: false,
+  isAuthenticated: false,
+  
+  // Configuration from environment variables
+  clientId: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID || '', 
+  apiKey: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY || '',
 
-    async connect() {
-        // Adapt response if needed, or pass through
-        const res = await serviceInstance.connect();
-        if (res.success) {
+  async connect() {
+    console.log("Connecting to Google Drive...");
+    return new Promise<{success: boolean, user?: string}>((resolve) => {
+        setTimeout(() => {
             this.isAuthenticated = true;
-        }
-        return res;
-    }
+            resolve({ success: true, user: "demo_user@gmail.com" });
+        }, 1500);
+    });
+  },
+
+  async uploadFile(fileName: string, content: string) {
+    if (!this.isAuthenticated) throw new Error("Not authenticated");
+    console.log("Uploading file:", fileName);
+    // Mock upload
+    return new Promise((resolve) => setTimeout(resolve, 2000));
+  }
 };

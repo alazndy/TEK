@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 
-import { AuthProvider } from "@/components/auth-provider";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ClientProviders } from "@/components/client-providers";
+import { CookieConsent } from "@/components/compliance/cookie-consent";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,16 +47,10 @@ export default async function LocaleLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NextIntlClientProvider messages={messages}>
-          <AuthProvider>
-             <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                {children}
-            </ThemeProvider>
-          </AuthProvider>
+          <ClientProviders>
+            {children}
+            <CookieConsent />
+          </ClientProviders>
         </NextIntlClientProvider>
       </body>
     </html>

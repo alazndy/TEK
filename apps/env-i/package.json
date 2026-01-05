@@ -53,8 +53,12 @@
     "@radix-ui/react-tooltip": "^1.1.8",
     "@tanstack/react-table": "^8.19.2",
     "@tanstack/react-virtual": "3.8.0",
+    "@t-ecosystem/ui-kit": "workspace:*",
+    "@t-ecosystem/core-types": "workspace:*",
+    "@t-ecosystem/integrations": "workspace:*",
     "@types/papaparse": "^5.5.2",
     "@zxing/browser": "^0.1.5",
+    "axios": "^1.7.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
@@ -80,11 +84,7 @@
     "tailwindcss-animate": "^1.0.7",
     "xlsx": "^0.18.5",
     "zod": "^3.24.2",
-    "zustand": "^4.5.4",
-    "@t-ecosystem/ui-kit": "workspace:*",
-    "@t-ecosystem/core-types": "workspace:*",
-    "@t-ecosystem/integrations": "workspace:*",
-    "axios": "^1.7.0"
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",

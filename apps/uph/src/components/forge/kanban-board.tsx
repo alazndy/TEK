@@ -15,6 +15,7 @@ import { KanbanColumn } from './kanban-column';
 import { ForgeJobCard } from './forge-job-card';
 import { useForgeStore } from '@/stores/forge-store';
 import { EditJobDialog } from '@/components/forge/edit-job-dialog';
+import { ForgeJob } from '@/types/forge';
 
 type Status = 'Pending' | 'In Progress' | 'Review' | 'Completed';
 

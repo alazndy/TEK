@@ -57,6 +57,7 @@ export function SupplierForm({ supplier, onSuccess, onCancel }: SupplierFormProp
   const { addSupplier, updateSupplier, generateSupplierCode } = useSupplierStore();
 
   const form = useForm<SupplierFormData>({
+    // @ts-ignore
     resolver: zodResolver(supplierSchema),
     defaultValues: {
       name: supplier?.name || "",

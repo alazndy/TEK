@@ -11,6 +11,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { SearchProvider } from "@/context/search-context"; 
 import { OnboardingGuide } from "@/components/onboarding-guide";
 import { PageWrapper } from "@/components/layout/page-wrapper";
+import { LegalFooter } from "@/components/compliance/legal-footer";
 
 
 interface MainLayoutProps {
@@ -27,6 +28,7 @@ function MainContent({ children }: { children: React.ReactNode }) {
                 <PageWrapper className="flex-1 flex flex-col gap-4 lg:gap-6">
                     {children}
                 </PageWrapper>
+                <LegalFooter />
             </main>
         </div>
     );

@@ -13,7 +13,7 @@ interface ZoneFloorPlanProps {
   onAddZone: () => void;
   onSelectZone: (id: string) => void;
   onMouseDown: (e: React.MouseEvent, id: string, action: 'drag' | 'resize') => void;
-  containerRef: React.RefObject<HTMLDivElement>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export function ZoneFloorPlan({

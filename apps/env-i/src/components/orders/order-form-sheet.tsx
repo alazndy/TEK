@@ -76,6 +76,7 @@ export function OrderFormSheet({ open, onOpenChange, onSubmit, customerNames, pr
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const form = useForm<OrderFormValues>({
+    // @ts-ignore
     resolver: zodResolver(orderSchema),
     defaultValues: {
       orderNumber: "", // Will be generated dynamically

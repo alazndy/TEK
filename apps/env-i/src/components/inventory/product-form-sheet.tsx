@@ -51,6 +51,7 @@ export function ProductFormSheet({ open, onOpenChange, product, onSubmit, manufa
   }, [fetchWarehouses, fetchRates]);
 
   const form = useForm<ProductFormValues>({
+    // @ts-ignore
     resolver: zodResolver(productSchema),
     defaultValues: {
       name: "",

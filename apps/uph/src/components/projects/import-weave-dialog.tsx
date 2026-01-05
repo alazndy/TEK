@@ -65,9 +65,7 @@ export function ImportWeaveDialog({ projectId, onOpenChange, trigger }: ImportWe
     setIsImporting(true);
     try {
       // Create a parent task for the BOM import
-      const parentTaskId = crypto.randomUUID();
       await addTask(projectId, {
-        id: parentTaskId,
         title: `Weave BOM Import: ${fileName}`,
         description: `Imported from Weave design on ${new Date().toLocaleDateString()}`,
         status: 'todo',

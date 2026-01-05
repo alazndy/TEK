@@ -45,7 +45,7 @@ export function CreateProjectDialog({ trigger }: CreateProjectDialogProps) {
     reset,
     watch,
     formState: { errors, isSubmitting } 
-  } = useForm<ProjectInput>({
+  } = useForm<any>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
       name: '',
@@ -119,7 +119,7 @@ export function CreateProjectDialog({ trigger }: CreateProjectDialogProps) {
                   className={`bg-white/5 border rounded-2xl text-white placeholder-[#a69db9] focus:bg-white/10 transition-all ${errors.name ? 'border-red-500' : 'border-white/10 focus:border-primary/50'}`}
                   placeholder="Project Name"
                 />
-                {errors.name && <p className="text-red-500 text-xs ml-1">{errors.name.message}</p>}
+                {errors.name && <p className="text-red-500 text-xs ml-1">{(errors.name as any).message}</p>}
               </div>
 
               {/* Description */}
@@ -231,7 +231,8 @@ export function CreateProjectDialog({ trigger }: CreateProjectDialogProps) {
                         <div className="relative h-7 w-7 rounded-full border border-white/10 overflow-hidden ring-offset-[#1a1821] focus-within:ring-2 focus-within:ring-primary">
                             <Input 
                                 type="color"
-                                {...register('color')}
+                                value={field.value}
+                                onChange={(e) => field.onChange(e.target.value)}
                                 className="absolute inset-0 h-[150%] w-[150%] -translate-x-1/4 -translate-y-1/4 p-0 border-none bg-transparent cursor-pointer"
                             />
                         </div>

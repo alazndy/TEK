@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { 
   Activity, Hammer, Network, Users, 
-  Search, ShoppingBag, 
+  Search, ShoppingBag, Check,
   LineChart, Box, Link, Puzzle, ArrowRight,
   Building, BarChart, ShieldAlert, MonitorPlay, Cpu, ClipboardCheck, RefreshCw,
   Sparkles, Grid, Layers, Shuffle, Plug
@@ -54,14 +54,14 @@ export default function MarketplacePage() {
     <div className="h-full flex flex-col space-y-12 animate-in fade-in duration-500 pb-24">
       
       {/* Hero Section */}
-      <div className="relative overflow-hidden rounded-b-[3rem] bg-gradient-to-b from-indigo-950 to-background pt-16 pb-12 md:pt-24 md:pb-20 border-b border-indigo-500/10">
+      <div className="relative overflow-hidden rounded-b-[3rem] bg-linear-to-b from-indigo-950 to-background pt-16 pb-12 md:pt-24 md:pb-20 border-b border-indigo-500/10">
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20 [mask-image:linear-gradient(to_bottom,white,transparent)]" />
           
           <div className="relative container mx-auto px-4 text-center z-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-medium mb-6">
                  <Sparkles className="w-3 h-3" /> T-Ecosystem V3 Store
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter bg-gradient-to-br from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent mb-6">
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter bg-linear-to-br from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent mb-6">
                 Ecosystem Hub
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
@@ -69,7 +69,7 @@ export default function MarketplacePage() {
             </p>
             
             <div className="max-w-xl mx-auto relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
+                <div className="absolute -inset-1 bg-linear-to-r from-indigo-500 to-purple-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
                 <div className="relative flex items-center bg-background/80 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl">
                     <Search className="ml-5 w-5 h-5 text-muted-foreground" />
                     <Input 
@@ -113,8 +113,8 @@ export default function MarketplacePage() {
                 >
                     <div className={`relative h-full rounded-3xl p-6 border transition-all duration-300 overflow-visible flex flex-col group
                         ${installed 
-                            ? 'bg-gradient-to-br from-indigo-500/5 to-purple-900/10 border-indigo-500/30' 
-                            : 'bg-gradient-to-br from-white/5 to-white/0 border-white/5 hover:border-indigo-500/30 hover:bg-white/5'
+                            ? 'bg-linear-to-br from-indigo-500/5 to-purple-900/10 border-indigo-500/30' 
+                            : 'bg-linear-to-br from-white/5 to-white/0 border-white/5 hover:border-indigo-500/30 hover:bg-white/5'
                         }
                     `}>
                         <div className="flex justify-between items-start mb-6">
@@ -180,7 +180,7 @@ export default function MarketplacePage() {
                                 {installed && <Check className="w-5 h-5 text-emerald-500" />}
                             </CardHeader>
                             <CardContent>
-                                <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
+                                <p className="text-sm text-muted-foreground line-clamp-2 min-h-10">
                                     {integration.description}
                                 </p>
                             </CardContent>

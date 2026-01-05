@@ -1,104 +1,250 @@
-
 /**
  * Batch Render Service for Renderci
- * Manages render queue and job processing via Core API
+ * Manages render queue and job processing
  */
 
 import {
   RenderJob,
   RenderQueue,
   BatchRenderConfig,
+  RenderStatus,
   DEFAULT_BATCH_CONFIG,
-} from '@t-ecosystem/core-types';
-import { apiClient } from '../lib/api-client';
+  QUALITY_PRESETS
+} from '../types/batch-render';
 
 type QueueEventHandler = (queue: RenderQueue) => void;
 type JobEventHandler = (job: RenderJob) => void;
 
 class BatchRenderService {
+  private queues: Map<string, RenderQueue> = new Map();
+  private currentQueue: string | null = null;
+  private isProcessing = false;
   private onQueueUpdate: QueueEventHandler | null = null;
   private onJobUpdate: JobEventHandler | null = null;
-  private pollingInterval: NodeJS.Timeout | null = null;
 
   // === Queue Management ===
 
-  async createQueue(name: string, config?: Partial<BatchRenderConfig>): Promise<RenderQueue> {
-    const res = await apiClient.post<RenderQueue>('/render-jobs/queues', { name, config });
-    return res.data;
+  createQueue(name: string, config?: Partial<BatchRenderConfig>): RenderQueue {
+    const queue: RenderQueue = {
+      id: `queue_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      name,
+      jobs: [],
+      config: { ...DEFAULT_BATCH_CONFIG, ...config },
+      status: 'idle',
+      completedCount: 0,
+      failedCount: 0,
+      createdAt: new Date(),
+    };
+
+    this.queues.set(queue.id, queue);
+    return queue;
   }
 
-  async getQueue(queueId: string): Promise<RenderQueue> {
-    const res = await apiClient.get<RenderQueue>(`/render-jobs/queues/${queueId}`);
-    return res.data;
+  getQueue(queueId: string): RenderQueue | undefined {
+    return this.queues.get(queueId);
   }
 
-  async getAllQueues(): Promise<RenderQueue[]> {
-    const res = await apiClient.get<RenderQueue[]>('/render-jobs/queues');
-    return res.data;
+  getAllQueues(): RenderQueue[] {
+    return Array.from(this.queues.values());
   }
 
-  async deleteQueue(queueId: string): Promise<boolean> {
-    try {
-        await apiClient.delete(`/render-jobs/queues/${queueId}`);
-        return true;
-    } catch (e) {
-        return false;
+  deleteQueue(queueId: string): boolean {
+    const queue = this.queues.get(queueId);
+    if (queue && queue.status !== 'running') {
+      this.queues.delete(queueId);
+      return true;
     }
+    return false;
   }
 
   // === Job Management ===
 
-  async addJob(queueId: string, file: { name: string; url: string; type: '2d' | '3d' | 'cad' }): Promise<RenderJob> {
-    const res = await apiClient.post<RenderJob>(`/render-jobs/queues/${queueId}/jobs`, {
-        fileName: file.name,
-        fileUrl: file.url,
-        fileType: file.type
-    });
-    return res.data;
+  addJob(queueId: string, file: { name: string; url: string; type: '2d' | '3d' | 'cad' }): RenderJob | null {
+    const queue = this.queues.get(queueId);
+    if (!queue) return null;
+
+    const dimensions = QUALITY_PRESETS[queue.config.quality];
+
+    const job: RenderJob = {
+      id: `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      fileName: file.name,
+      fileUrl: file.url,
+      fileType: file.type,
+      format: queue.config.format,
+      quality: queue.config.quality,
+      width: queue.config.width || dimensions.width,
+      height: queue.config.height || dimensions.height,
+      backgroundColor: queue.config.backgroundColor,
+      transparent: queue.config.transparent,
+      status: 'pending',
+      progress: 0,
+      createdAt: new Date(),
+    };
+
+    queue.jobs.push(job);
+    this.notifyQueueUpdate(queue);
+    return job;
   }
 
-  async addMultipleJobs(queueId: string, files: { name: string; url: string; type: '2d' | '3d' | 'cad' }[]): Promise<RenderJob[]> {
-    // Parallel execution
-    const jobs = await Promise.all(
-        files.map(file => this.addJob(queueId, file))
-    );
-    return jobs;
+  addMultipleJobs(queueId: string, files: { name: string; url: string; type: '2d' | '3d' | 'cad' }[]): RenderJob[] {
+    return files.map(file => this.addJob(queueId, file)).filter((job): job is RenderJob => job !== null);
+  }
+
+  removeJob(queueId: string, jobId: string): boolean {
+    const queue = this.queues.get(queueId);
+    if (!queue) return false;
+
+    const jobIndex = queue.jobs.findIndex(j => j.id === jobId);
+    if (jobIndex >= 0 && queue.jobs[jobIndex].status !== 'processing') {
+      queue.jobs.splice(jobIndex, 1);
+      this.notifyQueueUpdate(queue);
+      return true;
+    }
+    return false;
   }
 
   // === Queue Control ===
 
   async startQueue(queueId: string): Promise<void> {
-    await apiClient.post(`/render-jobs/queues/${queueId}/start`);
-    this.startPolling(queueId);
+    const queue = this.queues.get(queueId);
+    if (!queue || queue.status === 'running') return;
+
+    queue.status = 'running';
+    queue.startedAt = new Date();
+    this.currentQueue = queueId;
+    this.isProcessing = true;
+    this.notifyQueueUpdate(queue);
+
+    await this.processQueue(queue);
   }
 
-  // === Events & Polling ===
-  // Since we are now server-side, we need to poll for updates or use sockets.
-  // For now, implementing simple polling when a queue is active.
+  pauseQueue(queueId: string): void {
+    const queue = this.queues.get(queueId);
+    if (!queue || queue.status !== 'running') return;
+
+    queue.status = 'paused';
+    this.isProcessing = false;
+    this.notifyQueueUpdate(queue);
+  }
+
+  resumeQueue(queueId: string): void {
+    const queue = this.queues.get(queueId);
+    if (!queue || queue.status !== 'paused') return;
+
+    this.startQueue(queueId);
+  }
+
+  cancelQueue(queueId: string): void {
+    const queue = this.queues.get(queueId);
+    if (!queue) return;
+
+    queue.status = 'idle';
+    this.isProcessing = false;
+    
+    // Cancel pending jobs
+    queue.jobs.forEach(job => {
+      if (job.status === 'pending' || job.status === 'processing') {
+        job.status = 'cancelled';
+      }
+    });
+
+    this.notifyQueueUpdate(queue);
+  }
+
+  // === Processing ===
+
+  private async processQueue(queue: RenderQueue): Promise<void> {
+    const pendingJobs = queue.jobs.filter(j => j.status === 'pending');
+    
+    for (const job of pendingJobs) {
+      if (!this.isProcessing || queue.status !== 'running') break;
+
+      await this.processJob(queue, job);
+    }
+
+    // Check if all done
+    if (queue.jobs.every(j => j.status === 'completed' || j.status === 'failed' || j.status === 'cancelled')) {
+      queue.status = 'completed';
+      queue.completedAt = new Date();
+      queue.completedCount = queue.jobs.filter(j => j.status === 'completed').length;
+      queue.failedCount = queue.jobs.filter(j => j.status === 'failed').length;
+      this.isProcessing = false;
+    }
+
+    this.notifyQueueUpdate(queue);
+  }
+
+  private async processJob(queue: RenderQueue, job: RenderJob): Promise<void> {
+    job.status = 'processing';
+    job.startedAt = new Date();
+    job.progress = 0;
+    this.notifyJobUpdate(job);
+
+    try {
+      // Simulate render progress
+      for (let i = 0; i <= 100; i += 10) {
+        if (!this.isProcessing) break;
+        
+        await this.delay(200 + Math.random() * 300); // Simulate work
+        job.progress = i;
+        this.notifyJobUpdate(job);
+      }
+
+      if (this.isProcessing) {
+        // In real implementation, this would call the actual renderer
+        job.status = 'completed';
+        job.progress = 100;
+        job.completedAt = new Date();
+        job.outputUrl = `rendered_${job.id}.${job.format}`;
+        job.outputSize = Math.floor(Math.random() * 5000000) + 500000; // Mock file size
+      }
+    } catch (error) {
+      job.status = 'failed';
+      job.error = error instanceof Error ? error.message : 'Render failed';
+    }
+
+    this.notifyJobUpdate(job);
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // === Events ===
 
   onQueueChange(handler: QueueEventHandler): void {
     this.onQueueUpdate = handler;
   }
 
-  private startPolling(queueId: string) {
-    if (this.pollingInterval) clearInterval(this.pollingInterval);
-    
-    this.pollingInterval = setInterval(async () => {
-        try {
-            const queue = await this.getQueue(queueId);
-            this.onQueueUpdate?.(queue);
-
-            if (queue.status === 'completed' || queue.status === 'idle') {
-                if (this.pollingInterval) clearInterval(this.pollingInterval);
-            }
-        } catch (e) {
-            console.error("Polling error", e);
-        }
-    }, 1000);
+  onJobChange(handler: JobEventHandler): void {
+    this.onJobUpdate = handler;
   }
-  
-  stopPolling() {
-      if (this.pollingInterval) clearInterval(this.pollingInterval);
+
+  private notifyQueueUpdate(queue: RenderQueue): void {
+    this.onQueueUpdate?.(queue);
+  }
+
+  private notifyJobUpdate(job: RenderJob): void {
+    this.onJobUpdate?.(job);
+  }
+
+  // === Stats ===
+
+  getQueueStats(queueId: string) {
+    const queue = this.queues.get(queueId);
+    if (!queue) return null;
+
+    return {
+      total: queue.jobs.length,
+      pending: queue.jobs.filter(j => j.status === 'pending').length,
+      processing: queue.jobs.filter(j => j.status === 'processing').length,
+      completed: queue.jobs.filter(j => j.status === 'completed').length,
+      failed: queue.jobs.filter(j => j.status === 'failed').length,
+      cancelled: queue.jobs.filter(j => j.status === 'cancelled').length,
+      progress: queue.jobs.length > 0 
+        ? Math.round(queue.jobs.reduce((sum, j) => sum + j.progress, 0) / queue.jobs.length)
+        : 0,
+    };
   }
 }
 

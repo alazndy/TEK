@@ -12,7 +12,7 @@ import { ProductFormSheet } from "@/components/inventory/product-form-sheet"
 import { ProductDetailDialog } from "@/components/inventory/product-detail-dialog"
 import { BarcodeLabelDialog } from "@/components/inventory/barcode-label-dialog"
 import { BarcodeScannerDialog } from "@/components/inventory/barcode-scanner-dialog"
-import { Product } from "@/lib/types"
+import { Product, Equipment, Consumable } from "@/lib/types"
 import { useSearch } from "@/context/search-context"
 import { seedProducts } from "@/lib/seed-data"
 import { useTranslations } from 'next-intl';
@@ -118,9 +118,9 @@ export default function InventoryPage() {
 
   // Use search results if searching, otherwise use loaded products
   const inventoryProducts = React.useMemo(() => {
-    let result = [];
+    let result: (Product | Equipment | Consumable)[] = [];
     if (searchQuery.length >= 2 && searchResults.length > 0) {
-      result = searchResults;
+      result = searchResults.filter(p => ["Stok Malzemesi", "Sarf Malzeme"].includes(p.category));
     } else {
       result = products.filter(p => p.category === "Stok Malzemesi");
     }
@@ -131,7 +131,7 @@ export default function InventoryPage() {
     }
 
     // Final safety de-duplication by ID
-    return Array.from(new Map(result.map(p => [p.id, p])).values());
+    return Array.from(new Map(result.map(p => [p.id, p])).values()) as Product[];
   }, [products, searchQuery, searchResults, selectedManufacturer]);
   
   const isSearchActive = searchQuery.length >= 2;

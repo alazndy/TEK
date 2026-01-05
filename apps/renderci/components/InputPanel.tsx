@@ -29,7 +29,6 @@ interface InputPanelProps {
     onOpenPromptLib: () => void;
     onClosePromptLib: () => void;
     onNewFile: () => void;
-    onAddToQueue: () => void;
 }
 
 export const InputPanel: React.FC<InputPanelProps> = React.memo(({
@@ -52,8 +51,7 @@ export const InputPanel: React.FC<InputPanelProps> = React.memo(({
     isPromptLibOpen,
     onOpenPromptLib,
     onClosePromptLib,
-    onNewFile,
-    onAddToQueue
+    onNewFile
 }) => {
 
     const handleAddMaterial = (materialText: string) => {
@@ -135,19 +133,6 @@ export const InputPanel: React.FC<InputPanelProps> = React.memo(({
                         </div>
                     )}
                 </PremiumButton>
-
-                {!resultImageUrl && (
-                    <PremiumButton
-                        variant="glass"
-                        size="lg"
-                        onClick={onAddToQueue}
-                        disabled={isLoading}
-                        className="w-full"
-                    >
-                        <span className="uppercase tracking-[0.1em] text-xs">Kuyruğa Ekle (Batch)</span>
-                    </PremiumButton>
-                )}
-
 
                 {resultImageUrl && (
                     <PremiumButton

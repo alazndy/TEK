@@ -1,7 +1,8 @@
 
 export type RiskLevel = 'Low' | 'Medium' | 'High' | 'Critical';
 export type RiskStatus = 'Open' | 'Mitigated' | 'Closed' | 'Occurred';
-export type RAIDType = 'Risk' | 'Assumption' | 'Issue' | 'Dependency';
+export type RAIDType = 'risk' | 'assumption' | 'issue' | 'dependency';
+export type RAIDStatus = 'identified' | 'analyzed' | 'mitigating' | 'resolved' | 'closed';
 
 export interface Risk {
   id: string;
@@ -26,10 +27,15 @@ export interface RAIDEntry {
   id: string;
   projectId: string;
   type: RAIDType;
+  title: string;
   description: string;
   priority: 'Low' | 'Medium' | 'High';
-  status: 'Open' | 'Closed';
+  status: RAIDStatus;
   ownerId?: string;
+  probability?: number;
+  impact?: number;
+  mitigationPlan?: string;
   createdAt: string;
+  updatedAt: string; // Added updatedAt
   resolvedAt?: string;
 }

@@ -43,6 +43,7 @@ interface LotActions {
   // FIFO/LIFO helpers
   getAvailableLotsFIFO: (productId: string, warehouseId?: string) => Lot[];
   allocateStockFIFO: (productId: string, quantity: number, warehouseId?: string) => { lotId: string; quantity: number }[];
+  getLotMovementsByReferenceId: (referenceId: string) => Promise<LotMovement[]>;
 }
 
 type LotStore = LotState & LotActions;
@@ -357,5 +358,25 @@ export const useLotStore = create<LotStore>((set, get) => ({
     }
     
     return allocations;
+  },
+
+  getLotMovementsByReferenceId: async (referenceId) => {
+    try {
+      const q = query(
+        collection(db, 'lotMovements'),
+        where('referenceId', '==', referenceId),
+        orderBy('createdAt', 'desc')
+      );
+      
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate() || new Date(),
+      })) as LotMovement[];
+    } catch (error) {
+      console.error('Error fetching lot movements by reference:', error);
+      return [];
+    }
   },
 }));

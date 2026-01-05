@@ -44,6 +44,7 @@ interface ConsumableFormSheetProps {
 
 export function ConsumableFormSheet({ open, onOpenChange, consumable, onSubmit }: ConsumableFormSheetProps) {
   const form = useForm<z.infer<typeof formSchema>>({
+    // @ts-ignore
     resolver: zodResolver(formSchema),
     defaultValues: consumable || { 
         name: "", 

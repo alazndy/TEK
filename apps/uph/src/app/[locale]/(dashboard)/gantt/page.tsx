@@ -221,13 +221,13 @@ export default function GanttPage() {
         </div>
       )}
       <TaskDetailDialog
-        taskId={selectedTask?.id || ''}
+        projectId={selectedTask?.projectId || selectedProjectId || ''}
+        task={selectedTask ? {
+            ...selectedTask,
+            completed: selectedTask.status === 'done'
+        } : null}
         open={isTaskDetailOpen}
         onOpenChange={setIsTaskDetailOpen}
-        onUpdate={() => {
-            // Refresh tasks if needed
-            subscribeToTasks(selectedProjectId === 'all' ? undefined : selectedProjectId);
-        }}
       />
     </div>
   );

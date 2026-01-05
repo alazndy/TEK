@@ -277,7 +277,7 @@ export const useTransferStore = create<TransferStore>((set, get) => ({
     if (transfer.status === 'in_transit') {
       // Reverse stock changes from source warehouse
       const { items } = transfer;
-      const { updateLot, addLotMovement, getLotMovementsByReferenceId, getLotById } = useLotStore.getState();
+      const { updateLot, addLotMovement, getLotById } = useLotStore.getState();
 
       // Find stock movements related to this transfer
       // Since lot-store doesn't expose getMovements directly in the interface used here, we rely on the lot movements we just created
@@ -316,13 +316,13 @@ export const useTransferStore = create<TransferStore>((set, get) => ({
             });
              await addLotMovement({
                lotId: sourceLot.id,
-               type: 'adjustment', // or 'cancellation_return'
+               type: 'adjust', // or 'cancellation_return'
                quantity: item.shippedQuantity,
                fromWarehouseId: transfer.fromWarehouseId, // It's coming back to here
                toWarehouseId: transfer.fromWarehouseId,
                referenceType: 'transfer',
                referenceId: transfer.id,
-               notes: 'Transfer cancellation return',
+               reason: 'Transfer cancellation return',
                performedBy: 'system' 
             });
          } else {

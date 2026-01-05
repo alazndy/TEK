@@ -2,7 +2,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { storageService } from '../services/storageService';
 import { renderImageWithStyle } from '../services/geminiService';
-import { batchRenderService } from '../services/batchRenderService';
 import { dataUrlToFile, fileToDataURL, getDominantColor } from '../utils/fileUtils';
 import { StylePreset, Resolution, Layer, SelectionTool, NavigationDirection, SavedPrompt } from '../types';
 
@@ -591,39 +590,8 @@ export const useAppState = () => {
         } else {
             const uphUrl = `http://localhost:3001/projects/${integrationContext.projectId}?integrated_result=render&data=${encodeURIComponent(resultImageUrl)}`;
             window.location.href = uphUrl;
-        };
+        }
     }, [resultImageUrl, integrationContext]);
-
-    const handleAddToQueue = useCallback(async () => {
-        if (!sourceFile) {
-            setError('Kuyruğa eklemek için bir dosya seçmelisiniz.');
-            return;
-        }
-        setIsLoading(true);
-        try {
-            // Find or create default queue
-            const queues = await batchRenderService.getAllQueues();
-            let queue = queues.find(q => q.name === 'Default Queue');
-            if (!queue) {
-                queue = await batchRenderService.createQueue('Default Queue');
-            }
-
-            // Mock file upload (since we don't have storage bucket yet)
-            const mockUrl = `http://localhost:3001/uploads/${sourceFile.name}`;
-            
-            await batchRenderService.addJob(queue.id, {
-                name: sourceFile.name,
-                url: mockUrl,
-                type: '2d' 
-            });
-            
-            alert("İşlem kuyruğa eklendi! (Backend Queue)");
-        } catch (e: any) {
-             setError(e.message || "Kuyruğa ekleme hatası");
-        } finally {
-            setIsLoading(false);
-        }
-    }, [sourceFile]);
 
     return {
         // State
@@ -686,7 +654,6 @@ export const useAppState = () => {
         handlePromptLibraryOpen,
         handlePromptLibraryClose,
         integrationContext,
-        handleSaveToUPH,
-        handleAddToQueue
+        handleSaveToUPH
     };
 };

@@ -9,6 +9,7 @@ import { ChevronLeft, ChevronRight, Menu } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import { PageWrapper } from './page-wrapper';
+import { LegalFooter } from '../compliance/legal-footer';
 
 
 export function DashboardLayoutClient({ children }: { children: React.ReactNode }) {
@@ -92,6 +93,7 @@ export function DashboardLayoutClient({ children }: { children: React.ReactNode 
                 <PageWrapper className="p-8">
                     {children}
                 </PageWrapper>
+                <LegalFooter />
             </main>
         </div>
     );

@@ -18,6 +18,7 @@ interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
   googleAccessToken: string | null;
+  teamGroups: { id: string; name: string; memberIds: string[] }[];
   
   login: (email: string, pass: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
@@ -45,8 +46,9 @@ const githubProvider = new GithubAuthProvider();
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
-  isLoading: true, // Start loading to check auth state
+  isLoading: true,
   googleAccessToken: null,
+  teamGroups: [],
 
   login: async (email, pass) => {
     set({ isLoading: true });

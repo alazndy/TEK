@@ -41,6 +41,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 
 import { AppLifecycle } from '@/components/layout/app-lifecycle';
+import { CookieConsent } from '@/components/compliance/cookie-consent';
 
 // function AppContent removed - hooks moved to AppLifecycle
 
@@ -89,6 +90,7 @@ export default async function RootLayout({
                     <AppLifecycle />
                     {children}
                     <Toaster />
+                    <CookieConsent />
                 </AuthProvider>
                 <LoadingSpinner />
               </LoadingProvider>

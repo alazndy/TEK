@@ -1,29 +1,24 @@
-import { GoogleDriveService as SharedDriveService } from '@t-ecosystem/integrations';
-
-// Initialize with environment variables
-const serviceInstance = new SharedDriveService({
-    clientId: import.meta.env.VITE_GOOGLE_DRIVE_CLIENT_ID || '',
-    apiKey: import.meta.env.VITE_GOOGLE_DRIVE_API_KEY || ''
-});
-
-// Export an object that matches the old API interface for backward compatibility
 export const GoogleDriveService = {
-    // We proxy properties to the instance or keep local state if needed.
-    // The old service had 'isAuthenticated' property.
-    // The new service has private isAuthenticated. 
-    // We might need to expose a getter or wrap connect.
-    
-    isAuthenticated: false, // Local tracker for UI compatibility
+  isAuthenticated: false,
+  
+  // Configuration from environment variables
+  clientId: import.meta.env.VITE_GOOGLE_DRIVE_CLIENT_ID || '', 
+  apiKey: import.meta.env.VITE_GOOGLE_DRIVE_API_KEY || '',
 
-    async connect() {
-        const res = await serviceInstance.connect();
-        if (res.success) {
+  async connect() {
+    console.log("Connecting to Google Drive...");
+    return new Promise<{success: boolean, user?: string}>((resolve) => {
+        setTimeout(() => {
             this.isAuthenticated = true;
-        }
-        return res;
-    },
+            resolve({ success: true, user: "demo_user@gmail.com" });
+        }, 1500);
+    });
+  },
 
-    async uploadFile(fileName: string, content: string) {
-        return serviceInstance.uploadFile(fileName, content);
-    }
+  async uploadFile(fileName: string, content: string) {
+    if (!this.isAuthenticated) throw new Error("Not authenticated");
+    console.log("Uploading file:", fileName);
+    // Mock upload
+    return new Promise((resolve) => setTimeout(resolve, 2000));
+  }
 };

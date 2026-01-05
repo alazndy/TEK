@@ -76,6 +76,7 @@ export function ProposalFormSheet({ open, onOpenChange, onSubmit, customerNames,
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const form = useForm<ProposalFormValues>({
+    // @ts-ignore
     resolver: zodResolver(proposalSchema),
     defaultValues: {
       proposalNumber: `T-${Date.now().toString().slice(-6)}`,

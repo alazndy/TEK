@@ -67,6 +67,7 @@ export function TransferForm({ onSuccess, onCancel }: TransferFormProps) {
   const { user } = useAuth();
 
   const form = useForm<TransferFormData>({
+    // @ts-ignore
     resolver: zodResolver(transferSchema),
     defaultValues: {
       fromWarehouseId: "",

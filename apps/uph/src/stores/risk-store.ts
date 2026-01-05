@@ -22,8 +22,8 @@ export const useRiskStore = create<RiskStore>()(
           {
             ...entry,
             id: crypto.randomUUID(),
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
             status: entry.status || 'identified'
           }
         ]
@@ -31,7 +31,7 @@ export const useRiskStore = create<RiskStore>()(
 
       updateEntry: (id, updates) => set((state) => ({
         entries: state.entries.map((e) =>
-          e.id === id ? { ...e, ...updates, updatedAt: new Date() } : e
+          e.id === id ? { ...e, ...updates, updatedAt: new Date().toISOString() } : e
         )
       })),
 

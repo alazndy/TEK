@@ -1,8 +1,8 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
 
-import { getStorage } from "firebase/storage";
+import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import { getAuth, Auth } from "firebase/auth";
+import { getFirestore, Firestore } from "firebase/firestore";
+import { getStorage, FirebaseStorage } from "firebase/storage";
 
 // Firebase configuration from environment variables
 const firebaseConfig = {
@@ -14,11 +14,21 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
-// Initialize Firebase
-// Use getApps() to avoid re-initialization errors in development (hot reload)
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
+// Initialize Firebase safely
+let app: FirebaseApp | undefined;
+let auth: Auth | any;
+let db: Firestore | any;
+let storage: FirebaseStorage | any;
+
+if (typeof window !== "undefined" || (firebaseConfig.apiKey && firebaseConfig.apiKey !== "undefined")) {
+  try {
+    app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+    auth = getAuth(app);
+    db = getFirestore(app);
+    storage = getStorage(app);
+  } catch (error) {
+    console.error("Firebase initialization error:", error);
+  }
+}
 
 export { app, auth, db, storage };
