@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
-import { AnalysesService } from './analyses.service';
-import { CreateAnalysisDto } from './dto/create-analysis.dto';
+import { Controller, Get, Post, Body, Param, Delete } from "@nestjs/common";
+import { AnalysesService } from "./analyses.service";
+import { CreateAnalysisDto } from "./dto/create-analysis.dto";
 
-@Controller('analyses')
+@Controller("analyses")
 export class AnalysesController {
   constructor(private readonly analysesService: AnalysesService) {}
 
@@ -16,13 +16,13 @@ export class AnalysesController {
     return this.analysesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.analysesService.findOne(id);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete(":id")
+  remove(@Param("id") id: string) {
     return this.analysesService.remove(id);
   }
 }

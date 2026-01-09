@@ -23,7 +23,7 @@ export const PremiumInput = ({ label, className, ...props }: PremiumInputProps) 
       >
         <Input
           className={cn(
-            "bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus:border-indigo-500/50 focus:ring-indigo-500/20 rounded-xl h-12 transition-all",
+            "bg-muted/50 border-input text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-primary/20 rounded-xl h-12 transition-all",
             className
           )}
           {...props}

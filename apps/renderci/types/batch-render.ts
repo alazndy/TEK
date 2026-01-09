@@ -7,6 +7,19 @@ export type RenderFormat = 'png' | 'jpg' | 'webp' | 'svg' | 'pdf';
 export type RenderQuality = 'low' | 'medium' | 'high' | 'ultra';
 export type RenderStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
 
+export type RenderModel = 'imagen' | 'stable-diffusion' | 'wan-25' | 'flux-1' | 'dall-e-3';
+
+// ... (keep intermediate interfaces)
+
+export const MODEL_OPTIONS: { value: RenderModel; label: string }[] = [
+  { value: 'imagen', label: 'Google Imagen' },
+  { value: 'stable-diffusion', label: 'Stable Diffusion XL' },
+  { value: 'wan-25', label: 'Wan 2.5 (Fal.ai)' },
+  { value: 'flux-1', label: 'Flux.1 (Black Forest Labs)' },
+  { value: 'dall-e-3', label: 'DALL-E 3 (OpenAI)' },
+];
+
+
 export interface RenderJob {
   id: string;
   fileName: string;
@@ -14,6 +27,7 @@ export interface RenderJob {
   fileType: '2d' | '3d' | 'cad';
   
   // Render settings
+  model: RenderModel; // Added model selection
   format: RenderFormat;
   quality: RenderQuality;
   width?: number;
@@ -42,6 +56,7 @@ export interface RenderJob {
 }
 
 export interface BatchRenderConfig {
+  model: RenderModel; // Added default model
   format: RenderFormat;
   quality: RenderQuality;
   width: number;
@@ -76,6 +91,7 @@ export interface RenderQueue {
 
 // Default config
 export const DEFAULT_BATCH_CONFIG: BatchRenderConfig = {
+  model: 'stable-diffusion', // Default
   format: 'png',
   quality: 'high',
   width: 1920,
@@ -102,4 +118,10 @@ export const FORMAT_OPTIONS: { value: RenderFormat; label: string; extension: st
   { value: 'webp', label: 'WebP', extension: '.webp' },
   { value: 'svg', label: 'SVG', extension: '.svg' },
   { value: 'pdf', label: 'PDF', extension: '.pdf' },
+];
+
+export const MODEL_OPTIONS: { value: RenderModel; label: string }[] = [
+  { value: 'imagen', label: 'Google Imagen' },
+  { value: 'stable-diffusion', label: 'Stable Diffusion XL' },
+  { value: 'wan-25', label: 'Wan 2.5 (Fal.ai)' },
 ];

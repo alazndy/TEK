@@ -1,5 +1,4 @@
-
-import { IsString, IsIn } from 'class-validator';
+import { IsString, IsIn } from "class-validator";
 
 export class AddJobDto {
   @IsString()
@@ -9,6 +8,6 @@ export class AddJobDto {
   fileUrl: string;
 
   @IsString()
-  @IsIn(['2d', '3d', 'cad'])
-  fileType: '2d' | '3d' | 'cad';
+  @IsIn(["2d", "3d", "cad"])
+  fileType: "2d" | "3d" | "cad";
 }

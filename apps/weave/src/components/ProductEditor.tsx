@@ -662,10 +662,10 @@ export const ProductEditor: React.FC<ProductEditorProps> = ({ initialTemplate, o
   
   const getDirectionIcon = (dir?: string) => {
       switch(dir) {
-          case 'top': return <ChevronUp size={12} className="text-white drop-shadow-md" />;
-          case 'bottom': return <ChevronDown size={12} className="text-white drop-shadow-md" />;
-          case 'left': return <ChevronLeft size={12} className="text-white drop-shadow-md" />;
-          case 'right': return <ChevronRight size={12} className="text-white drop-shadow-md" />;
+          case 'top': return <ChevronUp size={12} className="text-foreground drop-shadow-md" />;
+          case 'bottom': return <ChevronDown size={12} className="text-foreground drop-shadow-md" />;
+          case 'left': return <ChevronLeft size={12} className="text-foreground drop-shadow-md" />;
+          case 'right': return <ChevronRight size={12} className="text-foreground drop-shadow-md" />;
           default: return null;
       }
   };
@@ -676,17 +676,17 @@ export const ProductEditor: React.FC<ProductEditorProps> = ({ initialTemplate, o
 
   const getTypeBadge = (type: PortFlowType) => {
       switch(type) {
-          case 'input': return <span className="px-1.5 py-0.5 bg-blue-900 text-blue-200 text-[10px] font-bold rounded flex items-center gap-1"><ArrowRight size={10}/> GİRİŞ</span>;
-          case 'output': return <span className="px-1.5 py-0.5 bg-red-900 text-red-200 text-[10px] font-bold rounded flex items-center gap-1"><ArrowLeft size={10}/> ÇIKIŞ</span>;
-          case 'bidirectional': return <span className="px-1.5 py-0.5 bg-teal-900 text-teal-200 text-[10px] font-bold rounded flex items-center gap-1"><ArrowRightLeft size={10}/> ÇİFT</span>;
+          case 'input': return <span className="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-[10px] font-bold rounded flex items-center gap-1"><ArrowRight size={10}/> GİRİŞ</span>;
+          case 'output': return <span className="px-1.5 py-0.5 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 text-[10px] font-bold rounded flex items-center gap-1"><ArrowLeft size={10}/> ÇIKIŞ</span>;
+          case 'bidirectional': return <span className="px-1.5 py-0.5 bg-teal-100 dark:bg-teal-900 text-teal-700 dark:text-teal-200 text-[10px] font-bold rounded flex items-center gap-1"><ArrowRightLeft size={10}/> ÇİFT</span>;
       }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-6 backdrop-blur-md animate-in fade-in duration-300">
-      <div className={`glass-panel rounded-3xl flex flex-col shadow-2xl overflow-hidden relative transition-all duration-300 border border-white/20 ${modalSizeClass}`}>
+    <div className="fixed inset-0 bg-background/80 flex items-center justify-center z-50 p-6 backdrop-blur-md animate-in fade-in duration-300">
+      <div className={`glass-panel rounded-3xl flex flex-col shadow-2xl overflow-hidden relative transition-all duration-300 border border-border ${modalSizeClass}`}>
         
-        <div className="p-5 border-b border-white/10 flex justify-between items-center bg-white/[0.03] backdrop-blur-3xl shrink-0">
+        <div className="p-5 border-b border-border flex justify-between items-center bg-card/30 backdrop-blur-3xl shrink-0">
           <h2 className="text-2xl font-black bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent flex items-center gap-3 drop-shadow-sm">
             {initialTemplate ? <Edit2 className="w-7 h-7 text-teal-400"/> : <Plus className="w-7 h-7 text-teal-400" />} 
             {mode === 'upload' ? 'Görsel Yükleme' : mode === 'preprocess' ? 'Ön İşleme & Kalibrasyon' : initialTemplate ? 'Ürün Düzenle' : 'Port Tanımlama'}
@@ -695,13 +695,13 @@ export const ProductEditor: React.FC<ProductEditorProps> = ({ initialTemplate, o
                {mode === 'ports' && (
                   <button 
                   onClick={handleSave}
-                  className="px-6 py-2.5 bg-white text-black hover:bg-zinc-200 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-white/10 transition-all active:scale-95"
+                  className="px-6 py-2.5 bg-foreground text-background hover:bg-muted-foreground rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-black/10 transition-all active:scale-95"
                   >
                   <Save size={18} />
                   Kaydet
                   </button>
               )}
-            <button onClick={onCancel} className="p-2 hover:bg-white/10 rounded-full text-zinc-400 hover:text-white transition-colors" title="Kapat" aria-label="Kapat">
+            <button onClick={onCancel} className="p-2 hover:bg-muted rounded-full text-muted-foreground hover:text-foreground transition-colors" title="Kapat" aria-label="Kapat">
                 <X className="w-6 h-6" />
             </button>
           </div>
@@ -741,25 +741,25 @@ export const ProductEditor: React.FC<ProductEditorProps> = ({ initialTemplate, o
           />
 
           {/* Right: Interactive Area */}
-          <div className="flex-1 bg-black/40 relative overflow-hidden flex items-center justify-center p-8">
-             <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-[0.03]"></div>
+          <div className="flex-1 bg-muted/20 relative overflow-hidden flex items-center justify-center p-8">
+             <div className="absolute inset-0 bg-[radial-gradient(#888888_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-[0.1] dark:opacity-[0.03]"></div>
              
              {mode === 'upload' && (
-                 <div className="text-zinc-500 flex flex-col items-center pointer-events-none text-center max-w-md">
-                     <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6">
-                         <Upload className="w-10 h-10 opacity-30"/>
+                 <div className="text-muted-foreground flex flex-col items-center pointer-events-none text-center max-w-md">
+                     <div className="w-24 h-24 bg-muted/20 rounded-full flex items-center justify-center mb-6">
+                         <Upload className="w-10 h-10 opacity-50"/>
                      </div>
-                     <p className="text-xl font-bold text-white mb-2">Başlamak için Bir Resim Yükleyin</p>
+                     <p className="text-xl font-bold text-foreground mb-2">Başlamak için Bir Resim Yükleyin</p>
                      <p className="text-sm font-medium">Sol menüyü kullanarak cihazınızdan bir resim veya PDF dosyası seçin.</p>
                  </div>
              )}
 
              {mode === 'preprocess' && rawImage && (
-                 <div className="relative shadow-2xl border border-white/10 rounded-lg overflow-hidden ring-1 ring-white/5 backdrop-blur-sm">
+                 <div className="relative shadow-2xl border border-border rounded-lg overflow-hidden ring-1 ring-border/50 backdrop-blur-sm">
                      {/* Layer 1: Base Image */}
                      <canvas 
                         ref={canvasRef}
-                        className="block max-h-[calc(85vh-80px)] max-w-[calc(90vw-26rem)] object-contain bg-zinc-900"
+                        className="block max-h-[calc(85vh-80px)] max-w-[calc(90vw-26rem)] object-contain bg-card"
                      />
                      {/* Layer 2: UI Overlay (Tools) */}
                      <canvas
@@ -774,7 +774,7 @@ export const ProductEditor: React.FC<ProductEditorProps> = ({ initialTemplate, o
              )}
 
              {mode === 'ports' && processedImage && (
-              <div className="relative shadow-2xl animate-in zoom-in-95 duration-500 group/image border border-white/10 rounded-xl overflow-hidden ring-4 ring-black/20">
+              <div className="relative shadow-2xl animate-in zoom-in-95 duration-500 group/image border border-border rounded-xl overflow-hidden ring-4 ring-black/5 dark:ring-black/20">
                 <img 
                   ref={imageRef}
                   src={processedImage} 
@@ -816,7 +816,7 @@ export const ProductEditor: React.FC<ProductEditorProps> = ({ initialTemplate, o
                     )}
                     
                     {/* Tooltip on Hover */}
-                    <div className={`absolute left-1/2 -translate-x-1/2 -bottom-8 bg-black/80 backdrop-blur text-white text-[10px] px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover/port:opacity-100 pointer-events-none transition-opacity font-bold border border-white/10 ${hoveredPortId === p.id ? 'opacity-100' : ''}`}>
+                    <div className={`absolute left-1/2 -translate-x-1/2 -bottom-8 bg-popover-foreground text-background px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover/port:opacity-100 pointer-events-none transition-opacity font-bold border border-border shadow-md ${hoveredPortId === p.id ? 'opacity-100' : ''}`}>
                         {p.label}
                     </div>
                   </div>
@@ -825,7 +825,7 @@ export const ProductEditor: React.FC<ProductEditorProps> = ({ initialTemplate, o
             {/* Context Menu for Port Editing */}
             {editingPortId && (
                 <div 
-                    className="absolute z-50 bg-zinc-900/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] p-4 w-72 animate-in fade-in zoom-in-95 duration-200"
+                    className="absolute z-50 bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] p-4 w-72 animate-in fade-in zoom-in-95 duration-200"
                     style={{
                         left: `${Math.min(80, Math.max(20, ports.find(p => p.id === editingPortId)?.x || 50))}%`,
                         top: `${Math.min(80, Math.max(20, ports.find(p => p.id === editingPortId)?.y || 50))}%`,
@@ -833,30 +833,30 @@ export const ProductEditor: React.FC<ProductEditorProps> = ({ initialTemplate, o
                     }}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
-                        <h4 className="font-bold text-white text-sm">Port Düzenle</h4>
-                        <button onClick={cancelEditing} className="text-zinc-500 hover:text-white transition-colors"><X size={14}/></button>
+                    <div className="flex justify-between items-center mb-4 border-b border-border pb-2">
+                        <h4 className="font-bold text-foreground text-sm">Port Düzenle</h4>
+                        <button onClick={cancelEditing} className="text-muted-foreground hover:text-foreground transition-colors"><X size={14}/></button>
                     </div>
                     
                     <div className="space-y-3">
                         <div>
-                            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Etiket</label>
+                            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">Etiket</label>
                             <input 
                                 type="text" 
                                 value={tempPortLabel} 
                                 onChange={e => setTempPortLabel(e.target.value)} 
-                                className="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1.5 text-sm text-white focus:border-amber-500 outline-none font-medium"
+                                className="w-full bg-muted/30 border border-input rounded-lg px-2 py-1.5 text-sm text-foreground focus:border-amber-500 outline-none font-medium"
                                 autoFocus
                             />
                         </div>
                         
                         <div className="grid grid-cols-2 gap-2">
                              <div>
-                                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Tip</label>
+                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">Tip</label>
                                 <select 
                                     value={tempPortType} 
                                     onChange={e => setTempPortType(e.target.value as any)}
-                                    className="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:border-amber-500 outline-none"
+                                    className="w-full bg-muted/30 border border-input rounded-lg px-2 py-1.5 text-xs text-foreground focus:border-amber-500 outline-none"
                                 >
                                     <option value="input">Giriş</option>
                                     <option value="output">Çıkış</option>
@@ -864,11 +864,11 @@ export const ProductEditor: React.FC<ProductEditorProps> = ({ initialTemplate, o
                                 </select>
                              </div>
                              <div>
-                                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Yön</label>
+                                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">Yön</label>
                                 <select 
                                     value={tempDirection} 
                                     onChange={e => setTempDirection(e.target.value as any)}
-                                    className="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:border-amber-500 outline-none"
+                                    className="w-full bg-muted/30 border border-input rounded-lg px-2 py-1.5 text-xs text-foreground focus:border-amber-500 outline-none"
                                 >
                                     <option value="bottom">Aşağı</option>
                                     <option value="top">Yukarı</option>
@@ -879,11 +879,11 @@ export const ProductEditor: React.FC<ProductEditorProps> = ({ initialTemplate, o
                         </div>
 
                         <div className="flex gap-2 pt-1">
-                             <label className={`flex-1 p-2 rounded-lg border cursor-pointer transition-all flex items-center justify-center gap-2 ${tempIsPower ? 'bg-amber-500/20 border-amber-500/50 text-amber-500 font-bold' : 'bg-black/20 border-white/10 text-zinc-500 hover:text-white'}`}>
+                             <label className={`flex-1 p-2 rounded-lg border cursor-pointer transition-all flex items-center justify-center gap-2 ${tempIsPower ? 'bg-amber-500/20 border-amber-500/50 text-amber-500 font-bold' : 'bg-muted/30 border-border text-muted-foreground hover:text-foreground'}`}>
                                  <input type="checkbox" checked={tempIsPower} onChange={e => setTempIsPower(e.target.checked)} className="hidden" />
                                  <Zap size={14} fill={tempIsPower ? "currentColor" : "none"}/> Güç
                              </label>
-                             <label className={`flex-1 p-2 rounded-lg border cursor-pointer transition-all flex items-center justify-center gap-2 ${tempIsGround ? 'bg-zinc-600/30 border-zinc-500 text-zinc-300 font-bold' : 'bg-black/20 border-white/10 text-zinc-500 hover:text-white'}`}>
+                             <label className={`flex-1 p-2 rounded-lg border cursor-pointer transition-all flex items-center justify-center gap-2 ${tempIsGround ? 'bg-zinc-600/30 border-zinc-500 text-foreground font-bold' : 'bg-muted/30 border-border text-muted-foreground hover:text-foreground'}`}>
                                  <input type="checkbox" checked={tempIsGround} onChange={e => setTempIsGround(e.target.checked)} className="hidden" />
                                  <ArrowDownToLine size={14}/> Toprak
                              </label>
@@ -896,19 +896,19 @@ export const ProductEditor: React.FC<ProductEditorProps> = ({ initialTemplate, o
                                     placeholder="Voltaj (5V)" 
                                     value={tempVoltage} 
                                     onChange={e => setTempVoltage(e.target.value)}
-                                    className="bg-black/40 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white outline-none focus:border-amber-500"
+                                    className="bg-muted/30 border border-input rounded-lg px-2 py-1.5 text-xs text-foreground outline-none focus:border-amber-500"
                                 />
                                 <input 
                                     type="text" 
                                     placeholder="Akım (2A)" 
                                     value={tempAmperage} 
                                     onChange={e => setTempAmperage(e.target.value)}
-                                    className="bg-black/40 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white outline-none focus:border-amber-500"
+                                    className="bg-muted/30 border border-input rounded-lg px-2 py-1.5 text-xs text-foreground outline-none focus:border-amber-500"
                                 />
                             </div>
                         )}
 
-                        <div className="flex gap-2 mt-4 pt-2 border-t border-white/10">
+                        <div className="flex gap-2 mt-4 pt-2 border-t border-border">
                             <button onClick={updatePort} className="flex-1 bg-amber-500 hover:bg-amber-400 text-black py-2 rounded-lg text-sm font-bold transition-transform active:scale-95 shadow-lg shadow-amber-500/20">
                                 Kaydet
                             </button>

@@ -71,26 +71,26 @@ export const VersionCompareModal: React.FC<VersionCompareModalProps> = ({
   }, {} as Record<string, typeof diff.changes>);
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col">
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-200">
+      <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col">
         
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
+        <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center gap-3">
-            <GitCompare className="h-6 w-6 text-blue-500" />
-            <h2 className="text-xl font-semibold dark:text-white">Versiyon Karşılaştırma</h2>
+            <GitCompare className="h-6 w-6 text-primary" />
+            <h2 className="text-xl font-semibold text-foreground">Versiyon Karşılaştırma</h2>
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-            <X className="h-5 w-5 dark:text-gray-300" />
+          <button onClick={onClose} className="p-1 hover:bg-muted rounded text-muted-foreground hover:text-foreground transition-colors">
+            <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Selection Area */}
-        <div className="flex items-center justify-between p-6 bg-gray-50 dark:bg-gray-700/30 border-b dark:border-gray-700">
+        <div className="flex items-center justify-between p-6 bg-muted/20 border-b border-border">
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Eski Versiyon (A)</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">Eski Versiyon (A)</label>
             <select
-              className="w-full px-3 py-2 rounded-lg border dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground focus:ring-1 focus:ring-primary"
               value={versionAId || ''}
               onChange={(e) => setVersionAId(e.target.value)}
             >
@@ -102,13 +102,13 @@ export const VersionCompareModal: React.FC<VersionCompareModalProps> = ({
           </div>
           
           <div className="px-6 flex items-center justify-center">
-            <ArrowRight className="h-6 w-6 text-gray-400" />
+            <ArrowRight className="h-6 w-6 text-muted-foreground" />
           </div>
 
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Yeni Versiyon (B)</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">Yeni Versiyon (B)</label>
             <select
-              className="w-full px-3 py-2 rounded-lg border dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground focus:ring-1 focus:ring-primary"
               value={versionBId || ''}
               onChange={(e) => setVersionBId(e.target.value)}
             >
@@ -123,7 +123,7 @@ export const VersionCompareModal: React.FC<VersionCompareModalProps> = ({
         {/* Diff Content */}
         <div className="flex-1 overflow-y-auto p-6">
           {!diff ? (
-            <div className="text-center text-gray-500 dark:text-gray-400 py-12">
+            <div className="text-center text-muted-foreground py-12">
               <GitCompare className="h-12 w-12 mx-auto mb-3 opacity-30" />
               <p>Karşılaştırmak için iki versiyon seçin.</p>
             </div>
@@ -146,7 +146,7 @@ export const VersionCompareModal: React.FC<VersionCompareModalProps> = ({
                </div>
 
                {diff.changes.length === 0 && (
-                   <div className="text-center py-8 text-gray-500">
+                   <div className="text-center py-8 text-muted-foreground">
                        <Check className="h-10 w-10 mx-auto mb-2 text-green-500" />
                        <p>Bu iki versiyon arasında fark bulunmamaktadır.</p>
                    </div>
@@ -154,13 +154,13 @@ export const VersionCompareModal: React.FC<VersionCompareModalProps> = ({
 
                {/* Detailed Changes */}
                {groupedChanges && Object.entries(groupedChanges).map(([type, changes]) => (
-                 <div key={type} className="border dark:border-gray-700 rounded-lg overflow-hidden">
-                   <div className="bg-gray-50 dark:bg-gray-700/50 px-4 py-2 border-b dark:border-gray-700 font-medium capitalize text-gray-700 dark:text-gray-200">
+                 <div key={type} className="border border-border rounded-lg overflow-hidden">
+                   <div className="bg-muted/30 px-4 py-2 border-b border-border font-medium capitalize text-foreground">
                      {type} ({changes.length})
                    </div>
-                   <div className="divide-y dark:divide-gray-700">
+                   <div className="divide-y divide-border">
                      {changes.map((change, idx) => (
-                       <div key={idx} className="p-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                       <div key={idx} className="p-3 flex items-center gap-3 hover:bg-muted/10 transition-colors">
                          {change.type === 'added' && <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600"><Check className="h-4 w-4" /></div>}
                          {change.type === 'deleted' && <div className="w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600"><Ban className="h-4 w-4" /></div>}
                          {change.type === 'modified' && <div className="w-6 h-6 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-yellow-600"><AlertTriangle className="h-4 w-4" /></div>}
@@ -175,7 +175,7 @@ export const VersionCompareModal: React.FC<VersionCompareModalProps> = ({
                                {change.elementName || change.elementId}
                              </span>
                            </div>
-                           {change.details && <p className="text-xs text-gray-500 mt-0.5">{change.details}</p>}
+                           {change.details && <p className="text-xs text-muted-foreground mt-0.5">{change.details}</p>}
                          </div>
                        </div>
                      ))}

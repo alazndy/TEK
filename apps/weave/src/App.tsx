@@ -19,6 +19,7 @@ import { analyzeSchematic } from './services/geminiService';
 import { LeftSidebar } from './components/layout/LeftSidebar';
 import { RightSidebar } from './components/layout/RightSidebar';
 import { Toolbar } from './components/layout/Toolbar';
+import { PartLookupPanel } from './components/PartLookupPanel';
 import { PageBar } from './components/layout/PageBar';
 import { PageGrid } from './components/canvas/PageGrid';
 import { PALETTES } from './components/modals/AppSettingsModal';
@@ -155,6 +156,8 @@ export default function App() {
   const [isCloudSyncOpen, setIsCloudSyncOpen] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
+  const [isPartLookupOpen, setIsPartLookupOpen] = useState(false);
+  
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
 
   // Compliance State
@@ -604,6 +607,65 @@ export default function App() {
       setTemplates(updatedTemplates);
   };
 
+  const handleSelectPart = (part: any) => {
+    // 1. Check if template exists for this part, or create a generic one
+    performCheckpoint();
+    
+    // Create a new template for this part if it doesn't exist
+    // For now, we use a generic IC placeholder with the part image if available
+    const newTemplateId = crypto.randomUUID();
+    
+    // Attempt to use image or default to placeholder
+    const imageUrl = part.imageUrl || 'https://via.placeholder.com/100?text=IC';
+    
+    // Create template compliant with ProductTemplate interface
+    const newTemplate: ProductTemplate = {
+        id: newTemplateId,
+        name: part.partNumber, // This will be the label
+        modelNumber: part.manufacturerPartNumber,
+        imageUrl: imageUrl, 
+        width: 120, // Default width
+        height: 120, // Default height
+        physicalWidth: 30, // Default physical width in mm
+        ports: [
+            // Add some default ports for testing with required label and connectorType
+            { id: 'p1', label: 'VCC', x: 0.5, y: 0, type: 'input', connectorType: 'generic' },
+            { id: 'p2', label: 'GND', x: 0.5, y: 1, type: 'input', connectorType: 'generic' },
+            { id: 'p3', label: 'IO1', x: 0, y: 0.5, type: 'bidirectional', connectorType: 'generic' },
+            { id: 'p4', label: 'IO2', x: 1, y: 0.5, type: 'bidirectional', connectorType: 'generic' }
+        ],
+        isBlock: false,
+        // Optional integration fields matching interface
+        externalId: part.partNumber
+    };
+
+    setTemplates(prev => [...prev, newTemplate]);
+    
+    // Add instance to canvas center (approx)
+    // Compliant with ProductInstance interface
+    const newInstance: ProductInstance = {
+        id: crypto.randomUUID(),
+        templateId: newTemplateId,
+        x: 400, // Roughly center of view
+        y: 300,
+        width: 120,
+        height: 120,
+        rotation: 0,
+        labelConfig: { 
+            visible: true, 
+            fontSize: 14, 
+            color: '#ffffff', 
+            backgroundColor: '#000000', 
+            position: 'bottom'
+            // content/text comes from template.name usually
+        }
+    };
+    
+    setInstances(prev => [...prev, newInstance]);
+    setIsPartLookupOpen(false);
+    alert(`${part.partNumber} tuvale eklendi.`);
+  };
+
   const runAnalysis = async () => {
     setIsAnalyzing(true);
     setAnalysisResult(null);
@@ -965,10 +1027,15 @@ export default function App() {
           {!isGridView && (
               <div className="absolute top-6 left-1/2 -translate-x-1/2 z-[100] w-max max-w-[90vw]">
                 <Toolbar 
-                    handleUndo={handleUndo} handleRedo={handleRedo}
-                    canUndo={canUndo} canRedo={canRedo}
-                    isAnalyzing={isAnalyzing} runAnalysis={runAnalysis}
-                    handleAutoRoute={handleAutoRoute} hasConnections={connections.length > 0}
+                    handleUndo={handleUndo}
+                    handleRedo={handleRedo}
+                    canUndo={canUndo}
+                    canRedo={canRedo}
+                    isAnalyzing={isAnalyzing}
+                    runAnalysis={runAnalysis}
+                    openPartLookup={() => setIsPartLookupOpen(true)}
+                    handleAutoRoute={handleAutoRoute}
+                    hasConnections={connections.length > 0}
                     requestClear={requestClear} handleExportImage={handleExportImage}
                     theme={appSettings.theme} setTheme={(t) => setAppSettings({...appSettings, theme: t})}
                     openShortcuts={() => setIsShortcutsOpen(true)}
@@ -1014,7 +1081,13 @@ export default function App() {
           comments={comments}
           handleUpdateItem={handleUpdateItem}
       />
-
+      <PartLookupPanel 
+        isOpen={isPartLookupOpen} 
+        onClose={() => setIsPartLookupOpen(false)}
+        onSelectPart={handleSelectPart}
+      />
+      
+      {/* Modals */}
       <ModalManager
         projectMetadata={projectMetadata}
         setProjectMetadata={setProjectMetadata}

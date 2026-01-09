@@ -33,7 +33,12 @@ export default defineConfig(({ mode }) => {
         outDir: 'dist',
         rollupOptions: {
           output: {
-            format: 'es'
+            format: 'es',
+            manualChunks: {
+              'vendor-react': ['react', 'react-dom', 'react/jsx-runtime'],
+              'vendor-firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
+              'vendor-ui': ['framer-motion', 'lucide-react', 'clsx', 'tailwind-merge']
+            }
           }
         }
       }

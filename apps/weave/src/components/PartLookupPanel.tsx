@@ -71,35 +71,35 @@ export const PartLookupPanel: React.FC<PartLookupPanelProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed right-0 top-0 h-full w-96 glass-panel border-l border-white/20 shadow-2xl z-40 flex flex-col animate-in slide-in-from-right duration-300">
+    <div className="fixed right-0 top-0 h-full w-96 bg-background/95 backdrop-blur-xl border-l border-border shadow-2xl z-40 flex flex-col animate-in slide-in-from-right duration-300">
       {/* Header */}
-      <div className="flex items-center justify-between p-5 border-b border-white/5 bg-white/[0.02]">
+      <div className="flex items-center justify-between p-5 border-b border-border bg-muted/20">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-lg border border-blue-500/20">
-             <Package className="h-5 w-5 text-blue-400" />
+             <Package className="h-5 w-5 text-blue-500" />
           </div>
-          <h3 className="font-bold text-lg premium-gradient-text">Parça Arama</h3>
+          <h3 className="font-bold text-lg text-foreground">Parça Arama</h3>
         </div>
         <button
           onClick={onClose}
-          className="p-2 hover:bg-white/10 rounded-lg transition-colors text-zinc-400 hover:text-white"
+          className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground"
         >
           <X className="h-5 w-5" />
         </button>
       </div>
 
       {/* Search */}
-      <div className="p-5 border-b border-white/5 bg-zinc-900/50 backdrop-blur-md">
+      <div className="p-5 border-b border-border bg-card/50 backdrop-blur-md">
         <div className="flex gap-2 mb-3">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Parça numarası veya açıklama..."
-              className="w-full pl-10 pr-3 py-2.5 bg-black/40 border border-white/10 rounded-xl text-sm text-white placeholder-zinc-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 outline-none transition-all"
+              className="w-full pl-10 pr-3 py-2.5 bg-background border border-input rounded-xl text-sm text-foreground placeholder-muted-foreground focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 outline-none transition-all"
             />
           </div>
           <button
@@ -113,8 +113,8 @@ export const PartLookupPanel: React.FC<PartLookupPanelProps> = ({
 
         {/* Filters */}
         <div className="flex items-center gap-3">
-          <label className="flex items-center text-xs font-medium text-zinc-400 cursor-pointer select-none group">
-            <div className={`w-4 h-4 rounded border flex items-center justify-center mr-2 transition-colors ${filters.inStockOnly ? 'bg-blue-500 border-blue-500' : 'border-zinc-600 bg-transparent group-hover:border-zinc-400'}`}>
+          <label className="flex items-center text-xs font-medium text-muted-foreground cursor-pointer select-none group">
+            <div className={`w-4 h-4 rounded border flex items-center justify-center mr-2 transition-colors ${filters.inStockOnly ? 'bg-blue-500 border-blue-500' : 'border-input bg-transparent group-hover:border-muted-foreground'}`}>
                 {filters.inStockOnly && <X className="w-3 h-3 text-white" />} 
             </div>
             <input
@@ -125,17 +125,17 @@ export const PartLookupPanel: React.FC<PartLookupPanelProps> = ({
             />
             Sadece stokta
           </label>
-          <div className="h-4 w-px bg-white/10 mx-2"></div>
+          <div className="h-4 w-px bg-border mx-2"></div>
            <div className="flex items-center gap-2 flex-1">
-             <Filter size={12} className="text-zinc-500"/>
+             <Filter size={12} className="text-muted-foreground"/>
              <select
                 value={filters.sortBy}
                 onChange={(e) => setFilters({ ...filters, sortBy: e.target.value as any })}
-                className="flex-1 bg-transparent border-none text-xs text-zinc-400 focus:text-white outline-none cursor-pointer hover:bg-white/5 py-1 rounded"
+                className="flex-1 bg-transparent border-none text-xs text-muted-foreground focus:text-foreground outline-none cursor-pointer hover:bg-muted/50 py-1 rounded"
               >
-                <option value="relevance" className="bg-zinc-900">En Alakalı</option>
-                <option value="price" className="bg-zinc-900">Fiyata Göre</option>
-                <option value="stock" className="bg-zinc-900">Stoğa Göre</option>
+                <option value="relevance" className="bg-background text-foreground">En Alakalı</option>
+                <option value="price" className="bg-background text-foreground">Fiyata Göre</option>
+                <option value="stock" className="bg-background text-foreground">Stoğa Göre</option>
               </select>
            </div>
         </div>
@@ -153,12 +153,12 @@ export const PartLookupPanel: React.FC<PartLookupPanelProps> = ({
             </div>
           </div>
         ) : results.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-64 text-zinc-500">
-            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
+          <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
+            <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
                  <Search className="h-8 w-8 opacity-40" />
             </div>
             <p className="text-sm font-medium">Bileşen Araması Yapın</p>
-            <p className="text-xs text-zinc-600 mt-1 max-w-[200px] text-center">Tedarikçilerden anlık fiyat ve stok bilgisi almak için arama yapın.</p>
+            <p className="text-xs text-muted-foreground mt-1 max-w-[200px] text-center">Tedarikçilerden anlık fiyat ve stok bilgisi almak için arama yapın.</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -168,7 +168,7 @@ export const PartLookupPanel: React.FC<PartLookupPanelProps> = ({
                 className={`p-3 rounded-xl border transition-all cursor-pointer group ${
                   selectedPart?.partNumber === part.partNumber 
                     ? 'bg-blue-500/10 border-blue-500/50 shadow-md shadow-blue-500/10' 
-                    : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20'
+                    : 'bg-card border-border hover:bg-muted/50 hover:border-muted-foreground/20'
                 }`}
                 onClick={() => setSelectedPart(part)}
               >
@@ -176,22 +176,22 @@ export const PartLookupPanel: React.FC<PartLookupPanelProps> = ({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-base filter drop-shadow-sm">{getSourceLogo(part.source)}</span>
-                      <span className="font-mono font-bold text-sm text-zinc-200 truncate group-hover:text-white transition-colors">
+                      <span className="font-mono font-bold text-sm text-foreground truncate group-hover:text-blue-500 transition-colors">
                         {part.partNumber}
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-500 mt-0.5 line-clamp-2 leading-relaxed group-hover:text-zinc-400">
+                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
                       {part.description}
                     </p>
-                    <p className="text-[10px] text-zinc-600 uppercase tracking-wider font-bold mt-2">{part.manufacturer}</p>
+                    <p className="text-[10px] text-muted-foreground/80 uppercase tracking-wider font-bold mt-2">{part.manufacturer}</p>
                   </div>
                   <div className="text-right ml-3 flex flex-col items-end">
                     {part.pricing[0] && (
-                      <p className="font-bold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded text-xs mb-1 border border-emerald-400/20">
+                      <p className="font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded text-xs mb-1 border border-emerald-500/20">
                         {partLookupService.formatPrice(part.pricing[0].unitPrice, part.pricing[0].currency)}
                       </p>
                     )}
-                    <p className={`text-[10px] font-bold flex items-center gap-1 ${part.stock.inStock ? 'text-zinc-400' : 'text-red-400'}`}>
+                    <p className={`text-[10px] font-bold flex items-center gap-1 ${part.stock.inStock ? 'text-muted-foreground' : 'text-red-500'}`}>
                       {part.stock.inStock ? <Truck size={10}/> : <X size={10}/>}
                       {part.stock.inStock ? `${part.stock.quantity}` : 'Yok'}
                     </p>
@@ -205,12 +205,12 @@ export const PartLookupPanel: React.FC<PartLookupPanelProps> = ({
 
       {/* Selected Part Details */}
       {selectedPart && (
-        <div className="border-t border-white/10 p-4 bg-zinc-900/80 backdrop-blur-xl animate-in slide-in-from-bottom-4 duration-300 z-50 shadow-[0_-5px_20px_rgba(0,0,0,0.3)]">
+        <div className="border-t border-border p-4 bg-card/90 backdrop-blur-xl animate-in slide-in-from-bottom-4 duration-300 z-50 shadow-[0_-5px_20px_rgba(0,0,0,0.1)]">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="font-bold text-white text-sm truncate pr-4">{selectedPart.partNumber}</h4>
+            <h4 className="font-bold text-foreground text-sm truncate pr-4">{selectedPart.partNumber}</h4>
             <button
               onClick={() => setSelectedPart(null)}
-              className="text-zinc-500 hover:text-white transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
@@ -219,8 +219,8 @@ export const PartLookupPanel: React.FC<PartLookupPanelProps> = ({
           {/* Pricing Tiers */}
           <div className="mb-3 flex overflow-x-auto gap-2 pb-2 custom-scrollbar">
             {selectedPart.pricing.map((tier: any, i: number) => (
-              <span key={i} className="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded whitespace-nowrap text-zinc-400">
-                {tier.quantity}+: <span className="text-zinc-200 font-bold">{partLookupService.formatPrice(tier.unitPrice, tier.currency)}</span>
+              <span key={i} className="text-[10px] bg-muted/50 border border-border px-2 py-1 rounded whitespace-nowrap text-muted-foreground">
+                {tier.quantity}+: <span className="text-foreground font-bold">{partLookupService.formatPrice(tier.unitPrice, tier.currency)}</span>
               </span>
             ))}
           </div>
@@ -232,7 +232,7 @@ export const PartLookupPanel: React.FC<PartLookupPanelProps> = ({
                 href={selectedPart.datasheetUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 px-3 py-2.5 text-xs font-bold border border-white/10 rounded-xl text-center hover:bg-white/10 text-zinc-300 hover:text-white transition-colors"
+                className="flex-1 px-3 py-2.5 text-xs font-bold border border-border rounded-xl text-center hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
               >
                 Datasheet
               </a>
@@ -241,7 +241,7 @@ export const PartLookupPanel: React.FC<PartLookupPanelProps> = ({
               href={selectedPart.productUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 px-3 py-2.5 text-xs font-bold border border-white/10 rounded-xl text-center hover:bg-white/10 text-zinc-300 hover:text-white transition-colors flex items-center justify-center gap-1"
+              className="flex-1 px-3 py-2.5 text-xs font-bold border border-border rounded-xl text-center hover:bg-muted text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1"
             >
               <ExternalLink className="h-3 w-3" />
               {getSourceName(selectedPart.source)}

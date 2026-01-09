@@ -62,12 +62,16 @@ export const useSidebar = () => {
   return context;
 };
 
+import { useAuthStore } from "@/stores/auth-store";
+import { UserRole } from "@/lib/types";
+
 type NavItem = {
     href?: string;
     label: string;
     icon: React.ElementType;
     subItems?: { href: string; label: string; icon: React.ElementType }[];
     featureId?: string;
+    requiredRole?: UserRole;
 };
 
 import { useTranslations } from 'next-intl';
@@ -76,6 +80,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const { isSidebarOpen, setIsSidebarOpen, isCollapsed, setIsCollapsed } = useSidebar();
   const { isFeatureEnabled } = useFeatureStore();
+  const { checkRole } = useAuthStore();
   const t = useTranslations('Common');
   
   // State for collapsible items
@@ -90,6 +95,7 @@ export function Sidebar() {
         featureId: 'asset-management',
         subItems: [
             { href: "/inventory", label: t('inventory'), icon: Boxes },
+            { href: "/defects", label: "Arızalı Ürünler", icon: ClipboardCheck },
             { href: "/equipment", label: t('equipment'), icon: HardHat },
             { href: "/consumables", label: t('consumables'), icon: FlaskConical },
             { href: "/catalog", label: t('catalog'), icon: BookOpen },
@@ -101,6 +107,7 @@ export function Sidebar() {
         label: "Tedarik", // Procurement
         icon: Truck,
         featureId: 'procurement',
+        requiredRole: 'manager' as UserRole, 
         subItems: [
             { href: "/suppliers", label: "Tedarikçiler", icon: Users },
             { href: "/purchases", label: "Satın Alma", icon: Truck },
@@ -111,6 +118,7 @@ export function Sidebar() {
         label: t('commercial'),
         icon: ShoppingCart,
         featureId: 'commercial',
+        requiredRole: 'manager' as UserRole,
         subItems: [
             { href: "/orders", label: t('orders'), icon: ShoppingCart },
             { href: "/proposals", label: t('proposals'), icon: FileText },
@@ -120,18 +128,25 @@ export function Sidebar() {
         label: t('reporting'),
         icon: BarChart2,
         featureId: 'reporting',
+        requiredRole: 'manager' as UserRole,
         subItems: [
             { href: "/reports", label: t('reports'), icon: BarChart2 },
             { href: "/audit-log", label: t('auditLog'), icon: History },
         ]
     },
     { href: "/warehouse-map", label: t('warehouseMap'), icon: Map, featureId: 'warehouse-map' },
-    { href: "/settings", label: t('settings'), icon: Settings },
+    { href: "/settings", label: t('settings'), icon: Settings, requiredRole: 'admin' as UserRole },
   ].filter(link => {
       // Filter based on featureId if present
-      if ((link as any).featureId) {
-          return isFeatureEnabled((link as any).featureId);
+      if (link.featureId && !isFeatureEnabled(link.featureId)) {
+          return false;
       }
+      
+      // Filter based on Role
+      if (link.requiredRole && !checkRole(link.requiredRole)) {
+          return false;
+      }
+
       return true;
   });
 
@@ -180,21 +195,21 @@ export function Sidebar() {
                                     <CollapsibleTrigger asChild>
                                         <Button 
                                             variant="ghost" 
-                                            className={`w-full justify-center p-2 mb-2 ${groupActive ? 'bg-primary/10 text-emerald-400' : 'text-zinc-400'}`}
+                                            className={`w-full justify-center p-2 mb-2 ${groupActive ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}
                                         >
                                             <link.icon className="h-4 w-4" />
                                             <span className="sr-only">{link.label}</span>
                                         </Button>
                                     </CollapsibleTrigger>
                                 </TooltipTrigger>
-                                <TooltipContent side="right" className="bg-black/80 backdrop-blur-md border border-white/10 text-emerald-400">
+                                <TooltipContent side="right" className="bg-popover/90 backdrop-blur-md border border-border text-foreground">
                                     {link.label} ({t('clickToExpand')})
                                 </TooltipContent>
                              </Tooltip>
                         ) : (
-                            <CollapsibleTrigger className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-zinc-400 hover:text-foreground hover:bg-white/5 ${groupActive ? 'text-foreground' : ''}`}>
+                            <CollapsibleTrigger className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 ${groupActive ? 'text-foreground font-medium' : ''}`}>
                                 <div className="flex items-center gap-3">
-                                    <link.icon className={`h-4 w-4 ${groupActive ? "text-emerald-400" : ""}`} />
+                                    <link.icon className={`h-4 w-4 ${groupActive ? "text-primary" : ""}`} />
                                     <span>{link.label}</span>
                                 </div>
                                 <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
@@ -210,12 +225,12 @@ export function Sidebar() {
                                         href={subItem.href}
                                         className={`flex items-center gap-3 rounded-lg pl-9 pr-3 py-2 transition-all duration-200 border border-transparent ${
                                             active
-                                            ? "bg-primary/20 text-emerald-400 border-primary/20 shadow-[0_0_15px_-5px_var(--primary)]"
-                                            : "text-zinc-400 hover:text-foreground hover:bg-white/5"
+                                            ? "bg-primary/10 text-primary border-primary/20 shadow-[0_0_15px_-5px_var(--primary)]"
+                                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                                         }`}
                                         onClick={() => setIsSidebarOpen(false)}
                                      >
-                                         <subItem.icon className={`h-4 w-4 ${active ? "text-emerald-400" : ""}`} />
+                                         <subItem.icon className={`h-4 w-4 ${active ? "text-primary" : ""}`} />
                                          <span>{subItem.label}</span>
                                      </Link>
                                  )
@@ -235,17 +250,17 @@ export function Sidebar() {
                           size="sm"
                           className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all duration-200 border border-transparent w-full ${
                               active
-                              ? "text-white"
-                              : "text-zinc-400 hover:text-foreground"
+                              ? "text-primary-foreground font-medium"
+                              : "text-muted-foreground hover:text-foreground"
                           } ${isCollapsed ? 'justify-center p-0' : 'justify-start'}`}
                           onClick={() => setIsSidebarOpen(false)}
                         >
-                          <link.icon className={`h-4 w-4 ${active ? "text-white" : ""}`} />
+                          <link.icon className={`h-4 w-4 ${active ? "text-primary-foreground" : ""}`} />
                           <span className={`${isCollapsed ? 'sr-only' : ''}`}>{link.label}</span>
                         </PremiumButton>
                     </TooltipTrigger>
                     {isCollapsed && (
-                        <TooltipContent side="right" className="bg-black/80 backdrop-blur-md border border-white/10 text-emerald-400">
+                        <TooltipContent side="right" className="bg-popover/90 backdrop-blur-md border border-border text-foreground">
                             {link.label}
                         </TooltipContent>
                     )}
@@ -261,19 +276,19 @@ export function Sidebar() {
       <div className="md:hidden">
         <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
           <SheetTrigger asChild>
-            <Button size="icon" variant="outline" className="sm:hidden border-white/10 bg-black/40 backdrop-blur-md">
-              <PanelLeft className="h-5 w-5 text-emerald-400" />
+            <Button size="icon" variant="outline" className="sm:hidden border-border bg-background/80 backdrop-blur-md">
+              <PanelLeft className="h-5 w-5 text-primary" />
               <span className="sr-only">{t('toggleMenu')}</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="sm:max-w-xs bg-zinc-950/90 backdrop-blur-xl border-r border-white/10">
+          <SheetContent side="left" className="sm:max-w-xs bg-sidebar/95 backdrop-blur-xl border-r border-border">
             <NavContent />
           </SheetContent>
         </Sheet>
       </div>
       <div className={`hidden border-r glass-sidebar md:flex md:flex-col transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-64'}`}>
         <div className="flex h-full max-h-screen flex-col gap-2">
-            <div className={`flex h-16 items-center border-b border-white/5 px-4 lg:px-6 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+            <div className={`flex h-16 items-center border-b border-sidebar-border px-4 lg:px-6 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
                 <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center w-full' : ''}`}>
                     <div className="relative w-8 h-8 overflow-hidden rounded-lg shrink-0">
                         <img src="/logo.png" alt="ENV-I Logo" className="w-full h-full object-cover" />
@@ -284,7 +299,7 @@ export function Sidebar() {
                         </span>
                     )}
                 </div>
-                <PremiumButton variant="glass" size="icon" onClick={() => setIsCollapsed(!isCollapsed)} className="text-zinc-400 hover:text-emerald-400">
+                <PremiumButton variant="glass" size="icon" onClick={() => setIsCollapsed(!isCollapsed)} className="text-muted-foreground hover:text-primary">
                     {isCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
                     <span className="sr-only">{t('toggleSidebar')}</span>
                 </PremiumButton>

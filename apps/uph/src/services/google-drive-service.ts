@@ -20,16 +20,24 @@ export const GoogleDriveService = {
   },
 
   async connect() {
-      // Mock connection for now
-      return new Promise<any>((resolve) => {
-          setTimeout(() => {
-              resolve({
-                  user: "Mock Google User",
-                  displayName: "Mock Google User",
-                  email: "mock@gmail.com"
-              });
-          }, 1000);
-      });
+      // Trigger Google Login via Auth Store
+      const authStore = useAuthStore.getState();
+      
+      if (!authStore.user) {
+          await authStore.loginWithGoogle();
+      }
+
+      // Check if we have the token now
+      const token = authStore.googleAccessToken;
+      if (!token) {
+          throw new Error("Google Login failed or no access token received.");
+      }
+
+      return {
+          user: authStore.user?.displayName || "Google User",
+          email: authStore.user?.email || "",
+          connected: true
+      };
   },
 
   async listFiles(folderId: string) {

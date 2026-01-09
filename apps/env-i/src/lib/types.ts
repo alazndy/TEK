@@ -494,4 +494,38 @@ export type AuditLogActionExtended = AuditLogAction
   | "Lot Güncellendi"
   | "Transfer Oluşturuldu"
   | "Transfer Tamamlandı"
-  | "Stok Uyarısı";
+
+// ============================================
+// DEFECTIVE PRODUCTS
+// ============================================
+
+export type DefectStatus = 'new' | 'investigating' | 'resolved' | 'discarded';
+
+// İncelenen ürün bilgisi (çoklu ürün desteği için)
+export type InspectedProduct = {
+  id: string;           // Unique ID for each product in the report
+  productType: string;  // "Essential Monitor", "Camera", "Sensor" etc.
+  brand: string;        // "Brigade", "Orlaco" etc.
+  model: string;        // "VBV-670M-M"
+  partNumber: string;   // "5775"
+  serialNumber: string; // "2406M01257"
+};
+
+export type DefectReport = {
+  id: string;
+  formNumber: string;                     // Otomatik: "ATF-260106-001"
+  inspectedProducts: InspectedProduct[];  // Çoklu ürün listesi
+  inspectorName: string;                  // İnspektör adı
+  inspectorDate: Date;                    // İnceleme tarihi
+  customerName: string;
+  reason: string;                         // Genel arıza başlığı
+  customerStatement: string;
+  inspectionResult?: string;
+  status: DefectStatus;
+  images?: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  reportedBy: string;
+  resolvedAt?: Date;
+  resolvedBy?: string;
+};

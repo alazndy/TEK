@@ -277,7 +277,7 @@ export const useTransferStore = create<TransferStore>((set, get) => ({
     if (transfer.status === 'in_transit') {
       // Reverse stock changes from source warehouse
       const { items } = transfer;
-      const { updateLot, addLotMovement, getLotById } = useLotStore.getState();
+      const { updateLot, addLotMovement, getLotMovementsByReferenceId, getLotById } = useLotStore.getState();
 
       // Find stock movements related to this transfer
       // Since lot-store doesn't expose getMovements directly in the interface used here, we rely on the lot movements we just created

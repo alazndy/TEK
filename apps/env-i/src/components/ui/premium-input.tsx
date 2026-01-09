@@ -13,7 +13,7 @@ export const PremiumInput = ({ label, className, ...props }: PremiumInputProps) 
   return (
     <div className="space-y-2">
       {label && (
-        <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">
+        <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest ml-1">
           {label}
         </label>
       )}
@@ -23,7 +23,7 @@ export const PremiumInput = ({ label, className, ...props }: PremiumInputProps) 
       >
         <Input
           className={cn(
-            "bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus:border-indigo-500/50 focus:ring-indigo-500/20 rounded-xl h-12 transition-all",
+            "bg-muted/30 border-border text-foreground placeholder:text-muted-foreground focus:border-indigo-500/50 focus:ring-indigo-500/20 rounded-xl h-12 transition-all",
             className
           )}
           {...props}

@@ -74,6 +74,44 @@ const MOCK_PARTS: PartSearchResult[] = [
     stock: { inStock: false, quantity: 0, leadTimeDays: 21 },
     lastUpdated: new Date(),
   },
+  {
+    source: 'jlcpcb',
+    partNumber: 'C123456',
+    manufacturerPartNumber: 'STM32F103C8T6',
+    manufacturer: 'STMicroelectronics',
+    description: 'MCU 32-bit ARM Cortex M3 RISC 64KB Flash 2.5V/3.3V 48-Pin LQFP',
+    category: 'Integrated Circuits (ICs)',
+    imageUrl: 'https://jlcpcb.com/img/component/C123456.jpg',
+    productUrl: 'https://jlcpcb.com/partdetail/STMicroelectronics-STM32F103C8T6/C8734',
+    datasheetUrl: 'https://datasheet.lcsc.com/lcsc/1810010013_STMicroelectronics-STM32F103C8T6_C8734.pdf',
+    pricing: [
+        { quantity: 1, unitPrice: 3.50, currency: 'USD', totalPrice: 3.50 },
+        { quantity: 10, unitPrice: 2.80, currency: 'USD', totalPrice: 28.00 },
+        { quantity: 50, unitPrice: 2.50, currency: 'USD', totalPrice: 125.00 }
+    ],
+    stock: { inStock: true, quantity: 12500, leadTimeDays: 1 },
+    specifications: {
+        'Package': 'LQFP-48',
+        'Speed': '72MHz',
+        'Core': 'ARM Cortex-M3',
+        'Flash': '64KB'
+    },
+    lastUpdated: new Date()
+  },
+  {
+      source: 'jlcpcb',
+      partNumber: 'C234567',
+      manufacturerPartNumber: 'AMS1117-3.3',
+      manufacturer: 'Advanced Monolithic Systems',
+      description: 'LDO Voltage Regulators 3.3V 1A SOT-223 RoHS',
+      category: 'Power Management',
+      pricing: [
+          { quantity: 1, unitPrice: 0.15, currency: 'USD', totalPrice: 0.15 },
+          { quantity: 100, unitPrice: 0.08, currency: 'USD', totalPrice: 8.00 }
+      ],
+      stock: { inStock: true, quantity: 50000, leadTimeDays: 1 },
+      lastUpdated: new Date()
+  }
 ];
 
 // Search parts across all providers
@@ -218,4 +256,10 @@ export async function searchMouser(query: string, maxResults: number = 10): Prom
 export async function searchOctopart(query: string, maxResults: number = 10): Promise<PartSearchResult[]> {
   const allResults = await searchParts({ query, maxResults });
   return allResults.filter(r => r.source === 'octopart');
+}
+
+// JLCPCB specific search (mock)
+export async function searchJLCPCB(query: string, maxResults: number = 10): Promise<PartSearchResult[]> {
+    const allResults = await searchParts({ query, maxResults });
+    return allResults.filter(r => r.source === 'jlcpcb');
 }

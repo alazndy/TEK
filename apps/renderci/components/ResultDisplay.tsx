@@ -68,7 +68,7 @@ export const ResultDisplay: React.FC<ResultDisplayPropsWithUpscale> = React.memo
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className={cn(
-                    "relative w-full flex-grow bg-slate-950 rounded-[2.5rem] overflow-hidden shadow-2xl group flex items-center justify-center border border-white/5",
+                    "relative w-full flex-grow bg-card rounded-[2.5rem] overflow-hidden shadow-2xl group flex items-center justify-center border border-border/10",
                     isExplorerMode ? 'h-full' : 'min-h-[50vh]'
                 )}
             >
@@ -113,7 +113,7 @@ export const ResultDisplay: React.FC<ResultDisplayPropsWithUpscale> = React.memo
                             {/* Hover Overlay */}
                             {!isExplorerMode && !isLoading && (
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-primary/5 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 duration-500 pointer-events-none">
-                                    <div className="bg-background/80 text-foreground px-6 py-3 rounded-2xl flex items-center gap-3 backdrop-blur-2xl border border-white/10 shadow-3xl transform translate-y-4 group-hover:translate-y-0 transition-all">
+                                    <div className="bg-background/80 text-foreground px-6 py-3 rounded-2xl flex items-center gap-3 backdrop-blur-2xl border border-border shadow-3xl transform translate-y-4 group-hover:translate-y-0 transition-all">
                                         <Maximize2 className="h-5 w-5 text-primary" />
                                         <span className="text-xs font-black uppercase tracking-widest">Tam Ekran</span>
                                     </div>
@@ -131,8 +131,8 @@ export const ResultDisplay: React.FC<ResultDisplayPropsWithUpscale> = React.memo
                             className={cn(
                                 "flex items-center gap-3 px-5 py-2.5 rounded-2xl backdrop-blur-2xl border transition-all duration-300",
                                 isCompareMode 
-                                    ? "bg-primary text-white border-primary shadow-2xl shadow-primary/40" 
-                                    : "bg-background/40 text-muted-foreground border-white/10 hover:bg-background/60 hover:text-foreground"
+                                    ? "bg-primary text-primary-foreground border-primary shadow-2xl shadow-primary/40" 
+                                    : "bg-background/40 text-muted-foreground border-border/10 hover:bg-background/60 hover:text-foreground"
                             )}
                         >
                             <SplitSquareHorizontal size={18} />
@@ -164,7 +164,7 @@ export const ResultDisplay: React.FC<ResultDisplayPropsWithUpscale> = React.memo
             
             {/* Action Buttons */}
             {!isExplorerMode && (
-                <div className="glass-panel p-4 rounded-[2rem] border-white/5 bg-slate-900/40">
+                <div className="glass-panel p-4 rounded-[2rem] border-white/5 bg-card/40">
                     <ResultActions 
                         onEnterExplorer={onEnterExplorer}
                         onGoBack={onGoBack}

@@ -63,49 +63,49 @@ export function UPHExportModal({ isOpen, onClose, projectData, projectName }: UP
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-[#1e1e1e] w-[500px] border border-[#333] rounded-lg shadow-xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-card w-[500px] border border-border rounded-lg shadow-xl overflow-hidden">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#333]">
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-            <Send className="w-5 h-5 text-blue-400" />
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Send className="w-5 h-5 text-blue-500" />
             Send to UPH Project
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white">✕</button>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">✕</button>
         </div>
 
         {/* Body */}
         <div className="p-6 space-y-4">
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-8 text-gray-400">
+            <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
               <Loader2 className="w-8 h-8 animate-spin mb-2" />
               <p>Loading projects...</p>
             </div>
           ) : success ? (
-            <div className="flex flex-col items-center justify-center py-8 text-green-400">
+            <div className="flex flex-col items-center justify-center py-8 text-green-500">
               <CheckCircle2 className="w-12 h-12 mb-2" />
               <p className="font-medium">Design sent successfully!</p>
             </div>
           ) : (
             <>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-300">Select Target Project</label>
-                <div className="max-h-[300px] overflow-y-auto border border-[#333] rounded-md bg-[#111]">
+                <label className="text-sm font-medium text-foreground/80">Select Target Project</label>
+                <div className="max-h-[300px] overflow-y-auto border border-border rounded-md bg-muted/20">
                   {projects.length === 0 ? (
-                     <div className="p-4 text-center text-gray-500 text-sm">No UPH projects found.</div>
+                     <div className="p-4 text-center text-muted-foreground text-sm">No UPH projects found.</div>
                   ) : (
                     projects.map(project => (
                       <button
                         key={project.id}
                         onClick={() => setSelectedProjectId(project.id)}
-                        className={`w-full text-left px-4 py-3 border-b last:border-0 border-[#222] hover:bg-[#252525] transition-colors flex flex-col ${
-                          selectedProjectId === project.id ? 'bg-[#2a2d3e] border-l-2 border-l-blue-500' : ''
+                        className={`w-full text-left px-4 py-3 border-b last:border-0 border-border hover:bg-muted/50 transition-colors flex flex-col ${
+                          selectedProjectId === project.id ? 'bg-primary/10 border-l-2 border-l-primary' : ''
                         }`}
                       >
-                        <span className="text-gray-200 font-medium">{project.name}</span>
+                        <span className="text-foreground font-medium">{project.name}</span>
                         {project.description && (
-                          <span className="text-gray-500 text-xs truncate mt-1">{project.description}</span>
+                          <span className="text-muted-foreground text-xs truncate mt-1">{project.description}</span>
                         )}
                       </button>
                     ))
@@ -114,7 +114,7 @@ export function UPHExportModal({ isOpen, onClose, projectData, projectName }: UP
               </div>
 
               {error && (
-                <div className="p-3 bg-red-900/20 border border-red-900/50 rounded flex items-center gap-2 text-red-200 text-sm">
+                <div className="p-3 bg-destructive/10 border border-destructive/20 rounded flex items-center gap-2 text-destructive text-sm">
                   <AlertCircle className="w-4 h-4" />
                   {error}
                 </div>
@@ -125,17 +125,17 @@ export function UPHExportModal({ isOpen, onClose, projectData, projectName }: UP
 
         {/* Footer */}
         {!success && !loading && (
-          <div className="px-6 py-4 bg-[#181818] border-t border-[#333] flex justify-end gap-3">
+          <div className="px-6 py-4 bg-muted/10 border-t border-border flex justify-end gap-3">
             <button 
               onClick={onClose}
-              className="px-4 py-2 rounded text-gray-300 hover:text-white hover:bg-[#333] transition-colors text-sm"
+              className="px-4 py-2 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors text-sm"
             >
               Cancel
             </button>
             <button
               onClick={handleUpload}
               disabled={!selectedProjectId || uploading}
-              className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 rounded bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {uploading ? (
                 <>

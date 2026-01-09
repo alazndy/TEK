@@ -22,7 +22,7 @@ export function InventoryListWidget({ products, type }: InventoryListWidgetProps
           {type === 'low-stock' ? (
             <AlertTriangle className="h-5 w-5 text-destructive" />
           ) : (
-            <List className="h-5 w-5 text-emerald-400" />
+            <List className="h-5 w-5 text-primary" />
           )}
           {type === 'low-stock' ? t('lowStockItems') : t('recentProducts')}
         </CardTitle>
@@ -31,13 +31,13 @@ export function InventoryListWidget({ products, type }: InventoryListWidgetProps
         <div className="space-y-3 pt-2">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product, index) => (
-              <div key={`${product.id}-${index}`} className="flex items-center justify-between p-2 rounded-lg bg-white/5 border border-white/5 transition-colors hover:border-white/10">
+              <div key={`${product.id}-${index}`} className="flex items-center justify-between p-2 rounded-lg bg-muted/40 border border-border/40 transition-colors hover:border-border/80">
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium text-white">{product.name}</span>
+                  <span className="text-sm font-medium text-foreground">{product.name}</span>
                   <span className="text-xs text-muted-foreground">{product.productCategory || product.category}</span>
                 </div>
                 <div className="flex flex-col items-end">
-                  <span className={`text-sm font-bold ${type === 'low-stock' ? 'text-destructive' : 'text-emerald-400'}`}>
+                  <span className={`text-sm font-bold ${type === 'low-stock' ? 'text-destructive' : 'text-primary'}`}>
                     {product.stock}
                   </span>
                   <span className="text-[10px] text-muted-foreground uppercase">{product.room}</span>

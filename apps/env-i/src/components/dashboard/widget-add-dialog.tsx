@@ -50,12 +50,12 @@ export function WidgetAddDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className="border-dashed border-white/10 hover:bg-white/5 gap-2">
+        <Button variant="outline" className="border-dashed border-border hover:bg-muted/50 gap-2">
           <Plus className="h-4 w-4" />
           Widget Ekle
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-zinc-950 border-white/10 text-white max-w-2xl">
+      <DialogContent className="bg-card border-border text-foreground max-w-2xl">
         <DialogHeader>
           <DialogTitle>Widget Ekle</DialogTitle>
           <DialogDescription>
@@ -64,7 +64,7 @@ export function WidgetAddDialog() {
         </DialogHeader>
         
         <Tabs defaultValue="general" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-white/5 border border-white/10">
+          <TabsList className="grid w-full grid-cols-4 bg-muted/50 border border-border">
             {categories.map(cat => (
               <TabsTrigger key={cat.id} value={cat.id} className="gap-2">
                 <cat.icon className="h-4 w-4" />
@@ -81,7 +81,7 @@ export function WidgetAddDialog() {
                   <Button
                     key={widget.type}
                     variant="ghost"
-                    className="h-auto flex flex-col items-start gap-2 p-4 border border-white/5 hover:bg-white/5 hover:border-emerald-500/50 text-left transition-all"
+                    className="h-auto flex flex-col items-start gap-2 p-4 border border-border hover:bg-muted/50 hover:border-emerald-500/50 text-left transition-all"
                     onClick={() => addWidget(widget.type, widget.title, widget.category)}
                   >
                     <div className="flex items-center gap-2 text-emerald-400">

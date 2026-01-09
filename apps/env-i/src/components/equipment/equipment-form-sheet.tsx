@@ -49,7 +49,6 @@ interface EquipmentFormSheetProps {
 
 export function EquipmentFormSheet({ open, onOpenChange, equipment, onSubmit }: EquipmentFormSheetProps) {
   const form = useForm<z.infer<typeof formSchema>>({
-    // @ts-ignore
     resolver: zodResolver(formSchema),
     defaultValues: equipment || { 
         name: "", 

@@ -94,15 +94,15 @@ export function CreateProjectDialog({ trigger }: CreateProjectDialogProps) {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="glass-morph bg-[#0d0b11] border-white/10 p-0 overflow-hidden max-w-2xl">
+      <DialogContent className="glass-morph bg-background border-border p-0 overflow-hidden max-w-2xl">
         <ScrollArea className="max-h-[85vh]">
           <div className="p-8">
             {/* Background Glow */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-2xl rounded-full -mr-16 -mt-16 pointer-events-none" />
             
             <DialogHeader className="relative z-10">
-              <DialogTitle className="text-2xl font-black">{t('addNewProject')}</DialogTitle>
-              <DialogDescription className="text-[#a69db9] text-sm">
+              <DialogTitle className="text-2xl font-black text-foreground">{t('addNewProject')}</DialogTitle>
+              <DialogDescription className="text-muted-foreground text-sm">
                 {t('createDescription')}
               </DialogDescription>
             </DialogHeader>
@@ -110,13 +110,13 @@ export function CreateProjectDialog({ trigger }: CreateProjectDialogProps) {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-6 relative z-10">
               {/* Name */}
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-[#a69db9] ml-1">
+                <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
                   {t('name')}
                 </Label>
                 <Input
                   id="name"
                   {...register('name')}
-                  className={`bg-white/5 border rounded-2xl text-white placeholder-[#a69db9] focus:bg-white/10 transition-all ${errors.name ? 'border-red-500' : 'border-white/10 focus:border-primary/50'}`}
+                  className={`bg-muted/50 border rounded-2xl text-foreground placeholder-muted-foreground focus:bg-background transition-all ${errors.name ? 'border-destructive' : 'border-border focus:border-primary/50'}`}
                   placeholder="Project Name"
                 />
                 {errors.name && <p className="text-red-500 text-xs ml-1">{(errors.name as any).message}</p>}
@@ -124,13 +124,13 @@ export function CreateProjectDialog({ trigger }: CreateProjectDialogProps) {
 
               {/* Description */}
               <div className="space-y-2">
-                <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-[#a69db9] ml-1">
+                <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
                   {t('description')}
                 </Label>
                 <Input
                   id="description"
                   {...register('description')}
-                  className="bg-white/5 border-white/10 rounded-2xl text-white placeholder-[#a69db9] focus:bg-white/10 focus:border-primary/50 transition-all"
+                  className="bg-muted/50 border-border rounded-2xl text-foreground placeholder-muted-foreground focus:bg-background focus:border-primary/50 transition-all"
                   placeholder={t('descriptionPlaceholder')}
                 />
               </div>
@@ -138,18 +138,18 @@ export function CreateProjectDialog({ trigger }: CreateProjectDialogProps) {
               <div className="grid grid-cols-2 gap-4">
                 {/* Status */}
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-[#a69db9] ml-1">{t('status')}</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{t('status')}</Label>
                   <Controller
                     control={control}
                     name="status"
                     render={({ field }) => (
                       <Select value={field.value} onValueChange={field.onChange}>
-                        <SelectTrigger className="bg-white/5 border-white/10 rounded-2xl text-white focus:bg-white/10 focus:border-primary/50 transition-all">
+                        <SelectTrigger className="bg-muted/50 border-border rounded-2xl text-foreground focus:bg-background focus:border-primary/50 transition-all">
                           <SelectValue placeholder={t('selectStatus')} />
                         </SelectTrigger>
-                        <SelectContent className="glass-morph bg-[#1a1821] border-white/10 text-white">
+                        <SelectContent className="glass-morph bg-card border-border text-foreground">
                             {ProjectStatusEnum.options.map(status => (
-                                <SelectItem key={status} value={status} className="focus:bg-white/5">{status}</SelectItem>
+                                <SelectItem key={status} value={status} className="focus:bg-muted">{status}</SelectItem>
                             ))}
                         </SelectContent>
                       </Select>
@@ -159,7 +159,7 @@ export function CreateProjectDialog({ trigger }: CreateProjectDialogProps) {
 
                 {/* Team */}
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-[#a69db9] ml-1">{t('team')}</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{t('team')}</Label>
                   <Controller
                     control={control}
                     name="teamGroupId"
@@ -168,13 +168,13 @@ export function CreateProjectDialog({ trigger }: CreateProjectDialogProps) {
                         value={field.value || "personal"} 
                         onValueChange={(v) => field.onChange(v === "personal" ? undefined : v)}
                       >
-                        <SelectTrigger className="bg-white/5 border-white/10 rounded-2xl text-white focus:bg-white/10 focus:border-primary/50 transition-all">
+                        <SelectTrigger className="bg-muted/50 border-border rounded-2xl text-foreground focus:bg-background focus:border-primary/50 transition-all">
                           <SelectValue placeholder={t('selectTeam')} />
                         </SelectTrigger>
-                        <SelectContent className="glass-card bg-[#1a1821] border-white/10 text-white">
-                          <SelectItem value="personal" className="focus:bg-white/5">Personal (Only Me)</SelectItem>
+                        <SelectContent className="glass-card bg-card border-border text-foreground">
+                          <SelectItem value="personal" className="focus:bg-muted">Personal (Only Me)</SelectItem>
                           {teamGroups.map(group => (
-                            <SelectItem key={group.id} value={group.id} className="focus:bg-white/5">{group.name}</SelectItem>
+                            <SelectItem key={group.id} value={group.id} className="focus:bg-muted">{group.name}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -186,33 +186,33 @@ export function CreateProjectDialog({ trigger }: CreateProjectDialogProps) {
               <div className="grid grid-cols-2 gap-4">
                 {/* Deadline */}
                 <div className="space-y-2">
-                  <Label htmlFor="deadline" className="text-[10px] font-black uppercase tracking-widest text-[#a69db9] ml-1">
+                  <Label htmlFor="deadline" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
                     {t('deadline')}
                   </Label>
                   <Input
                     id="deadline"
                     type="date"
                     {...register('deadline')}
-                    className="bg-white/5 border-white/10 rounded-2xl text-white focus:bg-white/10 focus:border-primary/50 transition-all scheme-dark"
+                    className="bg-muted/50 border-border rounded-2xl text-foreground focus:bg-background focus:border-primary/50 transition-all"
                   />
                 </div>
                 {/* Budget */}
                 <div className="space-y-2">
-                  <Label htmlFor="budget" className="text-[10px] font-black uppercase tracking-widest text-[#a69db9] ml-1">
+                  <Label htmlFor="budget" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
                     {t('budget')} ($)
                   </Label>
                   <Input
                     id="budget"
                     type="number"
                     {...register('budget')}
-                    className="bg-white/5 border-white/10 rounded-2xl text-white focus:bg-white/10 focus:border-primary/50 transition-all"
+                    className="bg-muted/50 border-border rounded-2xl text-foreground focus:bg-background focus:border-primary/50 transition-all"
                   />
                 </div>
               </div>
               
               {/* Color */}
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-[#a69db9] ml-1">{t('color')}</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{t('color')}</Label>
                 <div className="flex flex-wrap gap-3 p-1">
                   <Controller 
                     control={control}
@@ -228,7 +228,7 @@ export function CreateProjectDialog({ trigger }: CreateProjectDialogProps) {
                             title={c.name}
                           />
                         ))}
-                        <div className="relative h-7 w-7 rounded-full border border-white/10 overflow-hidden ring-offset-[#1a1821] focus-within:ring-2 focus-within:ring-primary">
+                        <div className="relative h-7 w-7 rounded-full border border-border overflow-hidden focus-within:ring-2 focus-within:ring-primary">
                             <Input 
                                 type="color"
                                 value={field.value}
@@ -244,13 +244,13 @@ export function CreateProjectDialog({ trigger }: CreateProjectDialogProps) {
 
               {/* Logo URL */}
               <div className="space-y-2">
-                <Label htmlFor="logoUrl" className="text-[10px] font-black uppercase tracking-widest text-[#a69db9] ml-1">
+                <Label htmlFor="logoUrl" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
                   {t('logoUrl')} (Optional)
                 </Label>
                 <Input
                   id="logoUrl"
                   {...register('logoUrl')}
-                  className="bg-white/5 border-white/10 rounded-2xl text-white placeholder-[#a69db9] focus:bg-white/10 focus:border-primary/50 transition-all"
+                  className="bg-muted/50 border-border rounded-2xl text-foreground placeholder-muted-foreground focus:bg-background focus:border-primary/50 transition-all"
                   placeholder="https://example.com/logo.png"
                 />
               </div>

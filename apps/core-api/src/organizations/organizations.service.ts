@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateOrganizationDto } from './dto/create-organization.dto';
-import { UpdateOrganizationDto } from './dto/update-organization.dto';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { CreateOrganizationDto } from "./dto/create-organization.dto";
+import { UpdateOrganizationDto } from "./dto/update-organization.dto";
 
 // Define interface locally if not in core-types yet
 export interface Organization {
@@ -16,13 +16,13 @@ export interface Organization {
 export class OrganizationsService {
   private organizations: Organization[] = [
     {
-       id: 'org_1',
-       name: 'Acme Corp',
-       slug: 'acme-corp',
-       ownerId: '123',
-       members: ['123'],
-       logoURL: 'https://via.placeholder.com/150'
-    }
+      id: "org_1",
+      name: "Acme Corp",
+      slug: "acme-corp",
+      ownerId: "123",
+      members: ["123"],
+      logoURL: "https://via.placeholder.com/150",
+    },
   ];
 
   create(createOrganizationDto: CreateOrganizationDto, ownerId: string) {
@@ -43,23 +43,28 @@ export class OrganizationsService {
   }
 
   findOne(id: string) {
-    const org = this.organizations.find(o => o.id === id);
+    const org = this.organizations.find((o) => o.id === id);
     if (!org) throw new NotFoundException(`Organization #${id} not found`);
     return org;
   }
 
   update(id: string, updateOrganizationDto: UpdateOrganizationDto) {
-    const index = this.organizations.findIndex(o => o.id === id);
-    if (index === -1) throw new NotFoundException(`Organization #${id} not found`);
-    
-    const updatedOrg = { ...this.organizations[index], ...updateOrganizationDto };
+    const index = this.organizations.findIndex((o) => o.id === id);
+    if (index === -1)
+      throw new NotFoundException(`Organization #${id} not found`);
+
+    const updatedOrg = {
+      ...this.organizations[index],
+      ...updateOrganizationDto,
+    };
     this.organizations[index] = updatedOrg;
     return updatedOrg;
   }
 
   remove(id: string) {
-    const index = this.organizations.findIndex(o => o.id === id);
-    if (index === -1) throw new NotFoundException(`Organization #${id} not found`);
+    const index = this.organizations.findIndex((o) => o.id === id);
+    if (index === -1)
+      throw new NotFoundException(`Organization #${id} not found`);
     this.organizations.splice(index, 1);
     return { deleted: true };
   }

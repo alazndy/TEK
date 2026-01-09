@@ -4,6 +4,8 @@ import "./globals.css";
 import { AuthProvider } from "@/components/auth-provider";
 import { CartDrawer } from "@/components/cart-drawer";
 import { RecaptchaProvider } from "@/components/recaptcha-provider";
+import { CookieConsent } from "@/components/compliance/cookie-consent";
+import { LegalFooter } from "@/components/compliance/legal-footer";
 
 export const metadata: Metadata = {
   title: "T-Market | Ecosystem Marketplace",
@@ -21,7 +23,9 @@ export default function RootLayout({
         <RecaptchaProvider>
           <AuthProvider>
             {children}
+            <LegalFooter />
             <CartDrawer />
+            <CookieConsent />
           </AuthProvider>
         </RecaptchaProvider>
       </body>

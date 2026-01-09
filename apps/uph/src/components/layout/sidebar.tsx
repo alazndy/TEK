@@ -259,15 +259,15 @@ export function Sidebar({ isCollapsed = false }: SidebarProps) {
                             className={cn(
                               "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
                               pathname === route.href
-                                ? "bg-white/10 text-white shadow-sm"
-                                : "text-sidebar-foreground/80 hover:text-white hover:bg-white/5",
+                                ? "bg-primary/10 text-primary shadow-sm font-semibold"
+                                : "text-sidebar-foreground/80 hover:text-foreground hover:bg-muted/50",
                               isCollapsed && "justify-center px-2"
                             )}
                             title={isCollapsed ? route.label : undefined}
                           >
                             <route.icon className={cn(
                               "h-4 w-4 flex-shrink-0 transition-colors",
-                              pathname === route.href ? "text-white" : route.color
+                              pathname === route.href ? "text-primary" : route.color
                             )} />
                             
                             {!isCollapsed && (
@@ -290,7 +290,7 @@ export function Sidebar({ isCollapsed = false }: SidebarProps) {
          {!isCollapsed ? (
            <div className="glass-panel rounded-2xl p-4 border-sidebar-border/50">
               <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-3">Workspace</p>
-              <PremiumButton className="w-full text-white rounded-xl shadow-lg border-0 transition-all bg-gradient-to-r from-primary to-purple-600 hover:opacity-90">
+              <PremiumButton className="w-full text-primary-foreground rounded-xl shadow-lg border-0 transition-all bg-gradient-to-r from-primary to-purple-600 hover:opacity-90">
                  <Plus className="h-4 w-4 mr-2" /> {t('newProject')}
               </PremiumButton>
            </div>

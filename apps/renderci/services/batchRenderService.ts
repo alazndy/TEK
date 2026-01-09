@@ -70,6 +70,7 @@ class BatchRenderService {
       fileName: file.name,
       fileUrl: file.url,
       fileType: file.type,
+      model: queue.config.model, // Pass model selection
       format: queue.config.format,
       quality: queue.config.quality,
       width: queue.config.width || dimensions.width,
@@ -181,22 +182,22 @@ class BatchRenderService {
     this.notifyJobUpdate(job);
 
     try {
-      // Simulate render progress
-      for (let i = 0; i <= 100; i += 10) {
-        if (!this.isProcessing) break;
-        
-        await this.delay(200 + Math.random() * 300); // Simulate work
-        job.progress = i;
-        this.notifyJobUpdate(job);
-      }
+      // Delegate to selected backend
+      const result = await this.backend.processJob(job, (progress) => {
+          if (this.isProcessing && queue.status === 'running') {
+              job.progress = progress;
+              this.notifyJobUpdate(job);
+          }
+      });
 
-      if (this.isProcessing) {
-        // In real implementation, this would call the actual renderer
+      if (result.success) {
         job.status = 'completed';
         job.progress = 100;
         job.completedAt = new Date();
-        job.outputUrl = `rendered_${job.id}.${job.format}`;
-        job.outputSize = Math.floor(Math.random() * 5000000) + 500000; // Mock file size
+        job.outputUrl = result.outputUrl;
+        job.outputSize = result.outputSize;
+      } else {
+        throw new Error(result.error);
       }
     } catch (error) {
       job.status = 'failed';
@@ -210,7 +211,185 @@ class BatchRenderService {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
+  // === Backends ===
+  
+  private backend: RenderBackend = new SimulationBackend();
+
+  setBackend(type: 'simulation' | 'nano-banana', config?: any) {
+      if (type === 'nano-banana') {
+          this.backend = new NanoBananaBackend(config?.url || 'http://localhost:5000');
+      } else {
+          this.backend = new SimulationBackend();
+      }
+  }
+
   // === Events ===
+
+  onQueueChange(handler: QueueEventHandler): void {
+    this.onQueueUpdate = handler;
+  }
+
+  onJobChange(handler: JobEventHandler): void {
+    this.onJobUpdate = handler;
+  }
+
+  private notifyQueueUpdate(queue: RenderQueue): void {
+    this.onQueueUpdate?.(queue);
+  }
+
+  private notifyJobUpdate(job: RenderJob): void {
+    this.onJobUpdate?.(job);
+  }
+
+  // === Stats ===
+
+  getQueueStats(queueId: string) {
+    const queue = this.queues.get(queueId);
+    if (!queue) return null;
+
+    return {
+      total: queue.jobs.length,
+      pending: queue.jobs.filter(j => j.status === 'pending').length,
+      processing: queue.jobs.filter(j => j.status === 'processing').length,
+      completed: queue.jobs.filter(j => j.status === 'completed').length,
+      failed: queue.jobs.filter(j => j.status === 'failed').length,
+      cancelled: queue.jobs.filter(j => j.status === 'cancelled').length,
+      progress: queue.jobs.length > 0 
+        ? Math.round(queue.jobs.reduce((sum, j) => sum + j.progress, 0) / queue.jobs.length)
+        : 0,
+    };
+  }
+}
+
+  // === Events ===
+
+  onQueueChange(handler: QueueEventHandler): void {
+    this.onQueueUpdate = handler;
+  }
+
+  onJobChange(handler: JobEventHandler): void {
+    this.onJobUpdate = handler;
+  }
+
+  private notifyQueueUpdate(queue: RenderQueue): void {
+    this.onQueueUpdate?.(queue);
+  }
+
+  private notifyJobUpdate(job: RenderJob): void {
+    this.onJobUpdate?.(job);
+  }
+
+  // === Stats ===
+
+  getQueueStats(queueId: string) {
+    const queue = this.queues.get(queueId);
+    if (!queue) return null;
+
+    return {
+      total: queue.jobs.length,
+      pending: queue.jobs.filter(j => j.status === 'pending').length,
+      processing: queue.jobs.filter(j => j.status === 'processing').length,
+      completed: queue.jobs.filter(j => j.status === 'completed').length,
+      failed: queue.jobs.filter(j => j.status === 'failed').length,
+      cancelled: queue.jobs.filter(j => j.status === 'cancelled').length,
+      progress: queue.jobs.length > 0 
+        ? Math.round(queue.jobs.reduce((sum, j) => sum + j.progress, 0) / queue.jobs.length)
+        : 0,
+    };
+  }
+}
+
+// === Backend Strategy Interfaces ===
+
+export interface RenderBackend {
+    processJob(job: RenderJob, onProgress: (progress: number) => void): Promise<RenderResult>;
+}
+
+export interface RenderResult {
+    success: boolean;
+    outputUrl?: string;
+    outputSize?: number;
+    error?: string;
+}
+
+// 1. Simulation Backend (Default)
+class SimulationBackend implements RenderBackend {
+    async processJob(job: RenderJob, onProgress: (progress: number) => void): Promise<RenderResult> {
+        // Simulate render progress
+        for (let i = 0; i <= 100; i += 10) {
+            await new Promise(r => setTimeout(r, 200 + Math.random() * 300));
+            onProgress(i);
+        }
+        return {
+            success: true,
+            outputUrl: `rendered_${job.id}.${job.format}`,
+            outputSize: Math.floor(Math.random() * 5000000) + 500000
+        };
+    }
+}
+
+// 2. Nano Banana Backend (Remote API)
+class NanoBananaBackend implements RenderBackend {
+    private apiUrl: string;
+
+    constructor(url: string) {
+        this.apiUrl = url;
+    }
+
+    async processJob(job: RenderJob, onProgress: (progress: number) => void): Promise<RenderResult> {
+        try {
+            // 1. Submit Job
+            const submitRes = await fetch(`${this.apiUrl}/api/render`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fileUrl: job.fileUrl,
+                    model: job.model, // Pass model parameter
+                    format: job.format,
+                    quality: job.quality,
+                    width: job.width,
+                    height: job.height
+                })
+            });
+
+            if (!submitRes.ok) throw new Error("Failed to submit to Nano Banana");
+            const { taskId } = await submitRes.json();
+
+            // 2. Poll for Completion
+            let isComplete = false;
+            let result: any = {};
+
+            while (!isComplete) {
+                await new Promise(r => setTimeout(r, 2000)); // Poll every 2s
+                
+                const statusRes = await fetch(`${this.apiUrl}/api/status/${taskId}`);
+                if (!statusRes.ok) continue;
+
+                const status = await statusRes.json();
+                onProgress(status.progress || 0);
+
+                if (status.state === 'completed') {
+                    isComplete = true;
+                    result = status;
+                } else if (status.state === 'failed') {
+                    throw new Error(status.error || "Remote render failed");
+                }
+            }
+
+            return {
+                success: true,
+                outputUrl: result.outputUrl,
+                outputSize: result.outputSize
+            };
+
+        } catch (error: any) {
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+    }
+}
 
   onQueueChange(handler: QueueEventHandler): void {
     this.onQueueUpdate = handler;

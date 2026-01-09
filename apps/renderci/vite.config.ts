@@ -19,7 +19,15 @@ export default defineConfig(({ mode }) => {
         'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
       },
       build: {
-        target: 'esnext'
+        target: 'esnext',
+        rollupOptions: {
+          output: {
+            manualChunks: {
+              'vendor-react': ['react', 'react-dom'],
+              'vendor-ui': ['framer-motion', 'lucide-react', 'clsx', 'tailwind-merge']
+            }
+          }
+        }
       },
       optimizeDeps: {
         esbuildOptions: {

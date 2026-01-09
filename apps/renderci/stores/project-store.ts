@@ -65,7 +65,7 @@ export const useProjectStore = create<ProjectState>()(
       },
       
       // Project Actions
-      createProject: (name: string, description?: string) => {
+      createProject: (name, description) => {
         const project: RenderProject = {
           id: uuid(),
           name,
@@ -77,7 +77,7 @@ export const useProjectStore = create<ProjectState>()(
           tags: [],
         };
         
-        set((state: ProjectState) => ({ 
+        set(state => ({ 
           projects: [project, ...state.projects],
           activeProjectId: project.id 
         }));
@@ -85,8 +85,8 @@ export const useProjectStore = create<ProjectState>()(
         return project;
       },
       
-      updateProject: (id: string, updates: Partial<RenderProject>) => {
-        set((state: ProjectState) => ({
+      updateProject: (id, updates) => {
+        set(state => ({
           projects: state.projects.map(p => 
             p.id === id 
               ? { ...p, ...updates, updatedAt: Date.now() }
@@ -95,14 +95,14 @@ export const useProjectStore = create<ProjectState>()(
         }));
       },
       
-      deleteProject: (id: string) => {
-        set((state: ProjectState) => ({
+      deleteProject: (id) => {
+        set(state => ({
           projects: state.projects.filter(p => p.id !== id),
           activeProjectId: state.activeProjectId === id ? null : state.activeProjectId
         }));
       },
       
-      setActiveProject: (id: string | null) => {
+      setActiveProject: (id) => {
         set({ activeProjectId: id });
       },
       
@@ -112,7 +112,7 @@ export const useProjectStore = create<ProjectState>()(
       },
       
       // Render Actions
-      addRenderToProject: (projectId: string, renderData: Omit<RenderItem, 'id' | 'createdAt' | 'versions'>) => {
+      addRenderToProject: (projectId, renderData) => {
         const render: RenderItem = {
           id: uuid(),
           ...renderData,
@@ -120,7 +120,7 @@ export const useProjectStore = create<ProjectState>()(
           versions: [],
         };
         
-        set((state: ProjectState) => ({
+        set(state => ({
           projects: state.projects.map(p => 
             p.id === projectId 
               ? { 
@@ -136,14 +136,14 @@ export const useProjectStore = create<ProjectState>()(
         return render;
       },
       
-      addVersionToRender: (projectId: string, renderId: string, versionData: Omit<RenderVersion, 'id' | 'createdAt'>) => {
+      addVersionToRender: (projectId, renderId, versionData) => {
         const version: RenderVersion = {
           id: uuid(),
           ...versionData,
           createdAt: Date.now(),
         };
         
-        set((state: ProjectState) => ({
+        set(state => ({
           projects: state.projects.map(p => 
             p.id === projectId 
               ? {
@@ -160,8 +160,8 @@ export const useProjectStore = create<ProjectState>()(
         }));
       },
       
-      deleteRender: (projectId: string, renderId: string) => {
-        set((state: ProjectState) => ({
+      deleteRender: (projectId, renderId) => {
+        set(state => ({
           projects: state.projects.map(p => 
             p.id === projectId 
               ? { 
@@ -175,15 +175,15 @@ export const useProjectStore = create<ProjectState>()(
       },
       
       // Batch Queue Actions
-      addToBatch: (items: Omit<BatchItem, 'id' | 'status' | 'progress'>[]) => {
-        const batchItems: BatchItem[] = items.map((item: any) => ({
+      addToBatch: (items) => {
+        const batchItems: BatchItem[] = items.map(item => ({
           id: uuid(),
           ...item,
           status: 'pending' as BatchItemStatus,
           progress: 0,
         }));
         
-        set((state: ProjectState) => ({
+        set(state => ({
           batchQueue: {
             ...state.batchQueue,
             items: [...state.batchQueue.items, ...batchItems]
@@ -191,8 +191,8 @@ export const useProjectStore = create<ProjectState>()(
         }));
       },
       
-      updateBatchItem: (id: string, updates: Partial<BatchItem>) => {
-        set((state: ProjectState) => ({
+      updateBatchItem: (id, updates) => {
+        set(state => ({
           batchQueue: {
             ...state.batchQueue,
             items: state.batchQueue.items.map(item => 
@@ -202,8 +202,8 @@ export const useProjectStore = create<ProjectState>()(
         }));
       },
       
-      removeBatchItem: (id: string) => {
-        set((state: ProjectState) => ({
+      removeBatchItem: (id) => {
+        set(state => ({
           batchQueue: {
             ...state.batchQueue,
             items: state.batchQueue.items.filter(item => item.id !== id)
@@ -212,7 +212,7 @@ export const useProjectStore = create<ProjectState>()(
       },
       
       clearBatch: () => {
-        set((state: ProjectState) => ({
+        set(state => ({
           batchQueue: {
             ...state.batchQueue,
             items: [],
@@ -223,19 +223,19 @@ export const useProjectStore = create<ProjectState>()(
       },
       
       startBatch: () => {
-        set((state: ProjectState) => ({
+        set(state => ({
           batchQueue: { ...state.batchQueue, isRunning: true }
         }));
       },
       
       pauseBatch: () => {
-        set((state: ProjectState) => ({
+        set(state => ({
           batchQueue: { ...state.batchQueue, isRunning: false }
         }));
       },
       
       // Getters
-      getProjectById: (id: string) => {
+      getProjectById: (id) => {
         return get().projects.find(p => p.id === id);
       },
       

@@ -23,10 +23,10 @@ export const PremiumButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const variants = {
         default: "bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg",
         premium: "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg hover:shadow-indigo-500/25 border-0 hover:scale-[1.02]",
-        glass: "bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10 shadow-sm hover:shadow-md",
-        ghost: "hover:bg-white/5 hover:text-white",
-        outline: "border border-white/20 bg-transparent hover:bg-white/5 hover:text-white",
-        destructive: "bg-red-600 text-white hover:bg-red-700",
+        glass: "bg-background/20 hover:bg-background/40 text-foreground backdrop-blur-md border border-border/50 shadow-sm hover:shadow-md",
+        ghost: "hover:bg-muted/50 hover:text-foreground",
+        outline: "border border-border bg-transparent hover:bg-muted/50 hover:text-foreground",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
     };
 
     // Sizes

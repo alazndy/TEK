@@ -68,7 +68,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] bg-zinc-950/95 backdrop-blur-xl flex items-center justify-center p-4"
+        className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-xl flex items-center justify-center p-4"
       >
         {/* Background Effects */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -82,26 +82,27 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="max-w-5xl w-full h-[600px] bg-zinc-900/80 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl flex relative overflow-hidden"
+          className="max-w-5xl w-full h-[600px] bg-card/80 backdrop-blur-2xl border border-border rounded-3xl shadow-2xl flex relative overflow-hidden"
         >
           {/* Close Button */}
           <button 
             onClick={handleClose}
-            className="absolute top-4 right-4 p-2 text-zinc-500 hover:text-white transition-colors z-50 hover:bg-white/5 rounded-full"
+            className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-foreground transition-colors z-50 hover:bg-muted/10 rounded-full"
           >
             <X className="w-6 h-6" />
           </button>
 
           {/* Left Side: Brand & Actions */}
-          <div className="w-[40%] bg-black/30 p-10 flex flex-col justify-between border-r border-white/5">
+          <div className="w-[40%] bg-muted/30 p-10 flex flex-col justify-between border-r border-border">
             <div>
               {/* Brand */}
               <div className="mb-10">
                 <h1 className="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-cyan-400 via-blue-400 to-violet-500 mb-2">
                   T-SA
                 </h1>
-                <p className="text-zinc-400 font-medium">Technical Smart Assistant</p>
-                <p className="text-xs text-zinc-600 mt-1">T-Ecosystem v1.0</p>
+                </h1>
+                <p className="text-muted-foreground font-medium">Technical Smart Assistant</p>
+                <p className="text-xs text-muted-foreground/80 mt-1">T-Ecosystem v1.0</p>
               </div>
 
               {/* Quick Actions */}
@@ -116,7 +117,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
 
                 <button 
                   onClick={onAnalyzeDocument}
-                  className="w-full h-12 flex items-center justify-start pl-6 text-base hover:bg-white/10 text-zinc-200 rounded-xl group transition-all"
+                  className="w-full h-12 flex items-center justify-start pl-6 text-base hover:bg-accent hover:text-accent-foreground text-foreground rounded-xl group transition-all"
                 >
                   <FileSearch className="w-5 h-5 mr-3 text-violet-400 group-hover:scale-110 transition-transform" />
                   Döküman Analizi (DXF/PDF)
@@ -139,40 +140,39 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 </button>
               </div>
 
-              {/* AI Features */}
               <div className="mt-8 grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center gap-2">
+                <div className="p-3 rounded-xl bg-muted/40 border border-border flex items-center gap-2">
                   <Brain className="w-4 h-4 text-cyan-400" />
-                  <span className="text-xs text-zinc-400">Agentic AI</span>
+                  <span className="text-xs text-muted-foreground">Agentic AI</span>
                 </div>
-                <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center gap-2">
+                <div className="p-3 rounded-xl bg-muted/40 border border-border flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-violet-400" />
-                  <span className="text-xs text-zinc-400">Gemini Pro</span>
+                  <span className="text-xs text-muted-foreground">Gemini Pro</span>
                 </div>
-                <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center gap-2">
+                <div className="p-3 rounded-xl bg-muted/40 border border-border flex items-center gap-2">
                   <Zap className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs text-zinc-400">Gerçek Zamanlı</span>
+                  <span className="text-xs text-muted-foreground">Gerçek Zamanlı</span>
                 </div>
-                <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center gap-2">
+                <div className="p-3 rounded-xl bg-muted/40 border border-border flex items-center gap-2">
                   <Bot className="w-4 h-4 text-emerald-400" />
-                  <span className="text-xs text-zinc-400">Otomatik Görev</span>
+                  <span className="text-xs text-muted-foreground">Otomatik Görev</span>
                 </div>
               </div>
             </div>
 
             {/* Bottom Links */}
-            <div className="flex gap-4 pt-6 border-t border-white/5">
-              <button onClick={onSettings} className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-sm font-medium">
+            <div className="flex gap-4 pt-6 border-t border-border">
+              <button onClick={onSettings} className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">
                 <Settings className="w-4 h-4" /> Ayarlar
               </button>
             </div>
           </div>
 
           {/* Right Side: Recent Chats */}
-          <div className="flex-1 bg-zinc-900/50 p-10 flex flex-col">
+          <div className="flex-1 bg-card/50 p-10 flex flex-col">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-zinc-200 flex items-center gap-2">
-                <Clock className="w-5 h-5 text-zinc-500" />
+              <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                <Clock className="w-5 h-5 text-muted-foreground" />
                 Son Konuşmalar
               </h2>
               <button className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors">
@@ -190,35 +190,35 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.1 }}
                       onClick={() => onOpenRecent?.(chat)}
-                      className="group p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer flex items-center gap-4"
+                      className="group p-4 rounded-xl bg-muted/30 border border-border hover:bg-muted/50 hover:border-border/80 transition-all cursor-pointer flex items-center gap-4"
                     >
-                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-border flex items-center justify-center group-hover:scale-110 transition-transform">
                         <MessageSquare className="w-6 h-6 text-cyan-400" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-zinc-200 text-base truncate group-hover:text-white transition-colors">
+                        <h3 className="font-bold text-foreground text-base truncate group-hover:text-primary transition-colors">
                           {chat.title}
                         </h3>
-                        <p className="text-xs text-zinc-500 mt-0.5 truncate">
+                        <p className="text-xs text-muted-foreground mt-0.5 truncate">
                           {chat.preview || chat.date}
                         </p>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-zinc-600 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                      <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-1 transition-all" />
                     </motion.div>
                   ))}
                 </div>
               ) : (
-                <div className="h-full flex flex-col items-center justify-center text-zinc-500">
+                <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
                   <MessageSquare className="w-16 h-16 mb-4 stroke-1 opacity-30" />
                   <p className="text-sm">Henüz konuşma başlatmadınız</p>
-                  <p className="text-xs mt-1 text-zinc-600">Asistanla sohbet başlatmak için sol taraftaki butonu kullanın</p>
+                  <p className="text-xs mt-1 text-muted-foreground/80">Asistanla sohbet başlatmak için sol taraftaki butonu kullanın</p>
                 </div>
               )}
             </div>
 
             {/* Ecosystem Integration Info */}
-            <div className="mt-6 pt-6 border-t border-white/5">
-              <p className="text-xs text-zinc-500 mb-3">Bağlı Sistemler</p>
+            <div className="mt-6 pt-6 border-t border-border">
+              <p className="text-xs text-muted-foreground mb-3">Bağlı Sistemler</p>
               <div className="flex gap-2 flex-wrap">
                 <span className="px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs font-medium">
                   UPH Bağlı

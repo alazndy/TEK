@@ -19,6 +19,7 @@ interface ToolbarProps {
   canRedo: boolean;
   isAnalyzing: boolean;
   runAnalysis: () => void;
+  openPartLookup: () => void;
   handleAutoRoute: () => void;
   hasConnections: boolean;
   requestClear: () => void;
@@ -38,7 +39,7 @@ interface ToolbarProps {
 export const Toolbar: React.FC<ToolbarProps> = (props) => {
   const {
     handleUndo, handleRedo, canUndo, canRedo,
-    isAnalyzing, runAnalysis,
+    isAnalyzing, runAnalysis, openPartLookup,
     handleAutoRoute, hasConnections,
     requestClear, handleExportImage,
     theme, setTheme,
@@ -94,7 +95,7 @@ export const Toolbar: React.FC<ToolbarProps> = (props) => {
                     variant="default" // Using default for primary action look
                     size="sm"
                     className={cn(
-                        "text-xs font-bold gap-2 bg-gradient-to-r from-orange-400 to-amber-500 hover:shadow-orange-500/25 text-white border-0",
+                        "text-xs font-bold gap-2 bg-gradient-to-r from-orange-400 to-amber-500 hover:shadow-orange-500/25 text-primary-foreground border-0",
                         isAnalyzing && "animate-pulse"
                     )}
                 >
@@ -103,6 +104,23 @@ export const Toolbar: React.FC<ToolbarProps> = (props) => {
                 </Button>
             </TooltipTrigger>
             <TooltipContent><p>{t('aiAnalysis')}</p></TooltipContent>
+        </Tooltip>
+
+        <Separator orientation="vertical" className="h-6 mx-1 bg-border/50" />
+
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <Button 
+                    onClick={openPartLookup}
+                    variant="outline"
+                    size="sm"
+                    className="text-xs font-bold gap-2 text-blue-500 border-blue-200 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                >
+                    <PackagePlus className="w-3.5 h-3.5 mr-1" />
+                    Parça Ara
+                </Button>
+            </TooltipTrigger>
+            <TooltipContent><p>Parça Kataloğu</p></TooltipContent>
         </Tooltip>
 
         <Tooltip>
