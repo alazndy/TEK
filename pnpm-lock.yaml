@@ -243,6 +243,12 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.1.8
         version: 1.2.8(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+      '@react-three/drei':
+        specifier: ^10.7.7
+        version: 10.7.7(@react-three/fiber@9.5.0(@types/react@19.2.7)(immer@11.1.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(three@0.182.0))(@types/react@19.2.7)(@types/three@0.182.0)(immer@11.1.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(three@0.182.0)
+      '@react-three/fiber':
+        specifier: ^9.5.0
+        version: 9.5.0(@types/react@19.2.7)(immer@11.1.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(three@0.182.0)
       '@t-ecosystem/core-types':
         specifier: workspace:*
         version: link:../../packages/core-types
@@ -336,6 +342,9 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@4.1.18)
+      three:
+        specifier: ^0.182.0
+        version: 0.182.0
       xlsx:
         specifier: ^0.18.5
         version: 0.18.5
@@ -379,6 +388,9 @@ importers:
       '@types/react-table':
         specifier: ^7.7.20
         version: 7.7.20
+      '@types/three':
+        specifier: ^0.182.0
+        version: 0.182.0
       '@vitejs/plugin-react':
         specifier: ^5.1.2
         version: 5.1.2(vite@7.3.0(@types/node@20.19.27)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1))
