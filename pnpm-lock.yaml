@@ -1271,6 +1271,12 @@ importers:
 
   packages/ui-kit:
     dependencies:
+      '@types/react':
+        specifier: ^19.0.2
+        version: 19.2.7
+      '@types/react-dom':
+        specifier: ^19.0.2
+        version: 19.2.3(@types/react@19.2.7)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -1280,22 +1286,16 @@ importers:
       framer-motion:
         specifier: ^12.23.26
         version: 12.23.26(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      tailwind-merge:
-        specifier: ^2.6.0
-        version: 2.6.0
-    devDependencies:
-      '@types/react':
-        specifier: ^19.0.2
-        version: 19.2.7
-      '@types/react-dom':
-        specifier: ^19.0.2
-        version: 19.2.3(@types/react@19.2.7)
       react:
         specifier: ^19.0.0
         version: 19.2.3
       react-dom:
         specifier: ^19.0.0
         version: 19.2.3(react@19.2.3)
+      tailwind-merge:
+        specifier: ^2.6.0
+        version: 2.6.0
+    devDependencies:
       typescript:
         specifier: ^5.7.2
         version: 5.9.3
