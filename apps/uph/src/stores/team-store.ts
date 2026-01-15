@@ -1,11 +1,10 @@
 import { create } from 'zustand';
 import { Team, TeamMember, TeamGroup } from '@/types/team';
 import { db } from '@/lib/firebase';
-import { 
+import {
   collection, 
   addDoc, 
   updateDoc, 
-  deleteDoc, 
   doc, 
   getDocs, 
   query, 
@@ -67,9 +66,9 @@ export const useTeamStore = create<TeamState>((set, get) => ({
           set({ activeTeamId: userTeams[0].id });
       }
 
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error fetching teams:", error);
-      set({ error: error.message });
+      set({ error: error instanceof Error ? error.message : 'Unknown error' });
     } finally {
       set({ isLoading: false });
     }
@@ -110,9 +109,9 @@ export const useTeamStore = create<TeamState>((set, get) => ({
         isLoading: false
       }));
 
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error creating team:", error);
-      set({ error: error.message, isLoading: false });
+      set({ error: error instanceof Error ? error.message : 'Unknown error', isLoading: false });
     }
   },
 
@@ -124,9 +123,15 @@ export const useTeamStore = create<TeamState>((set, get) => ({
       const q = query(usersRef, where('email', '==', email));
       const snapshot = await getDocs(q);
       
-      let user: any;
+      let user: { id: string; email: string; displayName: string; photoURL?: string };
       if (!snapshot.empty) {
-        user = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
+        const data = snapshot.docs[0].data();
+        user = { 
+            id: snapshot.docs[0].id, 
+            email: data.email,
+            displayName: data.displayName,
+            photoURL: data.photoURL
+        };
       } else {
         // Mock user if not found for prototype
         user = {
@@ -141,7 +146,7 @@ export const useTeamStore = create<TeamState>((set, get) => ({
       if (!team) throw new Error("Team not found");
 
       const newMember: TeamMember = {
-        userId: user.id || user.uid,
+        userId: user.id,
         email: user.email,
         displayName: user.displayName,
         role,
@@ -159,9 +164,9 @@ export const useTeamStore = create<TeamState>((set, get) => ({
         teams: state.teams.map(t => t.id === teamId ? { ...t, members: updatedMembers } : t),
         isLoading: false
       }));
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error adding member:", error);
-      set({ error: error.message, isLoading: false });
+      set({ error: error instanceof Error ? error.message : 'Unknown error', isLoading: false });
     }
   },
 
@@ -177,7 +182,7 @@ export const useTeamStore = create<TeamState>((set, get) => ({
           set(state => ({
               teams: state.teams.map(t => t.id === teamId ? { ...t, members: updatedMembers } : t)
           }));
-      } catch (error: any) {
+      } catch (error) {
           console.error("Error removing member:", error);
       }
   },
@@ -196,7 +201,7 @@ export const useTeamStore = create<TeamState>((set, get) => ({
           set(state => ({
               teams: state.teams.map(t => t.id === teamId ? { ...t, members: updatedMembers } : t)
           }));
-      } catch (error: any) {
+      } catch (error) {
           console.error("Error updating member role:", error);
       }
   },
@@ -218,7 +223,7 @@ export const useTeamStore = create<TeamState>((set, get) => ({
         set(state => ({
             teams: state.teams.map(t => t.id === teamId ? { ...t, groups: updatedGroups } : t)
         }));
-    } catch (error: any) {
+    } catch (error) {
         console.error("Error creating group:", error);
     }
   },
@@ -234,7 +239,7 @@ export const useTeamStore = create<TeamState>((set, get) => ({
         set(state => ({
             teams: state.teams.map(t => t.id === teamId ? { ...t, groups: updatedGroups } : t)
         }));
-    } catch (error: any) {
+    } catch (error) {
         console.error("Error deleting group:", error);
     }
   },
@@ -254,7 +259,7 @@ export const useTeamStore = create<TeamState>((set, get) => ({
         set(state => ({
             teams: state.teams.map(t => t.id === teamId ? { ...t, groups: updatedGroups } : t)
         }));
-    } catch (error: any) {
+    } catch (error) {
         console.error("Error adding member to group:", error);
     }
   },
@@ -274,7 +279,7 @@ export const useTeamStore = create<TeamState>((set, get) => ({
         set(state => ({
             teams: state.teams.map(t => t.id === teamId ? { ...t, groups: updatedGroups } : t)
         }));
-    } catch (error: any) {
+    } catch (error) {
         console.error("Error removing member from group:", error);
     }
   }

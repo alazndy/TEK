@@ -1,5 +1,5 @@
 
-import { parseWeaveBOM } from '../lib/weave';
+import { parseWeaveBOM } from '../../lib/weave';
 
 describe('Weave BOM Parser', () => {
     it('should parse a flat array of components', () => {

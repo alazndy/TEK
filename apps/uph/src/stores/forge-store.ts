@@ -8,8 +8,7 @@ import {
   doc, 
   query, 
   orderBy,
-  Timestamp,
-  where
+  Timestamp
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { ForgeJob, ForgeStats } from '@/types/forge';
@@ -82,9 +81,9 @@ export const useForgeStore = create<ForgeStore>((set, get) => ({
         stats: calculateStats(jobs),
         loading: false 
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Fetching forge jobs failed:', error);
-      set({ error: error.message, loading: false });
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
     }
   },
 
@@ -111,8 +110,8 @@ export const useForgeStore = create<ForgeStore>((set, get) => ({
         stats: calculateStats(updatedJobs),
         loading: false 
       });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },

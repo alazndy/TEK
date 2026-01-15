@@ -36,7 +36,11 @@ export class FirebaseProjectRepository implements IProjectRepository {
     }
 
     async create(data: Omit<Project, 'id'>): Promise<string> {
-        const docRef = await addDoc(collection(db, this.collectionName), data);
+        // Remove undefined fields to avoid Firestore errors
+        const cleanData = Object.fromEntries(
+            Object.entries(data).filter(([_, v]) => v !== undefined)
+        );
+        const docRef = await addDoc(collection(db, this.collectionName), cleanData);
         return docRef.id;
     }
 

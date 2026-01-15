@@ -26,8 +26,10 @@ export function IntegrationsSettings() {
             setConnectingDrive(true);
             try {
                 const user = await GoogleDriveService.connect();
-                setDriveUser(user.user || user.displayName || 'Unknown User');
-                toast.success(t('integrations.driveConnected', { user: user.user || user.displayName || 'Unknown User' }));
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const driveUser = user as any;
+                setDriveUser(driveUser.user || driveUser.displayName || 'Unknown User');
+                toast.success(t('integrations.driveConnected', { user: driveUser.user || driveUser.displayName || 'Unknown User' }));
             } catch (error) {
                 console.error('Google Drive connection failed:', error);
                 toast.error(t('integrations.driveConnectError'));

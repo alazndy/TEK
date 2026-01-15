@@ -58,6 +58,7 @@ export function AddTaskDialog({ open, onOpenChange, defaultStatus = 'todo' }: Ad
   // ... (keep logic) ...
 
   const form = useForm<z.infer<typeof formSchema>>({
+    // @ts-expect-error - Zod version mismatch with hookform resolver
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',

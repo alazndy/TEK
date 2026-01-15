@@ -50,12 +50,15 @@ export const useGitHubStore = create<GitHubState>((set, get) => ({
     }
 
     try {
-      // @ts-ignore
+      // @ts-expect-error - fetchRepoInfo might return incompatible type
       const repoInfo = await fetchRepoInfo(parsed.owner, parsed.repo, activeToken);
       set({ repoInfo, isConnecting: false });
       return repoInfo;
-    } catch (error: any) {
-      set({ error: error.message || 'Failed to connect to repository', isConnecting: false });
+    } catch (error) {
+      set({ 
+        error: error instanceof Error ? error.message : 'Failed to connect to repository', 
+        isConnecting: false 
+      });
       return null;
     }
   },
@@ -63,11 +66,11 @@ export const useGitHubStore = create<GitHubState>((set, get) => ({
   fetchRepoIssues: async (owner, repo, token) => {
     try {
       const activeToken = token || get().token;
-      // @ts-ignore
+      // @ts-expect-error - fetchIssues might return incompatible type
       const issues = await fetchIssues(owner, repo, activeToken);
       set({ issues });
       return issues;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error fetching issues:', error);
       return [];
     }

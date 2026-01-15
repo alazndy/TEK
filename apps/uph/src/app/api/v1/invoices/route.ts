@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const perPage = Math.min(parseInt(searchParams.get('per_page') || '20'), 100);
     
-    let q = query(
+    const q = query(
       collection(db, 'invoices'),
       where('userId', '==', auth.userId),
       orderBy('issueDate', 'desc'),

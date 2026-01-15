@@ -12,7 +12,7 @@ import {
   Timestamp
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { Reminder, ReminderSettings, ReminderStatus, ReminderType } from '@/types/reminder';
+import type { Reminder, ReminderSettings, ReminderStatus } from '@/types/reminder';
 
 interface ReminderState {
   reminders: Reminder[];
@@ -93,8 +93,8 @@ export const useReminderStore = create<ReminderStore>((set, get) => ({
       ).length;
       
       set({ reminders, upcomingCount, loading: false });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       console.error('Error fetching reminders:', error);
     }
   },
@@ -110,6 +110,7 @@ export const useReminderStore = create<ReminderStore>((set, get) => ({
         updatedAt: now,
       };
       
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const docData: any = {
         ...reminder,
         triggerDate: Timestamp.fromDate(reminderData.triggerDate),
@@ -133,8 +134,8 @@ export const useReminderStore = create<ReminderStore>((set, get) => ({
       }));
       
       return docRef.id;
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },
@@ -143,6 +144,7 @@ export const useReminderStore = create<ReminderStore>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const now = new Date();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const updateData: any = {
         ...data,
         updatedAt: Timestamp.fromDate(now),
@@ -160,8 +162,8 @@ export const useReminderStore = create<ReminderStore>((set, get) => ({
         ),
         loading: false,
       }));
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },
@@ -175,8 +177,8 @@ export const useReminderStore = create<ReminderStore>((set, get) => ({
         reminders: state.reminders.filter(r => r.id !== id),
         loading: false,
       }));
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },
@@ -226,7 +228,7 @@ export const useReminderStore = create<ReminderStore>((set, get) => ({
         await addDoc(collection(db, 'reminderSettings'), defaultSettings);
         set({ settings: defaultSettings });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error fetching reminder settings:', error);
     }
   },

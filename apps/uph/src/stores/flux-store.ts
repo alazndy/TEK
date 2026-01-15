@@ -93,9 +93,9 @@ export const useFluxStore = create<FluxStore>((set, get) => ({
         stats: calculateStats(devices),
         loading: false 
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Fetching flux devices failed:', error);
-      set({ error: error.message, loading: false });
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
     }
   },
 
@@ -124,8 +124,8 @@ export const useFluxStore = create<FluxStore>((set, get) => ({
         stats: calculateStats(updatedDevices),
         loading: false 
       });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },

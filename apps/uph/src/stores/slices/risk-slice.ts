@@ -9,8 +9,7 @@ import {
   doc, 
   query, 
   where, 
-  getDocs,
-  Timestamp 
+  getDocs
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 

@@ -8,9 +8,6 @@ import {
   updateDoc, 
   deleteDoc, 
   doc, 
-  query, 
-  where, 
-  Timestamp,
   increment,
   writeBatch
 } from 'firebase/firestore';
@@ -157,7 +154,7 @@ export const useInventoryStore = create<InventoryState>((set, get) => ({
         };
 
         // Find item in local state to get name (optimistic)
-        let localItem: any;
+        let localItem: Product | Equipment | Consumable | undefined;
          if (itemType === 'equipment') localItem = get().equipment.find(p => p.id === productId);
          else if (itemType === 'consumable') localItem = get().consumables.find(p => p.id === productId);
          else localItem = get().products.find(p => p.id === productId);

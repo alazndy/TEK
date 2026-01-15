@@ -59,7 +59,7 @@ export const createTaskSlice: StateCreator<TaskSlice> = (set, get) => ({
                   [projectId]: [...(state.tasks[projectId] || []), newTask]
               }
           }));
-      } catch (error: any) {
+      } catch (error) {
            console.error("Error adding task:", error);
       }
   },
@@ -76,7 +76,7 @@ export const createTaskSlice: StateCreator<TaskSlice> = (set, get) => ({
                   )
               }
           }));
-      } catch (error: any) {
+      } catch (error) {
           console.error("Error toggling task:", error);
       }
   },
@@ -94,7 +94,7 @@ export const createTaskSlice: StateCreator<TaskSlice> = (set, get) => ({
                   )
               }
           }));
-      } catch (error: any) {
+      } catch (error) {
           console.error("Error updating task status:", error);
       }
   },
@@ -109,7 +109,7 @@ export const createTaskSlice: StateCreator<TaskSlice> = (set, get) => ({
                    [projectId]: (state.tasks[projectId] || []).filter(t => t.id !== taskId)
                }
            }));
-      } catch (error: any) {
+      } catch (error) {
           console.error("Error deleting task:", error);
       }
   },
@@ -135,7 +135,7 @@ export const createTaskSlice: StateCreator<TaskSlice> = (set, get) => ({
                   )
               }
           }));
-      } catch (error: any) {
+      } catch (error) {
           console.error("Error adding subtask:", error);
       }
   },
@@ -158,7 +158,7 @@ export const createTaskSlice: StateCreator<TaskSlice> = (set, get) => ({
                   )
               }
           }));
-      } catch (error: any) {
+      } catch (error) {
           console.error("Error toggling subtask:", error);
       }
   },
@@ -179,7 +179,7 @@ export const createTaskSlice: StateCreator<TaskSlice> = (set, get) => ({
                   )
               }
           }));
-      } catch (error: any) {
+      } catch (error) {
           console.error("Error deleting subtask:", error);
       }
   },
@@ -207,7 +207,7 @@ export const createTaskSlice: StateCreator<TaskSlice> = (set, get) => ({
                   )
               }
           }));
-      } catch (error: any) {
+      } catch (error) {
           console.error("Error adding comment:", error);
       }
   },
@@ -228,7 +228,7 @@ export const createTaskSlice: StateCreator<TaskSlice> = (set, get) => ({
                   )
               }
           }));
-      } catch (error: any) {
+      } catch (error) {
           console.error("Error deleting comment:", error);
       }
   },

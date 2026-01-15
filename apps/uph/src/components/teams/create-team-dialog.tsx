@@ -49,6 +49,7 @@ export function CreateTeamDialog({ open, onOpenChange }: CreateTeamDialogProps) 
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
+    // @ts-expect-error - Zod version mismatch with hookform resolver
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",

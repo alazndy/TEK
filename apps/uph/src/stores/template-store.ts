@@ -82,8 +82,8 @@ export const useTemplateStore = create<TemplateStore>((set, get) => ({
       }
       
       set({ templates, loading: false });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       console.error('Error fetching templates:', error);
     }
   },
@@ -113,8 +113,8 @@ export const useTemplateStore = create<TemplateStore>((set, get) => ({
       }));
       
       return docRef.id;
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },
@@ -134,8 +134,8 @@ export const useTemplateStore = create<TemplateStore>((set, get) => ({
         ),
         loading: false,
       }));
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },
@@ -149,8 +149,8 @@ export const useTemplateStore = create<TemplateStore>((set, get) => ({
         templates: state.templates.filter(t => t.id !== id),
         loading: false,
       }));
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },
@@ -159,6 +159,7 @@ export const useTemplateStore = create<TemplateStore>((set, get) => ({
     const original = get().getTemplateById(id);
     if (!original) throw new Error('Template not found');
     
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id: _, createdAt, updatedAt, usageCount, ...templateData } = original;
     
     return await get().addTemplate({
@@ -200,7 +201,7 @@ export const useTemplateStore = create<TemplateStore>((set, get) => ({
     // Implementation depends on project store structure
     console.log('Creating template from project:', projectId);
     
-    const now = new Date();
+    
     const template: Omit<ProjectTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount'> = {
       name: templateName,
       description: `Template created from project`,
@@ -230,7 +231,7 @@ export const useTemplateStore = create<TemplateStore>((set, get) => ({
         usedBy: userId,
         usedAt: Timestamp.fromDate(now),
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error logging template usage:', error);
     }
   },
@@ -259,7 +260,7 @@ export const useTemplateStore = create<TemplateStore>((set, get) => ({
       })) as TemplateUsageLog[];
       
       set({ usageLogs });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error fetching usage logs:', error);
     }
   },

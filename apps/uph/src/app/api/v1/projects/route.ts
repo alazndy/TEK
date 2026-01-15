@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
     const perPage = Math.min(parseInt(searchParams.get('per_page') || '20'), 100);
     const status = searchParams.get('status');
     
-    let q = query(
+    const q = query(
       collection(db, 'projects'),
       where('userId', '==', auth.userId),
       orderBy('createdAt', 'desc'),

@@ -14,6 +14,7 @@ export function parseWeaveBOM(jsonContent: string): WeaveBOMItem[] {
     
     // Handle array of components directly
     if (Array.isArray(data)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return data.map((item: any) => ({
         designator: item.designator || item.ref || 'N/A',
         component: item.component || item.value || 'Unknown Component',
@@ -26,6 +27,7 @@ export function parseWeaveBOM(jsonContent: string): WeaveBOMItem[] {
 
     // Handle Weave Project format (nested bom)
     if (data.bom && Array.isArray(data.bom)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return data.bom.map((item: any) => ({
             designator: item.designator || item.ref || 'N/A',
             component: item.component || item.value || 'Unknown Component',

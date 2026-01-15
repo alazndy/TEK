@@ -13,7 +13,9 @@ import {
   orderBy,
   onSnapshot,
   Timestamp,
-  Unsubscribe
+  Unsubscribe,
+  QueryDocumentSnapshot,
+  DocumentData
 } from 'firebase/firestore';
 import { addDays, format } from 'date-fns';
 
@@ -38,14 +40,14 @@ interface GanttState {
 }
 
 // Helper: Convert Firestore timestamps
-const convertTask = (doc: any): GanttTask => {
+const convertTask = (doc: QueryDocumentSnapshot<DocumentData, DocumentData>): GanttTask => {
   const data = doc.data();
   return {
     id: doc.id,
     ...data,
     startDate: data.startDate?.toDate ? format(data.startDate.toDate(), 'yyyy-MM-dd') : data.startDate,
     endDate: data.endDate?.toDate ? format(data.endDate.toDate(), 'yyyy-MM-dd') : data.endDate,
-  };
+  } as GanttTask;
 };
 
 export const useGanttStore = create<GanttState>((set, get) => ({
@@ -134,6 +136,7 @@ export const useGanttStore = create<GanttState>((set, get) => ({
 
   updateTask: async (id, updates) => {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const updateData: any = { ...updates };
 
       // Convert dates to Timestamps

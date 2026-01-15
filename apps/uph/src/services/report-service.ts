@@ -60,7 +60,7 @@ export const ReportService = {
     XLSX.writeFile(workbook, "project-report.xlsx");
   },
 
-  generateInventoryPDF: (items: any[]) => { // Using any[] for flexibility, ideally strong typed
+  generateInventoryPDF: (items: { name: string; sku?: string; category?: string; stock: number; price?: number }[]) => {
      const doc = new jsPDF();
      
      doc.setFontSize(18);
@@ -85,14 +85,14 @@ export const ReportService = {
      doc.save('inventory-report.pdf');
   },
 
-  generateInventoryExcel: (items: any[]) => {
+  generateInventoryExcel: (items: { name: string; sku?: string; category?: string; stock: number; price?: number }[]) => {
       const data = items.map(item => ({
           'Name': item.name,
           'SKU': item.sku,
           'Category': item.category,
           'Stock': item.stock,
           'Unit Price': item.price,
-          'Total Value': item.stock * item.price
+          'Total Value': item.stock * (item.price ?? 0)
       }));
 
       const worksheet = XLSX.utils.json_to_sheet(data);

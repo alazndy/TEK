@@ -33,7 +33,7 @@ export interface ProjectEVM {
   currentMetrics: EVMMetrics;
   history: EVMDataPoint[];
   status: EVMStatus;
-  lastUpdated: any; // Timestamp or Date
+  lastUpdated: unknown; // Timestamp or Date
 }
 
 export interface EVMProjectMetrics extends EVMMetrics {

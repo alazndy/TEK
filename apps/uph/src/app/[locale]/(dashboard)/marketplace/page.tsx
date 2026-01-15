@@ -27,7 +27,12 @@ export default function MarketplacePage() {
   const [filter, setFilter] = React.useState('');
   const router = useRouter();
   
-  const { availableModules, installedModules, installModule, uninstallModule, loading } = useMarketplaceStore();
+  const { availableModules, installedModules, installModule, uninstallModule, loading, fetchModules } = useMarketplaceStore();
+
+  // Fetch modules from API on mount
+  React.useEffect(() => {
+    fetchModules();
+  }, [fetchModules]);
 
   const isInstalled = (id: string) => installedModules.some(m => m.moduleId === id && m.status === 'active');
 

@@ -384,7 +384,7 @@ export class MarketplaceService {
     if (index === -1) throw new NotFoundException(`Product #${id} not found`);
 
     const updatedProduct = { ...this.products[index], ...updateProductDto };
-    // @ts-ignore
+
     this.products[index] = updatedProduct;
     return updatedProduct;
   }

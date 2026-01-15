@@ -64,7 +64,7 @@ export const useTimeStore = create<TimeStore>((set, get) => ({
   fetchEntries: async (userId, projectId, startDate, endDate) => {
     set({ loading: true, error: null });
     try {
-      let q = query(
+      const q = query(
         collection(db, 'timeEntries'),
         where('userId', '==', userId),
         orderBy('startTime', 'desc')
@@ -80,7 +80,7 @@ export const useTimeStore = create<TimeStore>((set, get) => ({
           endTime: data.endTime?.toDate(),
           createdAt: data.createdAt?.toDate() || new Date(),
           updatedAt: data.updatedAt?.toDate() || new Date(),
-          breaks: (data.breaks || []).map((b: any) => ({
+          breaks: (data.breaks || []).map((b: { start?: Timestamp, end?: Timestamp }) => ({
             start: b.start?.toDate(),
             end: b.end?.toDate(),
           })),
@@ -102,8 +102,8 @@ export const useTimeStore = create<TimeStore>((set, get) => ({
       const activeEntry = entries.find(e => e.status === 'running' || e.status === 'paused');
       
       set({ entries, activeEntry, loading: false });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       console.error('Error fetching time entries:', error);
     }
   },
@@ -147,8 +147,8 @@ export const useTimeStore = create<TimeStore>((set, get) => ({
       }));
       
       return docRef.id;
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },
@@ -281,8 +281,8 @@ export const useTimeStore = create<TimeStore>((set, get) => ({
       }));
       
       return docRef.id;
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },
@@ -291,6 +291,7 @@ export const useTimeStore = create<TimeStore>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const now = new Date();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const updateData: any = {
         ...data,
         updatedAt: Timestamp.fromDate(now),
@@ -305,8 +306,8 @@ export const useTimeStore = create<TimeStore>((set, get) => ({
         entries: state.entries.map(e => e.id === id ? { ...e, ...data, updatedAt: now } : e),
         loading: false,
       }));
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },
@@ -321,8 +322,8 @@ export const useTimeStore = create<TimeStore>((set, get) => ({
         activeEntry: state.activeEntry?.id === id ? null : state.activeEntry,
         loading: false,
       }));
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },
@@ -352,8 +353,8 @@ export const useTimeStore = create<TimeStore>((set, get) => ({
       }) as Timesheet[];
       
       set({ timesheets, loading: false });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       console.error('Error fetching timesheets:', error);
     }
   },
@@ -406,8 +407,8 @@ export const useTimeStore = create<TimeStore>((set, get) => ({
       }));
       
       return docRef.id;
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },

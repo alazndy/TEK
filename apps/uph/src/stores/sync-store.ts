@@ -10,7 +10,7 @@ interface SyncState {
   // Actions
   initialize: () => void;
   syncPendingChanges: () => Promise<void>;
-  enqueueAction: (module: string, action: 'create' | 'update' | 'delete', data: any) => Promise<void>;
+  enqueueAction: (module: string, action: 'create' | 'update' | 'delete', data: unknown) => Promise<void>;
 }
 
 export const useSyncStore = create<SyncState>((set, get) => ({

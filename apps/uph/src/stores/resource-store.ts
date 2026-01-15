@@ -16,7 +16,6 @@ import {
   query,
   orderBy,
   onSnapshot,
-  Timestamp,
   Unsubscribe
 } from 'firebase/firestore';
 import { addDays, format, isWithinInterval, parseISO } from 'date-fns';
@@ -51,7 +50,9 @@ const convertResourceData = (data: Record<string, unknown>): Partial<ResourceCap
   if (result.exceptions && Array.isArray(result.exceptions)) {
     result.exceptions = (result.exceptions as { date: unknown; availableHours: number; reason?: string }[]).map((e) => ({
       ...e,
-      date: (e.date as any) instanceof Timestamp ? format((e.date as any).toDate(), 'yyyy-MM-dd') : e.date
+      date: e.date && typeof (e.date as unknown as { toDate?: () => Date }).toDate === 'function' 
+        ? format((e.date as unknown as { toDate: () => Date }).toDate(), 'yyyy-MM-dd') 
+        : e.date as string
     }));
   }
   
@@ -59,8 +60,8 @@ const convertResourceData = (data: Record<string, unknown>): Partial<ResourceCap
   if (result.currentAssignments && Array.isArray(result.currentAssignments)) {
     result.currentAssignments = (result.currentAssignments as ResourceLoad[]).map((a) => ({
       ...a,
-      startDate: (a.startDate as any) instanceof Timestamp ? format((a.startDate as any).toDate(), 'yyyy-MM-dd') : a.startDate,
-      endDate: (a.endDate as any) instanceof Timestamp ? format((a.endDate as any).toDate(), 'yyyy-MM-dd') : a.endDate
+      startDate: a.startDate && typeof (a.startDate as unknown as { toDate?: () => Date }).toDate === 'function' ? format((a.startDate as unknown as { toDate: () => Date }).toDate(), 'yyyy-MM-dd') : a.startDate as string,
+      endDate: a.endDate && typeof (a.endDate as unknown as { toDate?: () => Date }).toDate === 'function' ? format((a.endDate as unknown as { toDate: () => Date }).toDate(), 'yyyy-MM-dd') : a.endDate as string
     }));
   }
   
@@ -238,6 +239,7 @@ export const useResourceStore = create<CapacityState>((set, get) => ({
   // Get bottlenecks
   getBottlenecks: (startDate, days) => {
     const heatmap = get().calculateHeatmapData(startDate, days);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const bottlenecks: any[] = [];
 
     heatmap.forEach(h => {

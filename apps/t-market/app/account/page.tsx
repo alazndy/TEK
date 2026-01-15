@@ -42,6 +42,7 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (user) fetchPurchases();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const fetchPurchases = async () => {
@@ -242,7 +243,7 @@ export default function AccountPage() {
                                     <div className="grid gap-4">
                                         {activePurchases.map((purchase, i) => {
                                             const url = getModuleUrl(purchase.moduleId);
-                                            const module = modules.find(m => m.id === purchase.moduleId);
+                                            const marketModule = modules.find(m => m.id === purchase.moduleId);
                                             return (
                                                 <motion.div
                                                     key={purchase.id}
@@ -259,7 +260,7 @@ export default function AccountPage() {
                                                         <div>
                                                             <h3 className="text-white font-semibold text-lg flex items-center gap-2">
                                                                 {purchase.moduleName}
-                                                                {module?.type === 'addon' && <Badge variant="secondary" className="bg-purple-500/10 text-purple-300 text-[10px] pointer-events-none">ADD-ON</Badge>}
+                                                                {marketModule?.type === 'addon' && <Badge variant="secondary" className="bg-purple-500/10 text-purple-300 text-[10px] pointer-events-none">ADD-ON</Badge>}
                                                             </h3>
                                                             <div className="flex items-center gap-3 text-sm text-slate-500">
                                                                 <span>version 2.0</span>

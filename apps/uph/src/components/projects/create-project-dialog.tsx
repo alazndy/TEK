@@ -46,6 +46,7 @@ export function CreateProjectDialog({ trigger }: CreateProjectDialogProps) {
     watch,
     formState: { errors, isSubmitting } 
   } = useForm<any>({
+    // @ts-expect-error - Zod version mismatch with hookform resolver
     resolver: zodResolver(projectSchema),
     defaultValues: {
       name: '',

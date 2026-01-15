@@ -14,7 +14,7 @@ import {
     ChevronRight,
     LogOut,
     ChevronLeft,
-    ChevronLeft,
+
     Factory,
     ClipboardList
 } from 'lucide-react';
@@ -58,7 +58,6 @@ export function Sidebar() {
             href: `/${locale}/dashboard`,
             exact: true,
         },
-        {
         {
             group: 'inventory_products',
             label: 'Tüm Ürünler',

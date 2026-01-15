@@ -87,8 +87,8 @@ export const useFileVersionStore = create<FileVersionStore>((set, get) => ({
       }) as VersionedFile[];
       
       set({ files, loading: false });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       console.error('Error fetching versioned files:', error);
     }
   },
@@ -113,8 +113,8 @@ export const useFileVersionStore = create<FileVersionStore>((set, get) => ({
       } else {
         set({ error: 'File not found', loading: false });
       }
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       console.error('Error fetching versioned file:', error);
     }
   },
@@ -136,8 +136,8 @@ export const useFileVersionStore = create<FileVersionStore>((set, get) => ({
       })) as FileVersion[];
       
       set({ versions, loading: false });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       console.error('Error fetching versions:', error);
     }
   },
@@ -158,7 +158,7 @@ export const useFileVersionStore = create<FileVersionStore>((set, get) => ({
       })) as FileActivity[];
       
       set({ activities });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error fetching file activities:', error);
     }
   },
@@ -260,8 +260,8 @@ export const useFileVersionStore = create<FileVersionStore>((set, get) => ({
       
       set({ loading: false });
       return targetFileId!;
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },
@@ -303,8 +303,8 @@ export const useFileVersionStore = create<FileVersionStore>((set, get) => ({
         versions: state.versions.filter(v => v.id !== versionId),
         loading: false,
       }));
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },
@@ -362,8 +362,8 @@ export const useFileVersionStore = create<FileVersionStore>((set, get) => ({
       
       await get().fetchVersions(fileId);
       set({ loading: false });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },
@@ -417,7 +417,7 @@ export const useFileVersionStore = create<FileVersionStore>((set, get) => ({
         ...activity,
         createdAt: Timestamp.fromDate(new Date()),
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error logging file activity:', error);
     }
   },

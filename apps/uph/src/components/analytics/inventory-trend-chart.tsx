@@ -53,7 +53,7 @@ export function InventoryTrendChart() {
                 tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
               />
               <Tooltip
-                formatter={(value: number) => [`$${value.toLocaleString()}`, 'Value']}
+                formatter={(value: number | undefined) => [value !== undefined ? `$${value.toLocaleString()}` : '', 'Value']}
                 contentStyle={{
                   backgroundColor: '#18181b',
                   border: '1px solid #3f3f46',

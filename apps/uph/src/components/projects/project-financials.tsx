@@ -6,7 +6,7 @@ import { Project } from '@/types/project';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProjectUsage, Product } from '@/types/inventory';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { DollarSign, TrendingUp, TrendingDown, PieChart as PieChartIcon, Wallet } from 'lucide-react';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 
 interface ProjectFinancialsProps {
     project: Project;
@@ -78,7 +78,7 @@ export function ProjectFinancials({ project, projectInventory, allProducts }: Pr
                                         <Cell key={`cell-${index}`} fill={entry.color} />
                                     ))}
                                 </Pie>
-                                <Tooltip formatter={(value: number) => `$${value.toLocaleString()}`} />
+                                <Tooltip formatter={(value: number | undefined) => [`$${(value || 0).toLocaleString()}`, '']} />
                                 <Legend verticalAlign="bottom" height={36}/>
                             </PieChart>
                         </ResponsiveContainer>
@@ -98,7 +98,7 @@ export function ProjectFinancials({ project, projectInventory, allProducts }: Pr
                                 <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                                 <XAxis dataKey="name" fontSize={12} />
                                 <YAxis fontSize={12} tickFormatter={(value) => `$${value/1000}k`} />
-                                <Tooltip formatter={(value: number) => [`$${value.toLocaleString()}`, 'Tutar']} />
+                                <Tooltip formatter={(value: number | undefined) => [`$${(value || 0).toLocaleString()}`, 'Tutar']} />
                                 <Bar dataKey="amount" fill="#6366f1" radius={[4, 4, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
@@ -134,7 +134,7 @@ export function ProjectFinancials({ project, projectInventory, allProducts }: Pr
                         </span>
                     </div>
                      <p className="text-[10px] text-muted-foreground mt-2">
-                        *Tahmini sözleşme değeri bütçenin %125'i olarak hesaplanmıştır.
+                        *Tahmini sözleşme değeri bütçenin %125&apos;i olarak hesaplanmıştır.
                     </p>
                 </CardContent>
             </Card>

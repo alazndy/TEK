@@ -107,8 +107,8 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       });
       
       set({ invoices: updatedInvoices, loading: false });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       console.error('Error fetching invoices:', error);
     }
   },
@@ -148,8 +148,8 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       }));
       
       return docRef.id;
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },
@@ -158,6 +158,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const now = new Date();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const updateData: any = {
         ...data,
         updatedAt: Timestamp.fromDate(now),
@@ -175,8 +176,8 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
         ),
         loading: false,
       }));
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },
@@ -190,8 +191,8 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
         invoices: state.invoices.filter(inv => inv.id !== id),
         loading: false,
       }));
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Unknown error', loading: false });
       throw error;
     }
   },
@@ -205,7 +206,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
     await get().updateInvoice(id, {
       status: 'paid',
       paidDate: now,
-      paymentMethod: paymentMethod as any,
+      paymentMethod: paymentMethod as unknown as Invoice['paymentMethod'],
       paymentReference: reference,
     });
     
@@ -217,7 +218,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
         amount: invoice.total,
         currency: invoice.currency,
         paymentDate: now,
-        paymentMethod: paymentMethod as any,
+        paymentMethod: paymentMethod as unknown as PaymentRecord['paymentMethod'],
         reference,
       });
     }
@@ -262,7 +263,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
         await addDoc(collection(db, 'invoiceSettings'), defaultSettings);
         set({ settings: defaultSettings });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error fetching invoice settings:', error);
     }
   },
@@ -303,7 +304,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       }));
       
       return docRef.id;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error adding payment:', error);
       throw error;
     }
@@ -326,7 +327,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       })) as PaymentRecord[];
       
       set({ payments });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error fetching payments:', error);
     }
   },

@@ -39,6 +39,7 @@ export function LoginForm() {
   const { executeRecaptcha } = useGoogleReCaptcha();
 
   const form = useForm<z.infer<typeof formSchema>>({
+    // @ts-expect-error - Zod version mismatch with hookform resolver
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',

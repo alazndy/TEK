@@ -35,7 +35,7 @@ export interface APIResponse<T> {
   error?: {
     code: string;
     message: string;
-    details?: any;
+    details?: unknown;
   };
   meta?: {
     page?: number;
@@ -54,7 +54,7 @@ export interface APIRequestLog {
   responseTime: number; // ms
   ipAddress?: string;
   userAgent?: string;
-  requestBody?: any;
+  requestBody?: unknown;
   errorMessage?: string;
   createdAt: Date;
 }
@@ -86,7 +86,7 @@ export interface WebhookDelivery {
   id: string;
   webhookId: string;
   event: WebhookEvent;
-  payload: any;
+  payload: unknown;
   statusCode?: number;
   response?: string;
   success: boolean;
