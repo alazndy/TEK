@@ -196,7 +196,7 @@ export function ProductDetailDialog({ open, onOpenChange, product }: ProductDeta
                                     >
                                       <div className="text-xs text-muted-foreground">{name}</div>
                                       <div className={`font-medium ${isSource ? 'text-primary font-bold' : ''}`}>
-                                        {symbol}{value.toFixed(2)}
+                                        {symbol}{Number(value).toFixed(2)}
                                       </div>
                                       {isSource && <div className="text-[10px] text-primary">Kaynak</div>}
                                     </div>

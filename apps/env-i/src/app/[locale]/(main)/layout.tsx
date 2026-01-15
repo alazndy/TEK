@@ -6,13 +6,15 @@ import { redirect } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { useDataStore } from "@/stores/data-store";
 import { Header } from "@/components/layout/header";
-import { Sidebar, SidebarProvider, useSidebar } from "@/components/layout/sidebar";
+import { Sidebar } from "@/components/layout/sidebar";
+import { SidebarProvider, useSidebar } from "@/components/layout/sidebar-context";
 import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { SearchProvider } from "@/context/search-context"; 
 import { OnboardingGuide } from "@/components/onboarding-guide";
 import { PageWrapper } from "@/components/layout/page-wrapper";
 import { LegalFooter } from "@/components/compliance/legal-footer";
-
+import { useTranslations } from 'next-intl';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -22,7 +24,7 @@ function MainContent({ children }: { children: React.ReactNode }) {
     const { isCollapsed } = useSidebar();
 
     return (
-        <div className={`flex flex-1 flex-col transition-all duration-300 ease-in-out`}>
+        <div className={`flex flex-1 flex-col transition-all duration-300 ease-in-out ${isCollapsed ? 'pl-20' : 'pl-0 md:pl-72'}`}>
             <Header />
             <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 overflow-hidden">
                 <PageWrapper className="flex-1 flex flex-col gap-4 lg:gap-6">
@@ -59,18 +61,18 @@ function AppLayout({ children }: MainLayoutProps) {
   }
 
   return (
-      <SidebarProvider>
-        <div className="flex min-h-screen w-full">
-          <Sidebar />
-          <MainContent>{children}</MainContent>
-        </div>
-        <Toaster />
-        <OnboardingGuide />
-      </SidebarProvider>
+      <TooltipProvider>
+        <SidebarProvider>
+          <div className="flex min-h-screen w-full">
+            <Sidebar />
+            <MainContent>{children}</MainContent>
+          </div>
+          <Toaster />
+          <OnboardingGuide />
+        </SidebarProvider>
+      </TooltipProvider>
   );
 }
-
-import { useTranslations } from 'next-intl';
 
 export default function MainLayout({ children }: MainLayoutProps) {
     const t = useTranslations('Common');

@@ -18,7 +18,7 @@ export function ZoneEditor({ warehouse, onSave, onCancel }: ZoneEditorProps) {
   const {
     zones, selectedZoneId, isDragging, isResizing, containerRef,
     addZone, updateZone, deleteZone,
-    addShelf, updateShelf, deleteShelf,
+    addStorageUnit, updateStorageUnit, deleteStorageUnit,
     handleMouseDown, setSelectedZoneId,
     constrainZone, zonesOverlap
   } = useZoneEditor(warehouse);
@@ -44,9 +44,9 @@ export function ZoneEditor({ warehouse, onSave, onCancel }: ZoneEditorProps) {
         selectedZone={selectedZone}
         onUpdateZone={updateZone}
         onDeleteZone={deleteZone}
-        onAddShelf={addShelf}
-        onUpdateShelf={updateShelf}
-        onDeleteShelf={deleteShelf}
+        onAddStorageUnit={addStorageUnit}
+        onUpdateStorageUnit={updateStorageUnit}
+        onDeleteStorageUnit={deleteStorageUnit}
         constrainZone={constrainZone}
         zonesOverlap={zonesOverlap}
         zones={zones}

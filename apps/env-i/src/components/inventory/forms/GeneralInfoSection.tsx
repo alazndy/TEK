@@ -68,7 +68,7 @@ export function GeneralInfoSection({ form, manufacturers, productTemplates, onTe
                   </Button>
                 </FormControl>
               </PopoverTrigger>
-              <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0 !bg-zinc-950 border border-zinc-800">
                 <Command>
                   <CommandInput 
                     placeholder="Ürün adı ara veya yeni ekle..."
@@ -154,7 +154,7 @@ export function GeneralInfoSection({ form, manufacturers, productTemplates, onTe
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0 !bg-zinc-950 border border-zinc-800">
                   <Command>
                     <CommandInput 
                       placeholder="Üretici ara veya yeni ekle..."

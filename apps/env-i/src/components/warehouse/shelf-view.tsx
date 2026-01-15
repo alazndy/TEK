@@ -18,7 +18,7 @@ interface ShelfViewProps {
 
 export function ShelfView({ zone, shelfIndex = 0, onBack, products = [] }: ShelfViewProps) {
   const [activeShelfIndex, setActiveShelfIndex] = React.useState(shelfIndex);
-  const shelf = zone.shelves[activeShelfIndex];
+  const shelf = zone.storageUnits[activeShelfIndex];
 
   if (!shelf) {
     return (
@@ -63,9 +63,9 @@ export function ShelfView({ zone, shelfIndex = 0, onBack, products = [] }: Shelf
         </div>
         
         {/* Shelf selector tabs */}
-        {zone.shelves.length > 1 && (
+        {zone.storageUnits.length > 1 && (
           <div className="flex gap-1">
-            {zone.shelves.map((s, i) => {
+            {zone.storageUnits.map((s, i) => {
               const count = products.filter(p => p.shelf === s.name).length;
               return (
                 <Button

@@ -39,13 +39,9 @@ import { useSearch } from "@/context/search-context"
 import { useAuth } from "@/context/auth-context"
 import { useTheme } from "next-themes"
 import { useOnboardingStore } from "@/stores/onboarding-store"
-import { useSidebar } from "./sidebar"
+import { useSidebar } from "./sidebar-context"
 import { CurrencySelector } from "@/components/currency-selector"
 import { LanguageSwitcher } from "@/components/language-switcher"
-
-// navLinks moved inside Header component for translations
-
-
 import { EcosystemSwitcher } from "@/components/ecosystem-switcher"
 import { useTranslations } from 'next-intl';
 import { NotificationCenter } from "@/components/notification-center"
@@ -60,24 +56,15 @@ export function Header() {
   const [logoClickCount, setLogoClickCount] = React.useState(0);
   const t = useTranslations('Common');
 
-  const navLinks = [
-      { href: "/dashboard", label: t('dashboard'), icon: LayoutGrid },
-      { href: "/inventory", label: t('catalog'), icon: Boxes }, // Assuming catalog maps to inventory for now or add inventory to translation
-      { href: "/equipment", label: "Ekipman", icon: HardHat }, // Needs key
-      { href: "/consumables", label: "Sarf Malzemeler", icon: FlaskConical }, // Needs key
-      { href: "/orders", label: "Siparişler", icon: ShoppingCart }, // Needs key
-      { href: "/proposals", label: "Teklifler", icon: FileText }, // Needs key
-      { href: "/physical-count", label: "Fiziksel Sayım", icon: ClipboardCheck }, // Needs key
-      { href: "/reports", label: "Raporlar", icon: BarChart2 }, // Needs key
-      { href: "/audit-log", label: "Denetim Kaydı", icon: History }, // Needs key
-      { href: "/discontinued", label: "Üretilmeyenler", icon: Archive }, // Needs key
-  ];
-  
-  const isActive = (path: string) => {
-    if (path === "/dashboard") {
-      return pathname === path
+  // Logic for logo click (easter egg / onboarding reset)
+  const handleLogoClick = () => {
+    const newCount = logoClickCount + 1;
+    if (newCount >= 5) {
+        setHasCompletedOnboarding(false);
+        setLogoClickCount(0);
+    } else {
+        setLogoClickCount(newCount);
     }
-    return pathname.startsWith(path)
   }
 
   const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -91,83 +78,96 @@ export function Header() {
     return email.substring(0, 2).toUpperCase();
   }
 
-  const handleLogoClick = () => {
-    const newCount = logoClickCount + 1;
-    if (newCount >= 5) {
-        setHasCompletedOnboarding(false);
-        setLogoClickCount(0);
-    } else {
-        setLogoClickCount(newCount);
-    }
-  }
-
-
   return (
-    <header className="sticky top-0 z-30 flex h-14 sm:h-16 items-center gap-2 sm:gap-4 border-b bg-card px-3 sm:px-6">
-      {/* Mobile menu button */}
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/40 bg-background/80 backdrop-blur-xl px-6 transition-all duration-200 supports-[backdrop-filter]:bg-background/60">
+      {/* Mobile Menu Trigger */}
       <Button
         variant="ghost"
         size="icon"
-        className="md:hidden shrink-0"
+        className="md:hidden shrink-0 -ml-2 text-muted-foreground hover:text-foreground"
         onClick={() => setIsSidebarOpen(true)}
       >
         <Menu className="h-5 w-5" />
         <span className="sr-only">Menüyü aç</span>
       </Button>
 
-
-
-
-      <div className="relative ml-auto flex-1 md:grow-0">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          type="search"
-          placeholder={t('searchPlaceholder')}
-          className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={handleSearchKeyDown}
-        />
+      {/* Search / Command Palette Proxy */}
+      <div className="flex-1 md:flex-none md:w-[320px]">
+        <div className="relative group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors duration-200" />
+            <Input
+              type="search"
+              placeholder={t('searchPlaceholder')}
+              className="w-full bg-muted/50 border-transparent focus:bg-background focus:border-primary/50 pl-10 h-10 rounded-xl transition-all duration-200 shadow-sm"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1 opacity-50">
+                <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                    <span className="text-xs">⌘</span>K
+                </kbd>
+            </div>
+        </div>
       </div>
-      <EcosystemSwitcher />
-      <CurrencySelector />
-      <LanguageSwitcher />
-       <NotificationCenter />
-       <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="rounded-full"
-        >
-            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Temayı değiştir</span>
-        </Button>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="overflow-hidden rounded-full"
-          >
-            <Avatar>
-              <AvatarImage src={user?.photoURL || undefined} alt="Kullanıcı avatarı" />
-              <AvatarFallback>{getInitials(user?.email)}</AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>{user?.email || "Hesabım"}</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>{t('settings')}</DropdownMenuItem>
-          <DropdownMenuItem>Destek</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={signOut}>
-            <LogOut className="mr-2 h-4 w-4" />
-            {t('logout')}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+
+      {/* Right Actions Area */}
+      <div className="ml-auto flex items-center gap-2">
+        <EcosystemSwitcher />
+        
+        <div className="hidden sm:flex items-center gap-1 border-l border-border/50 pl-2 ml-1">
+            <CurrencySelector />
+            <LanguageSwitcher />
+        </div>
+
+        <div className="flex items-center gap-1 border-l border-border/50 pl-2 ml-1">
+            <NotificationCenter />
+            
+            <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            >
+                <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Temayı değiştir</span>
+            </Button>
+        </div>
+
+        {/* User Profile */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="relative h-9 w-9 rounded-full ml-1 ring-2 ring-primary/10 hover:ring-primary/20 transition-all"
+            >
+              <Avatar className="h-9 w-9">
+                <AvatarImage src={user?.photoURL || undefined} alt="Kullanıcı avatarı" />
+                <AvatarFallback className="bg-primary/10 text-primary font-medium">{getInitials(user?.email)}</AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56" forceMount>
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{user?.displayName || "Kullanıcı"}</p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {user?.email}
+                </p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer">{t('settings')}</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">Destek</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive" onClick={signOut}>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>{t('logout')}</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </header>
   )
 }

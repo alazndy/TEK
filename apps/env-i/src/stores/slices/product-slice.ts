@@ -30,33 +30,33 @@ export const createProductSlice: StoreSlice<any> = (set, get) => ({
       set({ products: products.sort((a,b) => a.name.localeCompare(b.name)), loadingProducts: false });
   },
 
-  fetchProducts: async (initial = false) => {
-    if (get().loadingProducts && !initial) return;
-    if (initial) set({ products: [], lastProduct: null, hasMoreProducts: true });
+  // Simplified Fetch All (Limit 2000)
+  fetchProducts: async (force = false) => {
+    const { products, loadingProducts } = get();
+    if (!force && products.length > 0) return;
+
     set({ loadingProducts: true });
     try {
-      const { data, lastDoc } = await inventoryRepo.getProducts(50, initial ? null : get().lastProduct);
+      // Fetch up to 2000 items (effectively all)
+      const { data } = await inventoryRepo.getProducts(2000);
       
-      set(state => {
-        const newData = initial ? data : [...state.products, ...data];
-        // Ensure uniqueness by ID
-        const uniqueData = Array.from(new Map(newData.map(item => [item.id, item])).values());
-        
-        return {
-          products: uniqueData,
-          lastProduct: lastDoc,
-          hasMoreProducts: data.length === 50,
-        };
+      // Client-side Sorting (Turkish A-Z)
+      const sortedData = data.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr'));
+
+      set({ 
+        products: sortedData, 
+        hasMoreProducts: false, 
+        loadingProducts: false,
+        lastProduct: null
       });
     } catch (error) {
       console.error("Error fetching products: ", error);
-      toast({ title: "Hata", description: "Ürünler getirilirken bir hata oluştu.", variant: "destructive" });
-    } finally {
+      toast({ title: "Hata", description: "Ürünler yüklenemedi.", variant: "destructive" });
       set({ loadingProducts: false });
     }
   },
 
-  loadMoreProducts: () => get().fetchProducts(),
+  loadMoreProducts: () => {}, // No-op in Fetch-All mode
 
   addProduct: async (productData: Omit<Product, 'id' | 'history'>) => {
     // Auto-categorize if not provided or set to default "Diğer"
@@ -132,7 +132,7 @@ export const createProductSlice: StoreSlice<any> = (set, get) => ({
     if (initial) set({ equipment: [], lastEquipment: null, hasMoreEquipment: true });
     set({ loadingEquipment: true });
     try {
-      const { data, lastDoc } = await inventoryRepo.getEquipment(50, initial ? null : get().lastEquipment);
+      const { data, lastDoc } = await inventoryRepo.getEquipment(250, initial ? null : get().lastEquipment);
 
       set(state => {
         const newData = initial ? data : [...state.equipment, ...data];
@@ -141,7 +141,7 @@ export const createProductSlice: StoreSlice<any> = (set, get) => ({
         return {
           equipment: uniqueData,
           lastEquipment: lastDoc,
-          hasMoreEquipment: data.length === 50,
+          hasMoreEquipment: data.length === 250,
         };
       });
     } catch (error) {
@@ -204,7 +204,7 @@ export const createProductSlice: StoreSlice<any> = (set, get) => ({
     if (initial) set({ consumables: [], lastConsumable: null, hasMoreConsumables: true });
     set({ loadingConsumables: true });
     try {
-      const { data, lastDoc } = await inventoryRepo.getConsumables(50, initial ? null : get().lastConsumable);
+      const { data, lastDoc } = await inventoryRepo.getConsumables(250, initial ? null : get().lastConsumable);
       
       set(state => {
         const newData = initial ? data : [...state.consumables, ...data];
@@ -213,7 +213,7 @@ export const createProductSlice: StoreSlice<any> = (set, get) => ({
         return {
           consumables: uniqueData,
           lastConsumable: lastDoc,
-          hasMoreConsumables: data.length === 50,
+          hasMoreConsumables: data.length === 250,
         };
       });
     } catch (error) {

@@ -1,18 +1,18 @@
 import React from "react";
-import { WarehouseZone, ShelfConfig } from "@/lib/types";
+import { WarehouseZone, StorageUnit } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash2, GripVertical } from "lucide-react";
+import { Plus, Trash2, GripVertical, Box } from "lucide-react";
 
 interface ZonePropertiesPanelProps {
   selectedZone: WarehouseZone | null;
   onUpdateZone: (id: string, updates: Partial<WarehouseZone>) => void;
   onDeleteZone: (id: string) => void;
-  onAddShelf: (id: string) => void;
-  onUpdateShelf: (zoneId: string, shelfId: string, updates: Partial<ShelfConfig>) => void;
-  onDeleteShelf: (zoneId: string, shelfId: string) => void;
+  onAddStorageUnit: (id: string) => void;
+  onUpdateStorageUnit: (zoneId: string, unitId: string, updates: Partial<StorageUnit>) => void;
+  onDeleteStorageUnit: (zoneId: string, unitId: string) => void;
   constrainZone: (zone: WarehouseZone) => WarehouseZone;
   zonesOverlap: (z1: WarehouseZone, z2: WarehouseZone) => boolean;
   zones: WarehouseZone[];
@@ -20,7 +20,7 @@ interface ZonePropertiesPanelProps {
 
 export function ZonePropertiesPanel({
   selectedZone, onUpdateZone, onDeleteZone,
-  onAddShelf, onUpdateShelf, onDeleteShelf,
+  onAddStorageUnit, onUpdateStorageUnit, onDeleteStorageUnit,
   constrainZone, zonesOverlap, zones
 }: ZonePropertiesPanelProps) {
   return (
@@ -108,52 +108,74 @@ export function ZonePropertiesPanel({
               </div>
             </div>
 
-            {/* Shelves */}
+            {/* Storage Units */}
             <div className="border-t pt-4">
               <div className="flex items-center justify-between mb-3">
-                <Label className="font-semibold">Raflar</Label>
-                <Button size="sm" variant="outline" onClick={() => onAddShelf(selectedZone.id)}>
-                  <Plus className="h-3 w-3 mr-1" /> Raf Ekle
+                <Label className="font-semibold flex items-center gap-2">
+                  <Box className="h-4 w-4" />
+                  Depolama Üniteleri
+                </Label>
+                <Button size="sm" variant="outline" onClick={() => onAddStorageUnit(selectedZone.id)}>
+                  <Plus className="h-3 w-3 mr-1" /> Ünite Ekle
                 </Button>
               </div>
               
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {selectedZone.shelves.map((shelf) => (
-                  <div key={shelf.id} className="flex items-center gap-2 p-2 border rounded bg-muted/20">
-                    <GripVertical className="h-4 w-4 text-muted-foreground" />
-                    <Input
-                      value={shelf.name}
-                      onChange={(e) => onUpdateShelf(selectedZone.id, shelf.id, { name: e.target.value })}
-                      className="h-8 flex-1"
-                      placeholder="Raf adı"
-                    />
-                    <Input
-                      type="number"
-                      value={shelf.rows}
-                      onChange={(e) => onUpdateShelf(selectedZone.id, shelf.id, { rows: Number(e.target.value) })}
-                      className="h-8 w-16"
-                      placeholder="Sıra"
-                      min={1} max={10}
-                    />
-                    <span className="text-xs text-muted-foreground">×</span>
-                    <Input
-                      type="number"
-                      value={shelf.columns}
-                      onChange={(e) => onUpdateShelf(selectedZone.id, shelf.id, { columns: Number(e.target.value) })}
-                      className="h-8 w-16"
-                      placeholder="Kolon"
-                      min={1} max={20}
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive"
-                      onClick={() => onDeleteShelf(selectedZone.id, shelf.id)}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {selectedZone.storageUnits.map((unit) => (
+                  <div key={unit.id} className="p-3 border rounded bg-muted/20 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <GripVertical className="h-4 w-4 text-muted-foreground" />
+                      <Input
+                        value={unit.name}
+                        onChange={(e) => onUpdateStorageUnit(selectedZone.id, unit.id, { name: e.target.value })}
+                        className="h-8 flex-1"
+                        placeholder="Ünite adı"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive"
+                        onClick={() => onDeleteStorageUnit(selectedZone.id, unit.id)}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    
+                    <div className="flex items-center gap-2 pl-6">
+                      <div className="flex-1">
+                        <Label className="text-xs text-muted-foreground">Dikey (Raf)</Label>
+                        <Input
+                          type="number"
+                          value={unit.rows}
+                          onChange={(e) => onUpdateStorageUnit(selectedZone.id, unit.id, { rows: Number(e.target.value) })}
+                          className="h-8"
+                          min={1} max={10}
+                        />
+                      </div>
+                      <span className="text-muted-foreground mt-4">×</span>
+                      <div className="flex-1">
+                        <Label className="text-xs text-muted-foreground">Yatay (Bölme)</Label>
+                        <Input
+                          type="number"
+                          value={unit.columns}
+                          onChange={(e) => onUpdateStorageUnit(selectedZone.id, unit.id, { columns: Number(e.target.value) })}
+                          className="h-8"
+                          min={1} max={12}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="text-xs text-muted-foreground pl-6">
+                      Toplam {unit.rows * unit.columns} bölme
+                    </div>
                   </div>
                 ))}
+                
+                {selectedZone.storageUnits.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    Henüz ünite eklenmedi
+                  </p>
+                )}
               </div>
             </div>
 

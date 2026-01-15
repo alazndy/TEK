@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { WarehouseZone, ShelfConfig, Warehouse } from "@/lib/types";
+import { WarehouseZone, StorageUnit, Warehouse } from "@/lib/types";
 
 // Generate unique ID
 const generateId = () => Math.random().toString(36).substring(2, 9);
@@ -47,7 +47,7 @@ export function useZoneEditor(initialWarehouse: Warehouse) {
     
     while (attempts < 20) {
       const testZone: WarehouseZone = {
-        id: 'test', name: '', x: newX, y: newY, width: 18, height: 22, shelves: []
+        id: 'test', name: '', x: newX, y: newY, width: 18, height: 22, storageUnits: []
       };
       
       const overlaps = zones.some(z => zonesOverlap(testZone, z));
@@ -69,11 +69,12 @@ export function useZoneEditor(initialWarehouse: Warehouse) {
       width: 18,
       height: 22,
       color: ZONE_COLORS[zones.length % ZONE_COLORS.length],
-      shelves: [{
+      storageUnits: [{
         id: generateId(),
-        name: `Raf 1`,
-        rows: 5,
-        columns: 4
+        name: `Ünite 1`,
+        rows: 4,
+        columns: 3,
+        compartments: []
       }]
     };
     setZones([...zones, newZone]);
@@ -89,35 +90,37 @@ export function useZoneEditor(initialWarehouse: Warehouse) {
     if (selectedZoneId === zoneId) setSelectedZoneId(null);
   };
 
-  const addShelf = (zoneId: string) => {
+  // Storage Unit operations
+  const addStorageUnit = (zoneId: string) => {
     const zone = zones.find(z => z.id === zoneId);
     if (!zone) return;
     
-    const newShelf: ShelfConfig = {
+    const newUnit: StorageUnit = {
       id: generateId(),
-      name: `Raf ${zone.shelves.length + 1}`,
-      rows: 5,
-      columns: 4
+      name: `Ünite ${zone.storageUnits.length + 1}`,
+      rows: 4,
+      columns: 3,
+      compartments: []
     };
     
-    updateZone(zoneId, { shelves: [...zone.shelves, newShelf] });
+    updateZone(zoneId, { storageUnits: [...zone.storageUnits, newUnit] });
   };
 
-  const updateShelf = (zoneId: string, shelfId: string, updates: Partial<ShelfConfig>) => {
+  const updateStorageUnit = (zoneId: string, unitId: string, updates: Partial<StorageUnit>) => {
     const zone = zones.find(z => z.id === zoneId);
     if (!zone) return;
     
-    const updatedShelves = zone.shelves.map(s => 
-      s.id === shelfId ? { ...s, ...updates } : s
+    const updatedUnits = zone.storageUnits.map(u => 
+      u.id === unitId ? { ...u, ...updates } : u
     );
-    updateZone(zoneId, { shelves: updatedShelves });
+    updateZone(zoneId, { storageUnits: updatedUnits });
   };
 
-  const deleteShelf = (zoneId: string, shelfId: string) => {
+  const deleteStorageUnit = (zoneId: string, unitId: string) => {
     const zone = zones.find(z => z.id === zoneId);
     if (!zone) return;
     
-    updateZone(zoneId, { shelves: zone.shelves.filter(s => s.id !== shelfId) });
+    updateZone(zoneId, { storageUnits: zone.storageUnits.filter(u => u.id !== unitId) });
   };
 
   const handleMouseDown = (e: React.MouseEvent, zoneId: string, action: 'drag' | 'resize') => {
@@ -192,7 +195,7 @@ export function useZoneEditor(initialWarehouse: Warehouse) {
     isDragging, isResizing,
     containerRef,
     addZone, updateZone, deleteZone,
-    addShelf, updateShelf, deleteShelf,
+    addStorageUnit, updateStorageUnit, deleteStorageUnit,
     handleMouseDown,
     constrainZone, zonesOverlap
   };

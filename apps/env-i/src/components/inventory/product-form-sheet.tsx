@@ -133,7 +133,7 @@ export function ProductFormSheet({ open, onOpenChange, product, onSubmit, manufa
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-3xl flex flex-col h-full w-full">
+      <SheetContent className="sm:max-w-3xl flex flex-col h-full w-full !bg-zinc-950 shadow-2xl border-l border-zinc-800">
         <SheetHeader className="mb-4">
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>

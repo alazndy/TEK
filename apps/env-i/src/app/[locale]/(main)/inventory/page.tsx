@@ -112,17 +112,35 @@ export default function InventoryPage() {
         setIsLabelDialogOpen(true);
     },
     onView: handleViewProduct,
-  });
+    onShowOnMap: (product) => {
+        // Navigate to warehouse map with zone highlighted
+        const zoneParam = encodeURIComponent(product.room || '');
+        window.location.href = `/warehouse-map?zone=${zoneParam}&product=${product.id}`;
+    },
+  }) as any;
   
   const [selectedManufacturer, setSelectedManufacturer] = React.useState<string>("all")
 
-  // Use search results if searching, otherwise use loaded products
+  // Get equipment and consumables too for "Tüm Ürünler"
+  const equipment = useDataStore(state => state.equipment);
+  const consumables = useDataStore(state => state.consumables);
+  const fetchEquipment = useDataStore(state => state.fetchEquipment);
+  const fetchConsumables = useDataStore(state => state.fetchConsumables);
+
+  // Fetch all collections on mount
+  React.useEffect(() => {
+    fetchEquipment(true);
+    fetchConsumables(true);
+  }, [fetchEquipment, fetchConsumables]);
+
+  // Use search results if searching, otherwise combine all products
   const inventoryProducts = React.useMemo(() => {
     let result: (Product | Equipment | Consumable)[] = [];
     if (searchQuery.length >= 2 && searchResults.length > 0) {
-      result = searchResults.filter(p => ["Stok Malzemesi", "Sarf Malzeme"].includes(p.category));
+      result = searchResults;
     } else {
-      result = products.filter(p => p.category === "Stok Malzemesi");
+      // Combine all collections for "Tüm Ürünler"
+      result = [...products, ...equipment, ...consumables];
     }
 
     // Apply Manufacturer Filter
@@ -132,7 +150,7 @@ export default function InventoryPage() {
 
     // Final safety de-duplication by ID
     return Array.from(new Map(result.map(p => [p.id, p])).values()) as Product[];
-  }, [products, searchQuery, searchResults, selectedManufacturer]);
+  }, [products, equipment, consumables, searchQuery, searchResults, selectedManufacturer]);
   
   const isSearchActive = searchQuery.length >= 2;
 

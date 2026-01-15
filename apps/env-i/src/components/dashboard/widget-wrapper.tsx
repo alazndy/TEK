@@ -1,8 +1,8 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import { X, GripVertical, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDashboardStore } from "@/stores/dashboard-store";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
@@ -12,9 +12,10 @@ interface WidgetWrapperProps {
   visible: boolean;
   children: React.ReactNode;
   className?: string;
+  variants?: Variants;
 }
 
-export function WidgetWrapper({ id, title, visible, children, className }: WidgetWrapperProps) {
+export const WidgetWrapper = forwardRef<HTMLDivElement, WidgetWrapperProps>(({ id, title, visible, children, className, variants }, ref) => {
   const { isEditing, removeWidget, toggleWidgetVisibility } = useDashboardStore();
   
   const {
@@ -35,9 +36,15 @@ export function WidgetWrapper({ id, title, visible, children, className }: Widge
   if (!visible && !isEditing) return null;
 
   return (
-    <div 
-      ref={setNodeRef}
+    <motion.div 
+      ref={(node: any) => {
+          setNodeRef(node);
+          if (typeof ref === 'function') ref(node);
+          else if (ref) (ref as any).current = node;
+      }}
       style={style}
+      variants={variants}
+      layout // Enable layout animations
       className={`relative group ${className} ${!visible ? 'grayscale opacity-50' : ''} ${isDragging ? 'opacity-50' : ''}`}
     >
       {isEditing && (
@@ -72,6 +79,8 @@ export function WidgetWrapper({ id, title, visible, children, className }: Widge
       )}
 
       {children}
-    </div>
+    </motion.div>
   );
-}
+});
+
+WidgetWrapper.displayName = "WidgetWrapper";

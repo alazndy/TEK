@@ -1,28 +1,22 @@
 import { create } from 'zustand';
-import { 
-  collection, 
-  getDocs, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  query, 
-  orderBy,
-  where,
-  Timestamp
-} from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import type { Lot, LotMovement, LotStatus } from '@/lib/types';
+import { InventoryService } from '@/services/inventory-service';
+import type { Lot, LotMovement, LotStatus } from '@/types/inventory';
+import type { QueryDocumentSnapshot } from 'firebase/firestore';
 
 interface LotState {
   lots: Lot[];
   lotMovements: LotMovement[];
   loading: boolean;
   error: string | null;
+  // Pagination State
+  lastDoc: QueryDocumentSnapshot | null;
+  hasMore: boolean;
 }
 
 interface LotActions {
   fetchLots: (productId?: string, warehouseId?: string) => Promise<void>;
+  loadMoreLots: (productId?: string, warehouseId?: string) => Promise<void>;
+  
   addLot: (lot: Omit<Lot, 'id' | 'createdAt' | 'updatedAt' | 'availableQuantity'>) => Promise<string>;
   updateLot: (id: string, data: Partial<Lot>) => Promise<void>;
   deleteLot: (id: string) => Promise<void>;
@@ -53,83 +47,62 @@ export const useLotStore = create<LotStore>((set, get) => ({
   lotMovements: [],
   loading: false,
   error: null,
+  lastDoc: null,
+  hasMore: true,
 
   fetchLots: async (productId, warehouseId) => {
-    set({ loading: true, error: null });
+    set({ loading: true, error: null, lots: [], lastDoc: null, hasMore: true });
     try {
-      let q = query(collection(db, 'lots'), orderBy('receivedDate', 'desc'));
+      const { items, lastDoc } = await InventoryService.getLots(
+          { productId, warehouseId }, 
+          undefined, // Initial load, no cursor
+          20 // Limit
+      );
       
-      // Note: Firestore doesn't support multiple where clauses on different fields without composite index
-      // For now, we filter client-side
-      const snapshot = await getDocs(q);
-      let lots = snapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          ...data,
-          manufactureDate: data.manufactureDate?.toDate(),
-          expiryDate: data.expiryDate?.toDate(),
-          receivedDate: data.receivedDate?.toDate() || new Date(),
-          createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date(),
-          availableQuantity: (data.quantity || 0) - (data.reservedQuantity || 0),
-        };
-      }) as Lot[];
-      
-      // Client-side filtering
-      if (productId) {
-        lots = lots.filter(l => l.productId === productId);
-      }
-      if (warehouseId) {
-        lots = lots.filter(l => l.warehouseId === warehouseId);
-      }
-      
-      set({ lots, loading: false });
+      set({ 
+          lots: items, 
+          lastDoc, 
+          hasMore: items.length === 20, // If we got full limit, likely more exists
+          loading: false 
+      });
     } catch (error: any) {
       set({ error: error.message, loading: false });
       console.error('Error fetching lots:', error);
     }
   },
 
+  loadMoreLots: async (productId, warehouseId) => {
+      const { lastDoc, hasMore, loading } = get();
+      if (!lastDoc || !hasMore || loading) return;
+
+      set({ loading: true });
+      try {
+          const { items, lastDoc: newLastDoc } = await InventoryService.getLots(
+              { productId, warehouseId },
+              lastDoc,
+              20
+          );
+
+          set(state => ({
+              lots: [...state.lots, ...items],
+              lastDoc: newLastDoc,
+              hasMore: items.length === 20,
+              loading: false
+          }));
+      } catch (error: any) {
+          set({ error: error.message, loading: false });
+      }
+  },
+
   addLot: async (lotData) => {
     set({ loading: true, error: null });
     try {
-      const now = new Date();
-      const availableQuantity = lotData.quantity - (lotData.reservedQuantity || 0);
-      
-      const docData: any = {
-        ...lotData,
-        availableQuantity,
-        reservedQuantity: lotData.reservedQuantity || 0,
-        createdAt: Timestamp.fromDate(now),
-        updatedAt: Timestamp.fromDate(now),
-        receivedDate: Timestamp.fromDate(lotData.receivedDate),
-      };
-      
-      if (lotData.manufactureDate) {
-        docData.manufactureDate = Timestamp.fromDate(lotData.manufactureDate);
-      }
-      if (lotData.expiryDate) {
-        docData.expiryDate = Timestamp.fromDate(lotData.expiryDate);
-      }
-      
-      const docRef = await addDoc(collection(db, 'lots'), docData);
-      
-      const newLot: Lot = {
-        id: docRef.id,
-        ...lotData,
-        availableQuantity,
-        reservedQuantity: lotData.reservedQuantity || 0,
-        createdAt: now,
-        updatedAt: now,
-      };
-      
-      set(state => ({
-        lots: [newLot, ...state.lots],
-        loading: false,
-      }));
-      
-      return docRef.id;
+        const newLot = await InventoryService.addLot(lotData);  
+        set(state => ({
+            lots: [newLot, ...state.lots],
+            loading: false,
+        }));
+        return newLot.id;
     } catch (error: any) {
       set({ error: error.message, loading: false });
       throw error;
@@ -139,43 +112,25 @@ export const useLotStore = create<LotStore>((set, get) => ({
   updateLot: async (id, data) => {
     set({ loading: true, error: null });
     try {
-      const now = new Date();
-      const updateData: any = {
-        ...data,
-        updatedAt: Timestamp.fromDate(now),
-      };
-      
-      // Recalculate available quantity if quantity or reserved changes
       const currentLot = get().getLotById(id);
-      if (currentLot) {
-        const newQuantity = data.quantity ?? currentLot.quantity;
-        const newReserved = data.reservedQuantity ?? currentLot.reservedQuantity;
-        updateData.availableQuantity = newQuantity - newReserved;
-      }
       
-      if (data.manufactureDate) {
-        updateData.manufactureDate = Timestamp.fromDate(data.manufactureDate);
-      }
-      if (data.expiryDate) {
-        updateData.expiryDate = Timestamp.fromDate(data.expiryDate);
-      }
-      if (data.receivedDate) {
-        updateData.receivedDate = Timestamp.fromDate(data.receivedDate);
-      }
-      
-      await updateDoc(doc(db, 'lots', id), updateData);
+      // Use Service
+      const updatedData = await InventoryService.updateLot(id, data, currentLot);
       
       set(state => ({
         lots: state.lots.map(l => 
           l.id === id ? { 
             ...l, 
-            ...data, 
-            availableQuantity: updateData.availableQuantity,
-            updatedAt: now 
+            ...updatedData, 
+            // updatedAt handled by service but we sync local state 
+             // Note: Service returns Partial data, we merge carefully
           } : l
         ),
         loading: false,
       }));
+      
+      // Refresh to ensure full consistency if needed, or trust local merge
+      // For now trust local merge + service return
     } catch (error: any) {
       set({ error: error.message, loading: false });
       throw error;
@@ -185,7 +140,7 @@ export const useLotStore = create<LotStore>((set, get) => ({
   deleteLot: async (id) => {
     set({ loading: true, error: null });
     try {
-      await deleteDoc(doc(db, 'lots', id));
+      await InventoryService.deleteLot(id);
       
       set(state => ({
         lots: state.lots.filter(l => l.id !== id),
@@ -200,45 +155,20 @@ export const useLotStore = create<LotStore>((set, get) => ({
   fetchLotMovements: async (lotId) => {
     set({ loading: true, error: null });
     try {
-      const q = query(
-        collection(db, 'lotMovements'),
-        where('lotId', '==', lotId),
-        orderBy('createdAt', 'desc')
-      );
-      
-      const snapshot = await getDocs(q);
-      const lotMovements = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate() || new Date(),
-      })) as LotMovement[];
-      
+      const lotMovements = await InventoryService.getLotMovements(lotId);
       set({ lotMovements, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });
-      console.error('Error fetching lot movements:', error);
     }
   },
 
   addLotMovement: async (movementData) => {
     try {
-      const now = new Date();
-      const docRef = await addDoc(collection(db, 'lotMovements'), {
-        ...movementData,
-        createdAt: Timestamp.fromDate(now),
-      });
-      
-      const newMovement: LotMovement = {
-        id: docRef.id,
-        ...movementData,
-        createdAt: now,
-      };
-      
+      const newMovement = await InventoryService.addLotMovement(movementData);
       set(state => ({
         lotMovements: [newMovement, ...state.lotMovements],
       }));
-      
-      return docRef.id;
+      return newMovement.id;
     } catch (error: any) {
       console.error('Error adding lot movement:', error);
       throw error;
@@ -250,6 +180,8 @@ export const useLotStore = create<LotStore>((set, get) => ({
     if (!lot) throw new Error('Lot not found');
     if (lot.availableQuantity < quantity) throw new Error('Insufficient available quantity');
     
+    // Logic remains in store or moves to service? 
+    // For now, keeping business logic here, calling service for update
     await get().updateLot(lotId, {
       reservedQuantity: lot.reservedQuantity + quantity,
     });
@@ -362,21 +294,10 @@ export const useLotStore = create<LotStore>((set, get) => ({
 
   getLotMovementsByReferenceId: async (referenceId) => {
     try {
-      const q = query(
-        collection(db, 'lotMovements'),
-        where('referenceId', '==', referenceId),
-        orderBy('createdAt', 'desc')
-      );
-      
-      const snapshot = await getDocs(q);
-      return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate() || new Date(),
-      })) as LotMovement[];
+      return await InventoryService.getLotMovementsByReference(referenceId);
     } catch (error) {
-      console.error('Error fetching lot movements by reference:', error);
-      return [];
+       console.error('Error fetching lot movements by reference:', error);
+       return [];
     }
   },
 }));

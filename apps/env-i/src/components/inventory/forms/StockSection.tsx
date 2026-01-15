@@ -130,7 +130,7 @@ export function StockSection({ form, warehouses }: StockSectionProps) {
                 warehouseId: w.id,
                 zoneName: z.name,
                 zoneId: z.id,
-                shelves: z.shelves
+                storageUnits: z.storageUnits
                 }))
             );
             
@@ -173,17 +173,17 @@ export function StockSection({ form, warehouses }: StockSectionProps) {
             control={form.control}
             name="shelf"
             render={({ field }) => {
-            // Get shelves for selected zone
+            // Get storage units for selected zone
             const selectedZoneName = form.watch('room');
             const allZones = warehouses.flatMap(w => 
-                (w.zones || []).map(z => ({ zoneName: z.name, shelves: z.shelves }))
+                (w.zones || []).map(z => ({ zoneName: z.name, storageUnits: z.storageUnits }))
             );
             const currentZone = allZones.find(z => z.zoneName === selectedZoneName);
-            const shelves = currentZone?.shelves || [];
+            const storageUnits = currentZone?.storageUnits || [];
             
             return (
                 <FormItem>
-                <FormLabel>Raf</FormLabel>
+                <FormLabel>Raf / Ünite</FormLabel>
                 <Select 
                     onValueChange={field.onChange} 
                     value={field.value || ''}
@@ -195,10 +195,10 @@ export function StockSection({ form, warehouses }: StockSectionProps) {
                     </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                    {shelves.length > 0 ? (
-                        shelves.map((shelf) => (
-                        <SelectItem key={shelf.id} value={shelf.name}>
-                            {shelf.name} ({shelf.rows} sıra × {shelf.columns} kolon)
+                    {storageUnits.length > 0 ? (
+                        storageUnits.map((unit) => (
+                        <SelectItem key={unit.id} value={unit.name}>
+                            {unit.name} ({unit.rows} sıra × {unit.columns} kolon)
                         </SelectItem>
                         ))
                     ) : (

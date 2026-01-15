@@ -28,6 +28,30 @@
     "saveDashboard": "Save",
     "addWidget": "Add Widget"
   },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "inventory_management": "Inventory Management",
+    "all_products": "All Products",
+    "stock_movements": "Stock Movements",
+    "warehouse_layout": "Warehouse Layout",
+    "batch_tracking": "Batch Tracking",
+    "expiration_dates": "Expiration Dates",
+    "commercial": "Commercial",
+    "suppliers": "Suppliers",
+    "purchase_orders": "Purchase Orders",
+    "customer_orders": "Customer Orders",
+    "proposals": "Proposals",
+    "production": "Production",
+    "work_orders": "Work Orders",
+    "recipes": "Recipes",
+    "reports": "Reports",
+    "stock_reports": "Stock Reports",
+    "sales_reports": "Sales Reports",
+    "quality_control": "Quality Control",
+    "team": "Team",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
   "Dashboard": {
     "title": "Dashboard",
     "welcome": "Welcome back",
@@ -69,3 +93,4 @@
     "searching": "Searching..."
   }
 }
+

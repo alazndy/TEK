@@ -12,9 +12,8 @@ export function useFirestoreListeners() {
   
   // Real-time listener for Products
   useEffect(() => {
-    // Listening to the first 100 products for now to avoid huge reads
-    // In a real production app with thousands of items, you'd listen to specific "modified recently" queries or use server-side triggers.
-    const q = query(collection(db, "products"), orderBy("name"), limit(100));
+    // Listening to the first 500 products
+    const q = query(collection(db, "products"), orderBy("name"), limit(500));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const products: Product[] = [];

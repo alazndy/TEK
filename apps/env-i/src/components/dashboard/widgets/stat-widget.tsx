@@ -21,14 +21,16 @@ export function StatWidget({ value, label, description, icon, isDestructive }: S
   const Icon = icons[icon];
   
   return (
-    <Card className={`transition-all hover:shadow-lg hover:-translate-y-1 ${isDestructive ? 'border-destructive/20 bg-destructive/5' : ''}`}>
+    <Card className={`glass-panel transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 hover:bg-card/40 border-0 ${isDestructive ? 'border-destructive/20 bg-destructive/5' : ''}`}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{label}</CardTitle>
-        <Icon className={`h-4 w-4 ${isDestructive ? 'text-destructive animate-pulse' : 'text-muted-foreground'}`} />
+        <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
+        <div className={`p-2 rounded-xl bg-primary/10 ${isDestructive ? 'bg-destructive/10' : ''}`}>
+            <Icon className={`h-4 w-4 ${isDestructive ? 'text-destructive animate-pulse' : 'text-primary'}`} />
+        </div>
       </CardHeader>
       <CardContent>
-        <div className={`text-2xl font-bold ${isDestructive ? 'text-destructive' : ''}`}>{value}</div>
-        <p className="text-xs text-muted-foreground">{description}</p>
+        <div className={`text-2xl font-bold tracking-tight ${isDestructive ? 'text-destructive' : 'text-foreground'}`}>{value}</div>
+        <p className="text-xs text-muted-foreground mt-1">{description}</p>
       </CardContent>
     </Card>
   );

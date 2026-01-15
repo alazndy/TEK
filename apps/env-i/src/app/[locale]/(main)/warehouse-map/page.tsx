@@ -1,11 +1,13 @@
 "use client"
 
 import * as React from "react"
+import dynamic from "next/dynamic"
 import { useDataStore } from "@/stores/data-store"
 import { WarehouseZone, Warehouse } from "@/lib/types"
 import { WarehouseFloorPlan } from "@/components/warehouse/warehouse-floor-plan"
 import { ShelfView } from "@/components/warehouse/shelf-view"
 import { ZoneEditor } from "@/components/warehouse/zone-editor"
+import { ViewModeToggle, ViewMode } from "@/components/warehouse/view-mode-toggle"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -19,12 +21,48 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Map, Settings, Package, ChevronLeft } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
+// Dynamic import for 3D view to avoid SSR issues with Three.js
+const Warehouse3DView = dynamic(
+  () => import("@/components/warehouse/warehouse-3d-view").then(mod => ({ default: mod.Warehouse3DView })),
+  { ssr: false, loading: () => <div className="h-[500px] flex items-center justify-center bg-muted/30 rounded-lg">3D Yükleniyor...</div> }
+)
+
 export default function WarehouseMapPage() {
   const { warehouses, fetchWarehouses, products, updateWarehouse } = useDataStore();
   const { toast } = useToast();
   const [selectedWarehouseId, setSelectedWarehouseId] = React.useState<string>("");
   const [selectedZone, setSelectedZone] = React.useState<WarehouseZone | null>(null);
   const [isEditing, setIsEditing] = React.useState(false);
+  const [viewMode, setViewMode] = React.useState<ViewMode>('topdown');
+  const [highlightedProductId, setHighlightedProductId] = React.useState<string | null>(null);
+
+  // Read URL query params for zone highlighting
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const zoneParam = params.get('zone');
+    const productParam = params.get('product');
+    
+    if (zoneParam) {
+      // Find warehouse and zone matching the zone name
+      for (const warehouse of warehouses) {
+        const zone = warehouse.zones?.find(z => z.name === zoneParam);
+        if (zone) {
+          setSelectedWarehouseId(warehouse.id);
+          setSelectedZone(zone);
+          if (productParam) {
+            setHighlightedProductId(productParam);
+          }
+          // Clear URL params after processing
+          window.history.replaceState({}, '', window.location.pathname);
+          toast({
+            title: "Ürün konumu",
+            description: `${zoneParam} bölgesinde gösteriliyor`,
+          });
+          break;
+        }
+      }
+    }
+  }, [warehouses, toast]);
 
   React.useEffect(() => {
     fetchWarehouses();
@@ -90,6 +128,11 @@ export default function WarehouseMapPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* View Mode Toggle */}
+          {!isEditing && !selectedZone && selectedWarehouse && (
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+          )}
+
           {/* Warehouse Selector */}
           <Select value={selectedWarehouseId} onValueChange={setSelectedWarehouseId}>
             <SelectTrigger className="w-[200px]">
@@ -152,20 +195,31 @@ export default function WarehouseMapPage() {
         </Card>
       ) : (
         <div className="grid gap-6 md:grid-cols-3">
-          {/* Floor Plan - Large */}
+          {/* Floor Plan / 3D View - Large */}
           <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle>{selectedWarehouse.name}</CardTitle>
               <CardDescription>
-                Bölgeye tıklayarak raf detaylarını görüntüleyin
+                {viewMode === '3d' 
+                  ? 'Sol tık döndür, scroll zoom, sağ tık kaydır' 
+                  : 'Bölgeye tıklayarak raf detaylarını görüntüleyin'}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <WarehouseFloorPlan
-                warehouse={selectedWarehouse}
-                onZoneClick={setSelectedZone}
-                productCounts={productCounts}
-              />
+              {viewMode === '3d' ? (
+                <Warehouse3DView
+                  warehouse={selectedWarehouse}
+                  onZoneClick={setSelectedZone}
+                  productCounts={productCounts}
+                />
+              ) : (
+                <WarehouseFloorPlan
+                  warehouse={selectedWarehouse}
+                  onZoneClick={setSelectedZone}
+                  productCounts={productCounts}
+                  viewMode={viewMode}
+                />
+              )}
             </CardContent>
           </Card>
 
@@ -181,9 +235,9 @@ export default function WarehouseMapPage() {
                   <span className="font-bold">{selectedWarehouse.zones?.length || 0}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Toplam Raf</span>
+                  <span className="text-muted-foreground">Toplam Ünite</span>
                   <span className="font-bold">
-                    {selectedWarehouse.zones?.reduce((sum, z) => sum + z.shelves.length, 0) || 0}
+                    {selectedWarehouse.zones?.reduce((sum, z) => sum + (z.storageUnits?.length || 0), 0) || 0}
                   </span>
                 </div>
                 <div className="flex justify-between">

@@ -21,24 +21,24 @@ import { Product, Equipment, Consumable, Warehouse, Order, Proposal, AuditLog, S
 export class FirebaseInventoryRepository implements IInventoryRepository {
     // Products
     async getProducts(limitCount = 50, lastDoc?: any): Promise<{ data: Product[], lastDoc: any }> {
-        let q = query(collection(db, 'products'), orderBy('name'), limit(limitCount));
+        let q = query(collection(db, 'products'), limit(limitCount));
         if (lastDoc) {
-            q = query(collection(db, 'products'), orderBy('name'), startAfter(lastDoc), limit(limitCount));
+            q = query(collection(db, 'products'), startAfter(lastDoc), limit(limitCount));
         }
         const snap = await getDocs(q);
-        const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+        const data = snap.docs.map(doc => ({ ...doc.data(), originalId: doc.data().id, id: doc.id } as unknown as Product));
         return { data, lastDoc: snap.docs[snap.docs.length - 1] || null };
     }
 
     async getProductById(id: string): Promise<Product | null> {
         const snap = await getDoc(doc(db, 'products', id));
-        return snap.exists() ? { id: snap.id, ...snap.data() } as Product : null;
+        return snap.exists() ? { ...snap.data(), id: snap.id } as Product : null;
     }
 
     async getAllProductsForSearch(): Promise<Product[]> {
-        const q = query(collection(db, "products"), orderBy("name"));
+        const q = query(collection(db, "products"));
         const querySnapshot = await getDocs(q);
-        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+        return querySnapshot.docs.map(doc => ({ ...doc.data(), originalId: doc.data().id, id: doc.id } as unknown as Product));
     }
 
     async addProduct(data: Omit<Product, 'id' | 'history'>): Promise<string> {
@@ -56,12 +56,12 @@ export class FirebaseInventoryRepository implements IInventoryRepository {
 
     // Equipment
     async getEquipment(limitCount = 50, lastDoc?: any): Promise<{ data: Equipment[], lastDoc: any }> {
-        let q = query(collection(db, 'equipment'), orderBy('name'), limit(limitCount));
+        let q = query(collection(db, 'equipment'), limit(limitCount));
         if (lastDoc) {
-            q = query(collection(db, 'equipment'), orderBy('name'), startAfter(lastDoc), limit(limitCount));
+            q = query(collection(db, 'equipment'), startAfter(lastDoc), limit(limitCount));
         }
         const snap = await getDocs(q);
-        const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Equipment));
+        const data = snap.docs.map(doc => ({ ...doc.data(), id: doc.id } as Equipment));
         return { data, lastDoc: snap.docs[snap.docs.length - 1] || null };
     }
 
@@ -80,12 +80,12 @@ export class FirebaseInventoryRepository implements IInventoryRepository {
 
     // Consumables
     async getConsumables(limitCount = 50, lastDoc?: any): Promise<{ data: Consumable[], lastDoc: any }> {
-        let q = query(collection(db, 'consumables'), orderBy('name'), limit(limitCount));
+        let q = query(collection(db, 'consumables'), limit(limitCount));
         if (lastDoc) {
-            q = query(collection(db, 'consumables'), orderBy('name'), startAfter(lastDoc), limit(limitCount));
+            q = query(collection(db, 'consumables'), startAfter(lastDoc), limit(limitCount));
         }
         const snap = await getDocs(q);
-        const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Consumable));
+        const data = snap.docs.map(doc => ({ ...doc.data(), id: doc.id } as Consumable));
         return { data, lastDoc: snap.docs[snap.docs.length - 1] || null };
     }
 
@@ -106,7 +106,7 @@ export class FirebaseInventoryRepository implements IInventoryRepository {
     async getWarehouses(): Promise<Warehouse[]> {
         const q = query(collection(db, 'warehouses'), orderBy('name'));
         const snap = await getDocs(q);
-        return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Warehouse));
+        return snap.docs.map(doc => ({ ...doc.data(), id: doc.id } as Warehouse));
     }
 
     async addWarehouse(data: Omit<Warehouse, 'id'>): Promise<string> {
@@ -153,7 +153,7 @@ export class FirebaseInventoryRepository implements IInventoryRepository {
     async getSettings(): Promise<Settings | null> {
         const snap = await getDocs(collection(db, 'settings'));
         if (snap.empty) return null;
-        return { id: snap.docs[0].id, ...snap.docs[0].data() } as Settings;
+        return { ...snap.docs[0].data(), id: snap.docs[0].id } as Settings;
     }
 
     async updateSettings(id: string, data: Partial<Settings>): Promise<void> {
@@ -172,7 +172,7 @@ export class FirebaseInventoryRepository implements IInventoryRepository {
             q = query(collection(db, 'orders'), orderBy('date', 'desc'), startAfter(lastDoc), limit(limitCount));
         }
         const snap = await getDocs(q);
-        const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+        const data = snap.docs.map(doc => ({ ...doc.data(), id: doc.id } as Order));
         return { data, lastDoc: snap.docs[snap.docs.length - 1] || null };
     }
 
@@ -187,7 +187,7 @@ export class FirebaseInventoryRepository implements IInventoryRepository {
             q = query(collection(db, 'proposals'), orderBy('date', 'desc'), startAfter(lastDoc), limit(limitCount));
         }
         const snap = await getDocs(q);
-        const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Proposal));
+        const data = snap.docs.map(doc => ({ ...doc.data(), id: doc.id } as Proposal));
         return { data, lastDoc: snap.docs[snap.docs.length - 1] || null };
     }
 

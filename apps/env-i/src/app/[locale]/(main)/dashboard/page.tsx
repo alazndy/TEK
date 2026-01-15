@@ -143,24 +143,39 @@ export default function Dashboard() {
     }
   };
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-transparent">
+    <div className="flex flex-col gap-6 p-2 md:p-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
           {t('title')}
         </h1>
         <div className="flex items-center gap-2">
             {isEditing && (
                 <>
                     <WidgetAddDialog />
-                    <Button variant="ghost" size="icon" onClick={resetToDefault} className="text-muted-foreground hover:text-white" title="Sıfırla">
+                    <Button variant="ghost" size="icon" onClick={resetToDefault} className="text-muted-foreground hover:text-foreground" title="Sıfırla">
                         <RotateCcw className="h-4 w-4" />
                     </Button>
                 </>
             )}
             <Button 
                 variant={isEditing ? "default" : "outline"} 
-                className={`gap-2 ${isEditing ? 'bg-emerald-500 hover:bg-emerald-600' : 'border-white/10 hover:bg-white/5'}`}
+                className={`gap-2 ${isEditing ? 'bg-primary hover:bg-primary/90' : 'hover:bg-accent'}`}
                 onClick={toggleEditing}
             >
                 {isEditing ? (
@@ -183,44 +198,47 @@ export default function Dashboard() {
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <div className="space-y-6">
+        <motion.div 
+            className="space-y-6"
+            variants={container}
+            initial="hidden"
+            animate="show"
+        >
           <SortableContext items={statWidgetIds} strategy={rectSortingStrategy}>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <AnimatePresence mode="popLayout">
+            <div className="grid gap-4 w-full md:grid-cols-2 lg:grid-cols-4">
                 {widgets.filter(w => w.type.startsWith('stat-')).map((widget) => (
                   <WidgetWrapper 
                     key={widget.id} 
                     id={widget.id} 
                     title={widget.title} 
                     visible={widget.visible}
+                    variants={item}
                   >
                     <WidgetRegistry type={widget.type} data={widgetData} />
                   </WidgetWrapper>
                 ))}
-              </AnimatePresence>
             </div>
           </SortableContext>
 
           <SortableContext items={otherWidgetIds} strategy={rectSortingStrategy}>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <AnimatePresence mode="popLayout">
+            <div className="grid gap-4 w-full md:grid-cols-2 lg:grid-cols-12">
                 {widgets.filter(w => !w.type.startsWith('stat-')).map((widget) => (
                   <WidgetWrapper 
                     key={widget.id} 
                     id={widget.id} 
                     title={widget.title} 
                     visible={widget.visible}
-                    className={widget.type.startsWith('chart-') ? 'col-span-4 lg:col-span-3 last:lg:col-span-4' : 'col-span-4'}
+                    className={widget.type.startsWith('chart-') ? 'col-span-full lg:col-span-8' : 'col-span-full md:col-span-1 lg:col-span-4'}
+                    variants={item}
                   >
-                    <div className={widget.type === 'chart-sales-trend' ? 'h-full' : ''}>
+                    <div className={widget.type === 'chart-sales-trend' ? 'h-full min-h-[300px]' : 'min-h-[300px]'}>
                         <WidgetRegistry type={widget.type} data={widgetData} />
                     </div>
                   </WidgetWrapper>
                 ))}
-              </AnimatePresence>
             </div>
           </SortableContext>
-        </div>
+        </motion.div>
       </DndContext>
     </div>
   )

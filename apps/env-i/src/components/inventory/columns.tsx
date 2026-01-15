@@ -2,7 +2,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { Product } from "@/lib/types"
+import { Product, Equipment, Consumable } from "@/lib/types"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,23 +13,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Book, FileArchive, Trash2, Pencil, AlertTriangle, Layers } from "lucide-react"
+import { MoreHorizontal, Book, FileArchive, Trash2, Pencil, AlertTriangle, Layers, MapPin } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { SortableHeader } from "@/components/ui/sortable-header"
 import { PriceCell } from "@/components/ui/price-cell"
 
+type InventoryItemType = Product | Equipment | Consumable;
+
 type ColumnsConfig = {
-  onView?: (product: Product) => void;
-  onEdit?: (product: Product) => void;
-  onDelete?: (productId: string) => void;
-  onPrintLabel?: (product: Product) => void;
+  onView?: (item: any) => void;
+  onEdit?: (item: any) => void;
+  onDelete?: (itemId: string) => void;
+  onPrintLabel?: (item: any) => void;
+  onShowOnMap?: (item: any) => void;
 }
 
 import { Checkbox } from "@/components/ui/checkbox"
 
-export const columns = ({ onView, onEdit, onDelete, onPrintLabel }: ColumnsConfig): ColumnDef<Product>[] => {
+export const columns = ({ onView, onEdit, onDelete, onPrintLabel, onShowOnMap }: ColumnsConfig): ColumnDef<InventoryItemType>[] => {
   
-  const baseColumns: ColumnDef<Product>[] = [
+  const baseColumns: ColumnDef<InventoryItemType>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -57,9 +60,9 @@ export const columns = ({ onView, onEdit, onDelete, onPrintLabel }: ColumnsConfi
         return (
             <div className="flex items-center gap-2">
                 <Button variant="link" className="p-0 h-auto font-medium" onClick={() => onView?.(product)}>
-                    {product.name}
+                    {product.name || <span className="text-muted-foreground italic font-normal">{(product as any).originalId || product.id} <span className="text-xs ml-1">(İsimsiz)</span></span>}
                 </Button>
-                {product.isFaulty && (
+                {(product as Product).isFaulty && (
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger>
@@ -71,7 +74,7 @@ export const columns = ({ onView, onEdit, onDelete, onPrintLabel }: ColumnsConfi
                         </Tooltip>
                     </TooltipProvider>
                 )}
-                {product.weaveFileUrl && (
+                {(product as Product).weaveFileUrl && (
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger>
@@ -116,7 +119,7 @@ export const columns = ({ onView, onEdit, onDelete, onPrintLabel }: ColumnsConfi
       header: ({ column }) => <SortableHeader column={column} title="Stok" />,
       cell: ({ row }) => {
           const stock: number = row.getValue("stock");
-          const minStock: number = row.original.minStock ?? 0;
+          const minStock: number = (row.original as Product).minStock ?? 0;
           
           let variant: "secondary" | "destructive" = "secondary";
           let className = "";
@@ -162,60 +165,97 @@ export const columns = ({ onView, onEdit, onDelete, onPrintLabel }: ColumnsConfi
         const product = row.original
    
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Menüyü aç</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
-              {onView && (
-                 <DropdownMenuItem onClick={() => onView(product)}>
-                  <Pencil className="mr-2 h-4 w-4" />
-                  Görüntüle / Düzenle
-                </DropdownMenuItem>
-              )}
-               {onPrintLabel && (
-                <DropdownMenuItem onClick={() => onPrintLabel(product)}>
-                  <MoreHorizontal className="mr-2 h-4 w-4" /> {/* Printer Icon ideally */}
-                  Etiket Yazdır
-                </DropdownMenuItem>
-              )}
-              {onEdit && (
-                <DropdownMenuItem onClick={() => onEdit(product)}>
-                  <Pencil className="mr-2 h-4 w-4" />
-                  Hızlı Düzenle
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              {product.guideUrl && (
-                <DropdownMenuItem onClick={() => window.open(product.guideUrl, '_blank')}>
-                  <Book className="mr-2 h-4 w-4" />
-                  Kılavuzu Görüntüle
-                </DropdownMenuItem>
-              )}
-               {product.brochureUrl && (
-                <DropdownMenuItem onClick={() => window.open(product.brochureUrl, '_blank')}>
-                  <FileArchive className="mr-2 h-4 w-4" />
-                  Broşürü Görüntüle
-                </DropdownMenuItem>
-              )}
-              {onDelete && (
-                <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                        className="text-destructive focus:text-destructive focus:bg-destructive/10"
-                        onClick={() => onDelete(product.id)}
-                    >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Sil
+          <div className="flex items-center justify-end gap-1">
+             {/* Quick Actions - Visible on Row Hover */}
+             <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                {onView && (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => onView(product)}>
+                                    <Pencil className="h-4 w-4" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Düzenle</TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )}
+                {onPrintLabel && (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => onPrintLabel(product)}>
+                                    <MoreHorizontal className="h-4 w-4 rotate-90" /> 
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Etiket</TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )}
+             </div>
+
+             {/* More Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Menüyü aç</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
+                  {onView && (
+                     <DropdownMenuItem onClick={() => onView(product)}>
+                      <Pencil className="mr-2 h-4 w-4" />
+                      Görüntüle / Düzenle
                     </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  )}
+                   {onPrintLabel && (
+                    <DropdownMenuItem onClick={() => onPrintLabel(product)}>
+                      <MoreHorizontal className="mr-2 h-4 w-4" /> {/* Printer Icon ideally */}
+                      Etiket Yazdır
+                    </DropdownMenuItem>
+                  )}
+                  {onEdit && (
+                    <DropdownMenuItem onClick={() => onEdit(product)}>
+                      <Pencil className="mr-2 h-4 w-4" />
+                      Hızlı Düzenle
+                    </DropdownMenuItem>
+                  )}
+                  {onShowOnMap && product.room && (
+                    <DropdownMenuItem onClick={() => onShowOnMap(product)}>
+                      <MapPin className="mr-2 h-4 w-4" />
+                      Haritada Göster
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  {product.guideUrl && (
+                    <DropdownMenuItem onClick={() => window.open(product.guideUrl, '_blank')}>
+                      <Book className="mr-2 h-4 w-4" />
+                      Kılavuzu Görüntüle
+                    </DropdownMenuItem>
+                  )}
+                   {product.brochureUrl && (
+                    <DropdownMenuItem onClick={() => window.open(product.brochureUrl, '_blank')}>
+                      <FileArchive className="mr-2 h-4 w-4" />
+                      Broşürü Görüntüle
+                    </DropdownMenuItem>
+                  )}
+                  {onDelete && (
+                    <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                            className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                            onClick={() => onDelete(product.id)}
+                        >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Sil
+                        </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+          </div>
         )
       },
     });

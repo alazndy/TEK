@@ -28,6 +28,30 @@
     "saveDashboard": "Kaydet",
     "addWidget": "Widget Ekle"
   },
+  "sidebar": {
+    "dashboard": "Panel",
+    "inventory_management": "Envanter Yönetimi",
+    "all_products": "Tüm Ürünler",
+    "stock_movements": "Stok Hareketleri",
+    "warehouse_layout": "Depo Düzeni",
+    "batch_tracking": "Lot Takibi",
+    "expiration_dates": "Son Kullanma Tarihleri",
+    "commercial": "Ticari",
+    "suppliers": "Tedarikçiler",
+    "purchase_orders": "Satın Alma Siparişleri",
+    "customer_orders": "Müşteri Siparişleri",
+    "proposals": "Teklifler",
+    "production": "Üretim",
+    "work_orders": "İş Emirleri",
+    "recipes": "Reçeteler",
+    "reports": "Raporlar",
+    "stock_reports": "Stok Raporları",
+    "sales_reports": "Satış Raporları",
+    "quality_control": "Kalite Kontrol",
+    "team": "Ekip",
+    "settings": "Ayarlar",
+    "logout": "Çıkış Yap"
+  },
   "Dashboard": {
     "title": "Panel",
     "welcome": "Tekrar hoşgeldiniz",
@@ -69,3 +93,4 @@
     "searching": "Aranıyor..."
   }
 }
+
