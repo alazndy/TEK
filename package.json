@@ -8,12 +8,12 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "dependencies": {
-    "turbo": "^2.3.4"
+    "turbo": "^2.3.4",
+    "typescript": "^5.7.2"
   },
   "devDependencies": {
     "@turbo/gen": "^2.3.4",
-    "prettier": "^3.2.5",
-    "typescript": "^5.7.2"
+    "prettier": "^3.2.5"
   },
   "packageManager": "pnpm@9.15.2"
 }
