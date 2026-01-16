@@ -8,73 +8,86 @@ service cloud.firestore {
       return request.auth != null;
     }
     
+    // Helper function to check if user is part of the organization
+    function isDomainUser() {
+      return request.auth != null && 
+             request.auth.token.email.matches('.*@adctasarim[.]com');
+    }
+    
     // Helper function to check if user owns the document
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
     }
+
+    // Helper to check access (Owner OR Domain User)
+    function hasAccess(userId) {
+      return isOwner(userId) || isDomainUser();
+    }
     
     // Users collection - users can only read/write their own data
+    // Exception: Domain users might need to read other profiles? Let's keep strict for now unless requested.
     match /users/{userId} {
-      allow read, write: if isOwner(userId);
+      allow read, write: if isOwner(userId) || isDomainUser();
     }
     
-    // Products/Inventory - authenticated users can read, only creators can write
+    // Products/Inventory - authenticated users can read, domain users/creators can write
     match /products/{productId} {
       allow read: if isAuthenticated();
-      allow write: if isOwner(resource.data.userId) || isOwner(request.resource.data.userId);
+      // Allow write if creator OR if domain user
+      allow write: if isOwner(resource.data.userId) || isOwner(request.resource.data.userId) || isDomainUser();
     }
     
-    // Orders - authenticated users can only access their own
+    // Orders - Domain users have access
     match /orders/{orderId} {
-      allow read, write: if isOwner(resource.data.userId) || isOwner(request.resource.data.userId);
+      allow read, write: if hasAccess(resource.data.userId) || hasAccess(request.resource.data.userId);
     }
     
-    // Proposals - authenticated users can only access their own
+    // Proposals
     match /proposals/{proposalId} {
-      allow read, write: if isOwner(resource.data.userId) || isOwner(request.resource.data.userId);
+      allow read, write: if hasAccess(resource.data.userId) || hasAccess(request.resource.data.userId);
     }
     
-    // Equipment - authenticated users can only access their own
+    // Equipment
     match /equipment/{equipmentId} {
-      allow read, write: if isOwner(resource.data.userId) || isOwner(request.resource.data.userId);
+      allow read, write: if hasAccess(resource.data.userId) || hasAccess(request.resource.data.userId);
     }
     
-    // Consumables - authenticated users can only access their own
+    // Consumables
     match /consumables/{consumableId} {
-      allow read, write: if isOwner(resource.data.userId) || isOwner(request.resource.data.userId);
+      allow read, write: if hasAccess(resource.data.userId) || hasAccess(request.resource.data.userId);
     }
     
-    // Warehouses - authenticated users can only access their own
+    // Warehouses
     match /warehouses/{warehouseId} {
-      allow read, write: if isOwner(resource.data.userId) || isOwner(request.resource.data.userId);
+      allow read, write: if hasAccess(resource.data.userId) || hasAccess(request.resource.data.userId);
     }
     
-    // Audit logs - authenticated users can read, system can write
+    // Audit logs - Domain users can read
     match /auditLogs/{logId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated();
-      allow update, delete: if false; // Audit logs should not be modified
+      allow update, delete: if false; 
     }
     
-    // Settings - authenticated users can only access their own
+    // Settings
     match /settings/{settingId} {
-      allow read, write: if isOwner(settingId);
+      allow read, write: if isOwner(settingId) || isDomainUser();
     }
     
-    // Discontinued items - authenticated users can read, only owners write
+    // Discontinued items
     match /discontinued/{itemId} {
       allow read: if isAuthenticated();
-      allow write: if isOwner(resource.data.userId) || isOwner(request.resource.data.userId);
+      allow write: if hasAccess(resource.data.userId) || hasAccess(request.resource.data.userId);
     }
     
-    // Projects - authenticated users can only access their own
+    // Projects
     match /projects/{projectId} {
-      allow read, write: if isOwner(resource.data.userId) || isOwner(request.resource.data.userId);
+      allow read, write: if hasAccess(resource.data.userId) || hasAccess(request.resource.data.userId);
     }
     
-    // Project usages - authenticated users can only access their own
+    // Project usages
     match /project_usages/{usageId} {
-      allow read, write: if isOwner(resource.data.userId) || isOwner(request.resource.data.userId);
+      allow read, write: if hasAccess(resource.data.userId) || hasAccess(request.resource.data.userId);
     }
   }
 }

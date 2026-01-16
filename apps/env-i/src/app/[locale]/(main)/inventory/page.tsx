@@ -47,7 +47,7 @@ export default function InventoryPage() {
   React.useEffect(() => {
     const timer = setTimeout(() => {
       if (searchQuery.length >= 2) {
-        searchProducts(searchQuery, "Stok Malzemesi");
+        searchProducts(searchQuery);
       } else {
         clearSearch();
       }

@@ -40,8 +40,10 @@ export const createProductSlice: StoreSlice<any> = (set, get) => ({
       // Fetch up to 2000 items (effectively all)
       const { data } = await inventoryRepo.getProducts(2000);
       
-      // Client-side Sorting (Turkish A-Z)
-      const sortedData = data.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr'));
+      // Client-side Sorting (Turkish A-Z) & Category Injection
+      const sortedData = data
+        .map(p => ({ ...p, category: "Stok Malzemesi" as const }))
+        .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'tr'));
 
       set({ 
         products: sortedData, 
@@ -135,8 +137,11 @@ export const createProductSlice: StoreSlice<any> = (set, get) => ({
       const { data, lastDoc } = await inventoryRepo.getEquipment(250, initial ? null : get().lastEquipment);
 
       set(state => {
-        const newData = initial ? data : [...state.equipment, ...data];
-        const uniqueData = Array.from(new Map(newData.map(item => [item.id, item])).values());
+        const enhancedData = initial ? data : [...state.equipment, ...data];
+        // Inject category for Equipment
+        const mappedData = enhancedData.map(e => ({ ...e, category: "Demirbaş" as const }));
+        
+        const uniqueData = Array.from(new Map(mappedData.map(item => [item.id, item])).values());
         
         return {
           equipment: uniqueData,
@@ -207,8 +212,11 @@ export const createProductSlice: StoreSlice<any> = (set, get) => ({
       const { data, lastDoc } = await inventoryRepo.getConsumables(250, initial ? null : get().lastConsumable);
       
       set(state => {
-        const newData = initial ? data : [...state.consumables, ...data];
-        const uniqueData = Array.from(new Map(newData.map(item => [item.id, item])).values());
+        const enhancedData = initial ? data : [...state.consumables, ...data];
+        // Inject category for Consumables
+        const mappedData = enhancedData.map(c => ({ ...c, category: "Sarf Malzeme" as const }));
+        
+        const uniqueData = Array.from(new Map(mappedData.map(item => [item.id, item])).values());
         
         return {
           consumables: uniqueData,
@@ -294,7 +302,9 @@ export const createProductSlice: StoreSlice<any> = (set, get) => ({
         // Actually, looking at searchProducts, it uses get().products.
         // So fetchAllProductsForSearch is useless if it doesn't update get().products.
         // Let's update products.
-        products: allItems, 
+
+        // Inject category for consistency
+        products: allItems.map(p => ({ ...p, category: "Stok Malzemesi" as const })), 
         searchResults: [], 
         allProductsLoaded: true
       });
@@ -339,7 +349,7 @@ export const createProductSlice: StoreSlice<any> = (set, get) => ({
         return matchesTerm && matchesCategory;
       });
 
-      set({ searchResults: results });
+      set({ searchResults: results, isSearching: false });
   },
   clearSearch: () => set({ searchResults: [], isSearching: false }),
 
