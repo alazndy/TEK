@@ -20,7 +20,10 @@ export function useCriticalStockMonitor() {
         if (products.length === 0) return;
 
         products.forEach((product: Product) => {
-            if (product.stock <= (product.minStock || 0)) {
+            // Default minStock to 5 if not set, to ensure functionality is visible
+            const threshold = product.minStock !== undefined ? product.minStock : 5;
+            
+            if (product.stock <= threshold) {
                 
                 // Check if already notified
                 if (!notifiedProductsRef.current.has(product.id)) {

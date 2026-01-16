@@ -136,7 +136,7 @@ export default function InventoryPage() {
   // Use search results if searching, otherwise combine all products
   const inventoryProducts = React.useMemo(() => {
     let result: (Product | Equipment | Consumable)[] = [];
-    if (searchQuery.length >= 2 && searchResults.length > 0) {
+    if (searchQuery.length >= 2) {
       result = searchResults;
     } else {
       // Combine all collections for "Tüm Ürünler"

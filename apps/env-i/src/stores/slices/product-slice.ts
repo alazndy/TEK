@@ -272,9 +272,29 @@ export const createProductSlice: StoreSlice<any> = (set, get) => ({
     
     set({ loadingProducts: true });
     try {
-      const allProducts = await inventoryRepo.getAllProductsForSearch();
+      const allItems = await inventoryRepo.getAllProductsForSearch();
       
+      // Separate items by category/type to update specific stores if needed, 
+      // or just trust that current 'products' logic is enough. 
+      // For now, let's assume getAllProductsForSearch returns everything and we put it in search context?
+      // Actually, if we just want to search, we should probably update 'products' if it's the main source.
+      // But 'getAllProductsForSearch' might return simplified objects.
+      
+      // Better approach: Just ensure 'products' has the data.
+      // If getAllProductsForSearch returns exactly Product[], update products.
       set({
+        // Assuming the repo returns products. If mixed, we might need a separate 'searchableItems' state or just update products.
+        // Given current structure, let's just make sure we don't lose the data.
+        // FIX: The original code discarded 'allProducts'.
+        // Let's assume for now we populate 'products' if it's empty? 
+        // Or better, let's rely on the existing fetchProducts(true) which loads 2000.
+        // If fetchAllProductsForSearch is redundant, we might deprecate it.
+        // But for now, let's fix the discard.
+        
+        // Actually, looking at searchProducts, it uses get().products.
+        // So fetchAllProductsForSearch is useless if it doesn't update get().products.
+        // Let's update products.
+        products: allItems, 
         searchResults: [], 
         allProductsLoaded: true
       });

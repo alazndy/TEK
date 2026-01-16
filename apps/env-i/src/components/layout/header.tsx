@@ -79,7 +79,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/40 bg-background/80 backdrop-blur-xl px-6 transition-all duration-200 supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-background px-6 transition-all duration-200">
       {/* Mobile Menu Trigger */}
       <Button
         variant="ghost"
