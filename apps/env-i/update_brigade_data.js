@@ -96,8 +96,8 @@ async function updateProducts() {
 
             if (data.name) {
                 const catalogPartNo = modelToPartNo.get(data.name);
-                if (catalogPartNo && data.parcode !== catalogPartNo) {
-                    updates.parcode = catalogPartNo;
+                if (catalogPartNo && data.partNumber !== catalogPartNo) {
+                    updates.partNumber = catalogPartNo;
                     needsUpdate = true;
                 }
             }

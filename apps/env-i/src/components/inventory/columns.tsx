@@ -100,10 +100,21 @@ export const columns = ({ onView, onEdit, onDelete, onPrintLabel, onShowOnMap }:
       header: ({ column }) => <SortableHeader column={column} title="Kategori" />,
       cell: ({ row }) => {
           const category: string = row.getValue("category");
-          let variant: "default" | "secondary" | "outline" = "secondary";
-          if (category === "Demirbaş") variant = "default";
-          if (category === "Sarf Malzeme") variant = "outline";
-          return <Badge variant={variant} className="whitespace-nowrap">{category}</Badge>
+          let className = "whitespace-nowrap";
+          let variant: "default" | "secondary" | "outline" | "destructive" = "secondary";
+          
+          if (category === "Demirbaş") {
+            variant = "default"; // Black/Primary
+            className += " bg-purple-100 text-purple-900 hover:bg-purple-200 border-purple-200";
+          } else if (category === "Sarf Malzeme") {
+            variant = "outline";
+            className += " bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100";
+          } else if (category === "Stok Malzemesi") {
+            variant = "secondary";
+            className += " bg-blue-50 text-blue-700 hover:bg-blue-100";
+          }
+          
+          return <Badge variant="outline" className={className}>{category}</Badge>
       }
     },
     {
@@ -111,7 +122,22 @@ export const columns = ({ onView, onEdit, onDelete, onPrintLabel, onShowOnMap }:
       header: ({ column }) => <SortableHeader column={column} title="Ürün Tipi" />,
       cell: ({ row }) => {
           const type: string = row.getValue("productCategory") || "Diğer";
-          return <Badge variant="outline" className="whitespace-nowrap bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/30 dark:border-blue-500/20">{type}</Badge>
+          let className = "whitespace-nowrap border-0 ";
+          
+          // Color mapping for common types
+          if (type.includes("Kablo") || type.includes("Fiş")) {
+            className += "bg-cyan-500/10 text-cyan-700 dark:text-cyan-400";
+          } else if (type.includes("Elektronik") || type.includes("Kamera") || type.includes("Monitör")) {
+            className += "bg-indigo-500/10 text-indigo-700 dark:text-indigo-400";
+          } else if (type.includes("Montaj") || type.includes("Vida") || type.includes("Mekanik")) {
+             className += "bg-slate-500/10 text-slate-700 dark:text-slate-400";
+          } else if (type.includes("Sensör")) {
+             className += "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400";
+          } else {
+             className += "bg-blue-500/10 text-blue-700 dark:text-blue-400";
+          }
+          
+          return <Badge variant="outline" className={className}>{type}</Badge>
       }
     },
     {
